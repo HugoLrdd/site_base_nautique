@@ -11,40 +11,75 @@
             margin: 0;
             padding: 0;
             color: #333;
-            /* 🔥 ÉTAPE 1 : On pousse le fond de la page encore plus bas pour créer une vraie zone de défilement libre */
-            padding-bottom: 260px; 
+            /* Espace en bas pour ne pas chevaucher le panier fixe */
+            padding-bottom: 180px; 
         }
         .header {
             background: linear-gradient(135deg, #0056b3, #00a8ff);
             color: white;
             text-align: center;
-            padding: 25px 20px;
+            padding: 20px 15px;
         }
-        .header h1 { margin: 0; font-size: 26px; }
-        .header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 13px; }
         
         .header-img {
             width: 100%;
-            max-width: 280px;
+            max-width: 240px;
             height: auto;
             border-radius: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             object-fit: cover;
         }
 
+        /* 📱 BARRE D'ONGLETS FIXE (Horizontale et scrollable si besoin) */
+        .onglets-barre {
+            position: sticky;
+            top: 0;
+            background: white;
+            display: flex;
+            gap: 10px;
+            padding: 10px 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            overflow-x: auto;
+            white-space: nowrap;
+            z-index: 500;
+            -webkit-overflow-scrolling: touch;
+        }
+        /* Masquer la barre de défilement pour le look */
+        .onglets-barre::-webkit-scrollbar { display: none; }
+
+        .onglet-btn {
+            background-color: #f0f2f5;
+            color: #555;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .onglet-btn.actif {
+            background-color: #0056b3;
+            color: white;
+            box-shadow: 0 3px 8px rgba(0, 86, 179, 0.3);
+        }
+
         .container {
             max-width: 600px;
-            margin: 20px auto;
+            margin: 15px auto;
             padding: 0 15px;
         }
 
-        .categorie-titre {
-            font-size: 20px;
-            color: #0056b3;
-            border-bottom: 2px solid #0056b3;
-            padding-bottom: 5px;
-            margin-top: 30px;
+        /* ❌ Par défaut, on cache toutes les sections de produits */
+        .categorie-section {
+            display: none;
+        }
+        /*  On affiche uniquement la section active */
+        .categorie-section.active {
+            display: block;
         }
 
         .produit-card {
@@ -55,17 +90,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            /* 🔥 ÉTAPE 2 : On force cette carte à repasser au-premier plan pour que le clic soit prioritaire */
-            position: relative;
-            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
         }
 
         .produit-infos {
             display: flex;
             flex-direction: column;
         }
-
         .produit-nom { font-weight: bold; font-size: 16px; }
         .produit-prix { color: #2ecc71; font-weight: 600; margin-top: 4px; }
 
@@ -77,11 +108,7 @@
             border-radius: 20px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
-            position: relative;
-            z-index: 20;
         }
-        .btn-ajouter:hover { background-color: #0084cc; }
 
         /* Panier fixe en bas */
         #panier-section {
@@ -90,15 +117,13 @@
             left: 0;
             right: 0;
             background: white;
-            /* On réduit un peu l'ombre pour éviter la zone invisible interactive */
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
             padding: 15px;
             border-top-left-radius: 15px;
             border-top-right-radius: 15px;
             max-width: 600px;
             margin: 0 auto;
-            /* Le panier reste en dessous des cartes de produit quand on fait défiler le menu */
-            z-index: 100; 
+            z-index: 1000;
         }
 
         .panier-resume {
@@ -143,38 +168,47 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
         }
-        .btn-valider:hover { background-color: #27ae60; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <!-- REMETS TON LIEN DE PHOTO ICI -->
-        <img src="https://www.ville-merville.fr/wp-content/uploads/2025/02/IMG_4803-1024x683.jpg" alt="Base Nautique" class="header-img">
-        
+        <img src="METS_L_ADRESSE_DE_TA_PHOTO_ICI" alt="Base Nautique" class="header-img">
         <h1>⛵ Base Nautique de Merville</h1>
-        <p>Commandez vos boissons & encas </p>
+        <p>Commandez vos boissons & encas depuis votre transat</p>
     </div>
 
-    <div class="container">
-        {% for categorie, produits in menu.items() %}
-            <div class="categorie-titre">{{ categorie }}</div>
-            {% for p in produits %}
-                <div class="produit-card">
-                    <div class="produit-infos">
-                        <span class="produit-nom">{{ p.nom }}</span>
-                        <span class="produit-prix">{{ "%.2f" | format(p.prix) }} €</span>
-                    </div>
-                    <button class="btn-ajouter" onclick="ajouterAuPanier('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}')">
-                        ＋ Ajouter
-                    </button>
-                </div>
-            {% endfor %}
+    <!-- 📥 Génération automatique des onglets -->
+    <div class="onglets-barre">
+        {% for categorie in menu.keys() %}
+            <button class="onglet-btn {% if loop.first %}actif{% endif %}" onclick="changerOnglet('{{ categorie }}', this)">
+                {{ categorie }}
+            </button>
         {% endfor %}
     </div>
 
+    <div class="container">
+        <!-- 📥 Séparation des produits par blocs de catégorie -->
+        {% for categorie, produits in menu.items() %}
+            <div id="cat-{{ categorie }}" class="categorie-section {% if loop.first %}active{% endif %}">
+                {% for p in produits %}
+                    <div class="produit-card">
+                        <div class="produit-infos">
+                            <span class="produit-nom">{{ p.nom }}</span>
+                            <span class="produit-prix">{{ "%.2f" | format(p.prix) }} €</span>
+                        </div>
+                        <button class="btn-ajouter" onclick="ajouterAuPanier('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}')">
+                            ＋ Ajouter
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Formulaire de validation compatible Safari -->
     <form id="panier-section" action="/commander" method="POST" onsubmit="return verifierPanierAvantEnvoi()">
         <div class="panier-resume">
             <span>🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
@@ -191,6 +225,24 @@
 
     <script>
         let panier = [];
+
+        // 🔀 Fonction magique pour basculer d'un onglet à l'autre
+        function changerOnglet(categorieSelectionnee, boutonClique) {
+            // 1. Masquer toutes les sections
+            let sections = document.querySelectorAll('.categorie-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+            
+            // 2. Désactiver tous les boutons d'onglets
+            let boutons = document.querySelectorAll('.onglet-btn');
+            boutons.forEach(btn => btn.classList.remove('actif'));
+            
+            // 3. Activer la bonne section et le bon bouton
+            document.getElementById('cat-' + categorieSelectionnee).classList.add('active');
+            boutonClique.classList.add('actif');
+            
+            // 4. Petit scroll automatique vers le haut pour replacer l'écran proprement
+            window.scrollTo({ top: document.querySelector('.onglets-barre').offsetTop, behavior: 'smooth' });
+        }
 
         function ajouterAuPanier(nom, prix, categorie) {
             let nomComplet = nom;
