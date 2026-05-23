@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-TJP5KT26');</script>
-<!-- End Google Tag Manager -->
+    <!-- On garde tes balises Google Tag Manager en haut de ton head si tu les as mises -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu - Base Nautique de Merville</title>
@@ -29,10 +23,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         .header h1 { margin: 0; font-size: 26px; }
         .header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
         
-        /* 📸 Style ajusté pour une photo PLUS GRANDE */
         .header-img {
             width: 100%;
-            max-width: 280px; /* Agrandi de 180px à 280px */
+            max-width: 280px;
             height: auto;
             border-radius: 12px;
             margin-bottom: 15px;
@@ -85,7 +78,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         }
         .btn-ajouter:hover { background-color: #0084cc; }
 
-        /* Style du panier fixe en bas de l'écran */
         #panier-section {
             position: fixed;
             bottom: 0;
@@ -149,13 +141,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </style>
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TJP5KT26"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 
     <div class="header">
-       
+        <!-- REMETS BIEN TON LIEN DE PHOTO ICI -->
         <img src="https://www.ville-merville.fr/wp-content/uploads/2025/02/IMG_4803-1024x683.jpg" alt="Base Nautique" class="header-img">
         
         <h1>⛵ Base Nautique de Merville</h1>
@@ -163,7 +151,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <div class="container">
-        <!-- Boucle Flask pour afficher automatiquement les catégories et produits de app.py -->
         {% for categorie, produits in menu.items() %}
             <div class="categorie-titre">{{ categorie }}</div>
             {% for p in produits %}
@@ -172,7 +159,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <span class="produit-nom">{{ p.nom }}</span>
                         <span class="produit-prix">{{ "%.2f" | format(p.prix) }} €</span>
                     </div>
-                    <!-- On passe maintenant le nom de la catégorie en plus au panier (ex: 'Crêpes') -->
                     <button class="btn-ajouter" onclick="ajouterAuPanier('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}')">
                         ＋ Ajouter
                     </button>
@@ -181,14 +167,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         {% endfor %}
     </div>
 
-    <!-- Le Panier intelligent -->
     <div id="panier-section">
         <div class="panier-resume">
             <span>🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
             <span class="panier-total"><span id="total-prix">0.00</span> €</span>
         </div>
         
-        <!-- Liste dynamique des objets ajoutés -->
         <ul id="liste-panier"></ul>
         
         <button class="btn-valider" onclick="envoyerCommande()">
@@ -197,11 +181,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <script>
-        // Le panier qui va stocker nos objets
         let panier = [];
 
         function ajouterAuPanier(nom, prix, categorie) {
-            // Si c'est une boisson on affiche juste le nom, sinon on fusionne (ex: Crêpes - Confiture)
             let nomComplet = nom;
             if (categorie === "Crêpes" && !nom.toLowerCase().includes("crêpe")) {
                 nomComplet = "Crêpe " + nom;
@@ -228,7 +210,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
             panier.forEach((item, index) => {
                 total += item.prix;
-                
                 let li = document.createElement('li');
                 li.innerHTML = `
                     <span>• ${item.nom}</span>
@@ -261,12 +242,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             })
             .then(response => {
                 if (response.ok) {
-                    // Ouverture de la page de suivi dans un nouvel onglet
-                    window.open(response.url, '_blank');
-                    
-                    // Nettoyage du panier
-                    panier = [];
-                    mettreAJourAffichage();
+                    // 🔥 LA CORRECTION MOBILE : Redirection directe sur la page de suivi dans la même fenêtre
+                    window.location.href = response.url;
                 } else {
                     alert("Oups, impossible de transmettre la commande au bar.");
                 }
