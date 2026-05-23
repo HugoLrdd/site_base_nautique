@@ -3,317 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bar - Base Nautique de Merville</title>
+    <title>Menu - Base Nautique de Merville</title>
     <style>
-        /* Style Général & Reset */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            max-width: 550px; 
-            margin: 0 auto; 
-            padding: 0; 
-            background: #f8fafc; 
-            color: #1e293b; 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            padding-bottom: 120px; /* Espace pour pas que le panier cache les produits */
         }
-        
-        /* En-tête de la Base Nautique */
-        .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('https://www.ville-merville.fr/wp-content/uploads/2025/02/IMG_4803-1024x683.jpg');
-            background-size: cover;
-            background-position: center;
+        .header {
+            background: linear-gradient(135deg, #0056b3, #00a8ff);
             color: white;
-            padding: 35px 20px;
             text-align: center;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 30px 20px;
         }
-        .hero h1 { margin: 0; font-size: 24px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-        .hero .welcome { font-size: 16px; margin: 6px 0 15px 0; font-weight: 500; color: #38bdf8; }
-        
-        /* Infos Pratiques */
-        .infos-badge {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(5px);
-            border-radius: 12px;
-            padding: 10px;
-            font-size: 13px;
-            display: inline-block;
-            text-align: left;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .infos-line { margin: 3px 0; display: flex; align-items: center; gap: 6px; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .header p { margin: 5px 0 0 0; opacity: 0.9; }
 
-        /* Navigation par Onglets Horizontaux */
-        .tabs-container {
-            position: sticky;
-            top: 0;
-            background: #f8fafc;
-            padding: 15px 20px;
-            z-index: 900;
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
         }
-        .tabs {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            white-space: nowrap;
+
+        .categorie-titre {
+            font-size: 20px;
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
             padding-bottom: 5px;
-            scrollbar-width: none; /* Cache la barre sur Firefox */
+            margin-top: 30px;
         }
-        .tabs::-webkit-scrollbar { display: none; } /* Cache la barre sur Chrome/Safari */
-        
-        .tab-btn {
+
+        .produit-card {
             background: white;
-            color: #64748b;
-            border: 1px solid #e2e8f0;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border-radius: 10px;
+            padding: 15px;
+            margin-vertical: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
-        .tab-btn.active {
-            background: #006699;
+
+        .produit-infos {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .produit-nom { font-weight: bold; font-size: 16px; }
+        .produit-prix { color: #2ecc71; font-weight: 600; margin-top: 4px; }
+
+        .btn-ajouter {
+            background-color: #00a8ff;
             color: white;
-            border-color: #006699;
-            box-shadow: 0 4px 10px rgba(0, 102, 153, 0.2);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
         }
+        .btn-ajouter:hover { background-color: #0084cc; }
 
-        /* Liste des Produits */
-        .container { padding: 0 20px 140px 20px; }
-        
-        .categorie-section {
-            display: none; /* Toutes cachées par défaut */
-        }
-        .categorie-section.active {
-            display: block; /* Seule la catégorie active s'affiche */
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .produit { 
-            background: white; 
-            padding: 16px; 
-            margin-bottom: 12px; 
-            border-radius: 16px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);
-            border: 1px solid #f1f5f9;
-        }
-        .produit-info { display: flex; flex-direction: column; }
-        .produit-nom { font-weight: 600; font-size: 16px; color: #0f172a; }
-        .produit-prix { font-size: 15px; color: #0284c7; font-weight: 700; margin-top: 4px; }
-        
-        .btn-ajouter { 
-            background: #f0f9ff; 
-            color: #0284c7; 
-            border: none; 
-            padding: 10px 16px; 
-            border-radius: 20px; 
-            cursor: pointer; 
-            font-weight: 700; 
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        .btn-ajouter:hover, .btn-ajouter:active { background: #0284c7; color: white; }
-
-        /* Panier Flottant */
-        #panier-section { 
+        /* Style du panier fixe en bas de l'écran */
+        #panier-section {
             position: fixed;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 550px;
-            background: #0f172a; 
-            color: white; 
-            box-sizing: border-box;
-            padding: 20px; 
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-            box-shadow: 0 -10px 25px rgba(0,0,0,0.15);
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            padding: 15px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            max-width: 600px;
+            margin: 0 auto;
             z-index: 1000;
         }
-        
+
         .panier-resume {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
         }
-        .panier-titre { font-size: 16px; font-weight: 600; }
-        .panier-total { font-size: 22px; font-weight: 800; color: #38bdf8; }
-        
-        #liste-panier { 
-            max-height: 90px; 
-            overflow-y: auto; 
-            margin: 0 0 15px 0; 
-            padding-left: 20px; 
-            font-size: 14px; 
-            color: #94a3b8;
-            display: none;
+        .panier-total { color: #2ecc71; font-size: 18px; }
+
+        #liste-panier {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+            max-height: 80px;
+            overflow-y: auto;
+            font-size: 14px;
+            color: #555;
         }
-        
-        .btn-valider { 
-            background: #10b981; 
-            color: white; 
-            border: none; 
-            width: 100%; 
-            padding: 16px; 
-            font-size: 16px; 
-            font-weight: 700;
-            border-radius: 12px; 
+        #liste-panier li {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .btn-supprimer {
+            color: #e74c3c;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-            transition: background 0.2s;
+            font-weight: bold;
+            margin-left: 10px;
         }
-        .btn-valider:hover { background: #059669; }
+
+        .btn-valider {
+            width: 100%;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
+        }
+        .btn-valider:hover { background-color: #27ae60; }
     </style>
 </head>
 <body>
 
-    <!-- En-tête d'accueil avec infos réelles -->
-    <div class="hero">
-        <h1>Base Nautique de Merville</h1>
-        <p class="welcome">👋 Bienvenue à la base nautique de Merville !</p>
-        
-        <div class="infos-badge">
-            <div class="infos-line">📍 <span>Rue de la Base Nautique, 59660 Merville</span></div>
-            <div class="infos-line">🕒 <span>Ouvert 7j/7 de 10h00 à 19h00 (Saison d'été)</span></div>
-            <div class="infos-line">💬 <span>Commandez ici, payez et retirez au comptoir</span></div>
-        </div>
+    <div class="header">
+        <h1>⛵ Base Nautique de Merville</h1>
+        <p>Commandez vos boissons & encas depuis votre transat</p>
     </div>
 
-    <!-- Zone des Onglets Dynamiques -->
-    <div class="tabs-container">
-        <div class="tabs">
-            <!-- Les boutons des onglets générés via Python loop pour correspondre au menu -->
-            {% for categorie in menu.keys() %}
-                <button class="tab-btn {% if loop.first %}active{% endif %}" onclick="changerOnglet('{{ categorie }}', this)">
-                    {{ categorie }}
-                </button>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Conteneur des Produits -->
     <div class="container">
+        <!-- Boucle Flask pour afficher automatiquement les catégories et produits de app.py -->
         {% for categorie, produits in menu.items() %}
-            <!-- Chaque catégorie est enveloppée dans une div de section -->
-            <div id="cat-{{ categorie }}" class="categorie-section {% if loop.first %}active{% endif %}">
-                {% for prod in produits %}
-                <div class="produit">
-                    <div class="produit-info">
-                        <span class="produit-nom">{{ prod.nom }}</span>
-                        <span class="produit-prix">{{ "%.2f"|format(prod.prix) }} €</span>
+            <div class="categorie-titre">{{ categorie }}</div>
+            {% for p in produits %}
+                <div class="produit-card">
+                    <div class="produit-infos">
+                        <span class="produit-nom">{{ p.nom }}</span>
+                        <span class="produit-prix">{{ "%.2f" | format(p.prix) }} €</span>
                     </div>
-                    <button class="btn-ajouter" onclick="ajouterAuPanier('{{ prod.nom }}', {{ prod.prix }})">
+                    <button class="btn-ajouter" onclick="ajouterAuPanier('{{ p.nom }}', {{ p.prix }})">
                         ＋ Ajouter
                     </button>
                 </div>
-                {% endfor %}
-            </div>
+            {% endfor %}
         {% endfor %}
     </div>
 
-    <!-- Panier fixe en bas -->
+    <!-- Le Panier intelligent -->
     <div id="panier-section">
         <div class="panier-resume">
-            <span class="panier-titre">🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
+            <span>🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
             <span class="panier-total"><span id="total-prix">0.00</span> €</span>
         </div>
+        
+        <!-- Liste dynamique des objets ajoutés -->
         <ul id="liste-panier"></ul>
+        
         <button class="btn-valider" onclick="envoyerCommande()">
             🚀 Envoyer la commande au bar
         </button>
     </div>
 
     <script>
+        // Le panier qui va stocker nos objets
         let panier = [];
-        let total = 0;
-
-        // Fonction pour gérer le changement d'onglet
-        function changerOnglet(idCategorie, boutonActive) {
-            // 1. Désactiver tous les boutons d'onglets
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            // 2. Cacher toutes les sections de produits
-            document.querySelectorAll('.categorie-section').forEach(sec => sec.classList.remove('active'));
-            
-            // 3. Activer le bon bouton et afficher la bonne section
-            boutonActive.classList.add('active');
-            document.getElementById('cat-' + idCategorie).classList.add('active');
-        }
 
         function ajouterAuPanier(nom, prix) {
-            panier.push({nom: nom, prix: prix});
-            total += prix;
+            // On ajoute l'objet dans notre tableau JavaScript
+            panier.push({ nom: nom, prix: prix });
+            mettreAJourAffichage();
+        }
+
+        function supprimerDuPanier(index) {
+            // Supprime l'élément ciblé
+            panier.splice(index, 1);
             mettreAJourAffichage();
         }
 
         function mettreAJourAffichage() {
-            const liste = document.getElementById('liste-panier');
-            const nbArticles = document.getElementById('panier-nb-articles');
+            let listeHTML = document.getElementById('liste-panier');
+            let nbArticles = document.getElementById('panier-nb-articles');
+            let totalPrix = document.getElementById('total-prix');
             
-            nbArticles.textContent = panier.length;
-            liste.innerHTML = '';
-            
-            if(panier.length > 0) {
-                liste.style.display = 'block';
-                panier.forEach(item => {
-                    let li = document.createElement('li');
-                    li.textContent = `${item.nom} (${item.prix.toFixed(2)} €)`;
-                    liste.appendChild(li);
-                });
-            } else {
-                liste.style.display = 'none';
-            }
-            
-            document.getElementById('total-prix').textContent = total.toFixed(2);
+            // On vide la liste avant de la reconstruire
+            listeHTML.innerHTML = "";
+            let total = 0;
+
+            panier.forEach((item, index) => {
+                total += item.prix;
+                
+                // On crée une ligne propre pour chaque objet de la commande
+                let li = document.createElement('li');
+                li.innerHTML = `
+                    <span>• ${item.nom}</span>
+                    <span>${item.prix.toFixed(2)} € <span class="btn-supprimer" onclick="supprimerDuPanier(${index})">❌</span></span>
+                `;
+                listeHTML.appendChild(li);
+            });
+
+            // Mise à jour des compteurs du bandeau de commande
+            nbArticles.innerText = panier.length;
+            totalPrix.innerText = total.toFixed(2);
         }
 
         function envoyerCommande() {
-    // On récupère tous les produits qui sont dans le panier
-    // (Adapte cette ligne si ton tableau de panier s'appelle autrement, par exemple 'panier')
-    if (panier.length === 0) {
-        alert("Votre panier est vide !");
-        return;
-    }
+            if (panier.length === 0) {
+                alert("Votre panier est vide ! Ajoutez des produits avant d'envoyer.");
+                return;
+            }
 
-    // On prépare les données à envoyer à Python
-    let formData = new URLSearchParams();
-    panier.forEach(produit => {
-        formData.append('produits', produit);
-    });
+            // On extrait uniquement les noms des produits pour Python
+            let formData = new URLSearchParams();
+            panier.forEach(item => {
+                formData.append('produits', item.nom);
+            });
 
-    // On envoie le tout au bar
-    fetch('/commander', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData
-    })
-    .then(response => {
-        if (response.redirected) {
-            // Si Python nous redirige vers la page de suivi, on y va !
-            window.location.href = response.url;
-        } else {
-            // Sinon, on extrait l'adresse de suivi manuellement
-            window.location.href = response.url;
+            // Envoi de la commande en arrière-plan à Flask
+            fetch('/commander', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 🔥 L'ONGLET MAGIQUE : On ouvre la page de suivi dans un nouvel onglet
+                    window.open(response.url, '_blank');
+                    
+                    // On nettoie le panier sur la carte pour une future commande
+                    panier = [];
+                    mettreAJourAffichage();
+                } else {
+                    alert("Oups, impossible de transmettre la commande au bar.");
+                }
+            })
+            .catch(error => {
+                alert("Erreur de connexion avec le comptoir.");
+                console.error(error);
+            });
         }
-    })
-    .catch(error => {
-        alert("Erreur lors de l'envoi de la commande...");
-        console.error(error);
-    });
-}
     </script>
 </body>
 </html>
