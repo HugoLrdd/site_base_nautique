@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar - Base Nautique de Merville</title>
+    <style>
+        /* Style Général & Reset */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            max-width: 550px; 
+            margin: 0 auto; 
+            padding: 0; 
+            background: #f8fafc; 
+            color: #1e293b; 
+        }
+        
+        /* En-tête de la Base Nautique */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('https://www.ville-merville.fr/wp-content/uploads/2025/02/IMG_4803-1024x683.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 35px 20px;
+            text-align: center;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .hero h1 { margin: 0; font-size: 24px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .hero .welcome { font-size: 16px; margin: 6px 0 15px 0; font-weight: 500; color: #38bdf8; }
+        
+        /* Infos Pratiques */
+        .infos-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 13px;
+            display: inline-block;
+            text-align: left;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .infos-line { margin: 3px 0; display: flex; align-items: center; gap: 6px; }
+
+        /* Navigation par Onglets Horizontaux */
+        .tabs-container {
+            position: sticky;
+            top: 0;
+            background: #f8fafc;
+            padding: 15px 20px;
+            z-index: 900;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 5px;
+            scrollbar-width: none; /* Cache la barre sur Firefox */
+        }
+        .tabs::-webkit-scrollbar { display: none; } /* Cache la barre sur Chrome/Safari */
+        
+        .tab-btn {
+            background: white;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .tab-btn.active {
+            background: #006699;
+            color: white;
+            border-color: #006699;
+            box-shadow: 0 4px 10px rgba(0, 102, 153, 0.2);
+        }
+
+        /* Liste des Produits */
+        .container { padding: 0 20px 140px 20px; }
+        
+        .categorie-section {
+            display: none; /* Toutes cachées par défaut */
+        }
+        .categorie-section.active {
+            display: block; /* Seule la catégorie active s'affiche */
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .produit { 
+            background: white; 
+            padding: 16px; 
+            margin-bottom: 12px; 
+            border-radius: 16px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);
+            border: 1px solid #f1f5f9;
+        }
+        .produit-info { display: flex; flex-direction: column; }
+        .produit-nom { font-weight: 600; font-size: 16px; color: #0f172a; }
+        .produit-prix { font-size: 15px; color: #0284c7; font-weight: 700; margin-top: 4px; }
+        
+        .btn-ajouter { 
+            background: #f0f9ff; 
+            color: #0284c7; 
+            border: none; 
+            padding: 10px 16px; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-ajouter:hover, .btn-ajouter:active { background: #0284c7; color: white; }
+
+        /* Panier Flottant */
+        #panier-section { 
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 550px;
+            background: #0f172a; 
+            color: white; 
+            box-sizing: border-box;
+            padding: 20px; 
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+        
+        .panier-resume {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .panier-titre { font-size: 16px; font-weight: 600; }
+        .panier-total { font-size: 22px; font-weight: 800; color: #38bdf8; }
+        
+        #liste-panier { 
+            max-height: 90px; 
+            overflow-y: auto; 
+            margin: 0 0 15px 0; 
+            padding-left: 20px; 
+            font-size: 14px; 
+            color: #94a3b8;
+            display: none;
+        }
+        
+        .btn-valider { 
+            background: #10b981; 
+            color: white; 
+            border: none; 
+            width: 100%; 
+            padding: 16px; 
+            font-size: 16px; 
+            font-weight: 700;
+            border-radius: 12px; 
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            transition: background 0.2s;
+        }
+        .btn-valider:hover { background: #059669; }
+    </style>
+</head>
+<body>
+
+    <!-- En-tête d'accueil avec infos réelles -->
+    <div class="hero">
+        <h1>Base Nautique de Merville</h1>
+        <p class="welcome">👋 Bienvenue à la base nautique de Merville !</p>
+        
+        <div class="infos-badge">
+            <div class="infos-line">📍 <span>Rue de la Base Nautique, 59660 Merville</span></div>
+            <div class="infos-line">🕒 <span>Ouvert 7j/7 de 10h00 à 19h00 (Saison d'été)</span></div>
+            <div class="infos-line">💬 <span>Commandez ici, payez et retirez au comptoir</span></div>
+        </div>
+    </div>
+
+    <!-- Zone des Onglets Dynamiques -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <!-- Les boutons des onglets générés via Python loop pour correspondre au menu -->
+            {% for categorie in menu.keys() %}
+                <button class="tab-btn {% if loop.first %}active{% endif %}" onclick="changerOnglet('{{ categorie }}', this)">
+                    {{ categorie }}
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Conteneur des Produits -->
+    <div class="container">
+        {% for categorie, produits in menu.items() %}
+            <!-- Chaque catégorie est enveloppée dans une div de section -->
+            <div id="cat-{{ categorie }}" class="categorie-section {% if loop.first %}active{% endif %}">
+                {% for prod in produits %}
+                <div class="produit">
+                    <div class="produit-info">
+                        <span class="produit-nom">{{ prod.nom }}</span>
+                        <span class="produit-prix">{{ "%.2f"|format(prod.prix) }} €</span>
+                    </div>
+                    <button class="btn-ajouter" onclick="ajouterAuPanier('{{ prod.nom }}', {{ prod.prix }})">
+                        ＋ Ajouter
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Panier fixe en bas -->
+    <div id="panier-section">
+        <div class="panier-resume">
+            <span class="panier-titre">🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
+            <span class="panier-total"><span id="total-prix">0.00</span> €</span>
+        </div>
+        <ul id="liste-panier"></ul>
+        <button class="btn-valider" onclick="envoyerCommande()">
+            🚀 Envoyer la commande au bar
+        </button>
+    </div>
+
+    <script>
+        let panier = [];
+        let total = 0;
+
+        // Fonction pour gérer le changement d'onglet
+        function changerOnglet(idCategorie, boutonActive) {
+            // 1. Désactiver tous les boutons d'onglets
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            // 2. Cacher toutes les sections de produits
+            document.querySelectorAll('.categorie-section').forEach(sec => sec.classList.remove('active'));
+            
+            // 3. Activer le bon bouton et afficher la bonne section
+            boutonActive.classList.add('active');
+            document.getElementById('cat-' + idCategorie).classList.add('active');
+        }
+
+        function ajouterAuPanier(nom, prix) {
+            panier.push({nom: nom, prix: prix});
+            total += prix;
+            mettreAJourAffichage();
+        }
+
+        function mettreAJourAffichage() {
+            const liste = document.getElementById('liste-panier');
+            const nbArticles = document.getElementById('panier-nb-articles');
+            
+            nbArticles.textContent = panier.length;
+            liste.innerHTML = '';
+            
+            if(panier.length > 0) {
+                liste.style.display = 'block';
+                panier.forEach(item => {
+                    let li = document.createElement('li');
+                    li.textContent = `${item.nom} (${item.prix.toFixed(2)} €)`;
+                    liste.appendChild(li);
+                });
+            } else {
+                liste.style.display = 'none';
+            }
+            
+            document.getElementById('total-prix').textContent = total.toFixed(2);
+        }
+
+        function envoyerCommande() {
+            if (panier.length === 0) return alert("Votre panier est vide ! Choisissez d'abord vos articles.");
+
+            fetch('/commander', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ panier: panier, total: total.toFixed(2) })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.statut === 'succes') {
+                    alert(`✅ COMMANDE VALIDÉE !\n\nNuméro de retrait : ${data.numero}\n\nDonnez simplement ce numéro au barman pour payer et récupérer votre commande.`);
+                    panier = [];
+                    total = 0;
+                    mettreAJourAffichage();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
