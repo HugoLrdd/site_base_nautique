@@ -22,6 +22,7 @@
         .header h1 { margin: 0; font-size: 26px; }
         .header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
         
+        /* Style de la photo agrandie */
         .header-img {
             width: 100%;
             max-width: 280px;
@@ -77,6 +78,7 @@
         }
         .btn-ajouter:hover { background-color: #0084cc; }
 
+        /* Panier fixe en bas */
         #panier-section {
             position: fixed;
             bottom: 0;
@@ -142,7 +144,7 @@
 <body>
 
     <div class="header">
-        <!-- REMETS BIEN TON LIEN DE PHOTO ICI -->
+        <!-- REMETS TON LIEN DE PHOTO ICI -->
         <img src="https://www.ville-merville.fr/wp-content/uploads/2025/02/IMG_4803-1024x683.jpg" alt="Base Nautique" class="header-img">
         
         <h1>⛵ Base Nautique de Merville</h1>
@@ -179,12 +181,10 @@
         </button>
     </div>
 
-    <!-- 🛠️ LE FORMULAIRE INVISIBLE SECRETS POUR SAFARI -->
-    <form id="safari-form" action="/commander" method="POST" style="display: none;"></form>
-
     <script>
         let panier = [];
 
+        // Gestion de l'affichage intelligent (ex: Crêpe Confiture)
         function ajouterAuPanier(nom, prix, categorie) {
             let nomComplet = nom;
             if (categorie === "Crêpes" && !nom.toLowerCase().includes("crêpe")) {
@@ -224,28 +224,41 @@
             totalPrix.innerText = total.toFixed(2);
         }
 
+        // Envoi des données en arrière-plan et ouverture du nouvel onglet sécurisé par URL
         function envoyerCommande() {
             if (panier.length === 0) {
                 alert("Votre panier est vide ! Ajoutez des produits avant d'envoyer.");
                 return;
             }
 
-            // On récupère notre formulaire invisible
-            let form = document.getElementById('safari-form');
-            form.innerHTML = ""; // On le vide au cas où
-
-            // On crée un champ caché pour chaque produit du panier
+            let formData = new URLSearchParams();
             panier.forEach(item => {
-                let input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'produits';
-                input.value = item.nom;
-                form.appendChild(input);
+                formData.append('produits', item.nom);
             });
 
-            // On envoie le formulaire de manière classique. 
-            // Safari l'accepte obligatoirement car c'est une action directe du bouton.
-            form.submit();
+            fetch('/commander', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 🚀 Ouverture du ticket dans un NOUVEL onglet
+                    window.open(response.url, '_blank');
+                    
+                    // On vide le panier sur la carte du menu
+                    panier = [];
+                    mettreAJourAffichage();
+                } else {
+                    alert("Oups, impossible de transmettre la commande au bar.");
+                }
+            })
+            .catch(error => {
+                alert("Erreur de connexion avec le comptoir.");
+                console.error(error);
+            });
         }
     </script>
 </body>
