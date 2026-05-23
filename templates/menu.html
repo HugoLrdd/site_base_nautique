@@ -279,23 +279,41 @@
         }
 
         function envoyerCommande() {
-            if (panier.length === 0) return alert("Votre panier est vide ! Choisissez d'abord vos articles.");
+    // On récupère tous les produits qui sont dans le panier
+    // (Adapte cette ligne si ton tableau de panier s'appelle autrement, par exemple 'panier')
+    if (panier.length === 0) {
+        alert("Votre panier est vide !");
+        return;
+    }
 
-            fetch('/commander', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ panier: panier, total: total.toFixed(2) })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.statut === 'succes') {
-                    alert(`✅ COMMANDE VALIDÉE !\n\nNuméro de retrait : ${data.numero}\n\nDonnez simplement ce numéro au barman pour payer et récupérer votre commande.`);
-                    panier = [];
-                    total = 0;
-                    mettreAJourAffichage();
-                }
-            });
+    // On prépare les données à envoyer à Python
+    let formData = new URLSearchParams();
+    panier.forEach(produit => {
+        formData.append('produits', produit);
+    });
+
+    // On envoie le tout au bar
+    fetch('/commander', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData
+    })
+    .then(response => {
+        if (response.redirected) {
+            // Si Python nous redirige vers la page de suivi, on y va !
+            window.location.href = response.url;
+        } else {
+            // Sinon, on extrait l'adresse de suivi manuellement
+            window.location.href = response.url;
         }
+    })
+    .catch(error => {
+        alert("Erreur lors de l'envoi de la commande...");
+        console.error(error);
+    });
+}
     </script>
 </body>
 </html>
