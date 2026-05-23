@@ -11,8 +11,8 @@
             margin: 0;
             padding: 0;
             color: #333;
-            /* 🔥 ON AGRANDIT L'ESPACE EN BAS : 180px pour que la glace à l'eau remonte bien au-dessus du panier */
-            padding-bottom: 180px; 
+            /* Grand espace en bas pour que la glace à l'eau remonte bien au-dessus du panier sur mobile */
+            padding-bottom: 200px; 
         }
         .header {
             background: linear-gradient(135deg, #0056b3, #00a8ff);
@@ -168,7 +168,7 @@
         {% endfor %}
     </div>
 
-    <!-- 🔥 LE PANIER DEVIENT UN VRAI FORMULAIRE HTML ULTRA STABLE POUR SAFARI -->
+    <!-- Le panier sous forme de formulaire direct pour contourner le blocage Safari -->
     <form id="panier-section" action="/commander" method="POST" onsubmit="return verifierPanierAvantEnvoi()">
         <div class="panier-resume">
             <span>🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
@@ -177,7 +177,7 @@
         
         <ul id="liste-panier"></ul>
         
-        <!-- Cette zone va recevoir les inputs cachés automatiquement -->
+        <!-- Zone magique pour stocker les produits sélectionnés -->
         <div id="inputs-caches-zone"></div>
         
         <button type="submit" class="btn-valider">
@@ -212,13 +212,13 @@
             let zoneInputs = document.getElementById('inputs-caches-zone');
             
             listeHTML.innerHTML = "";
-            zoneInputs.innerHTML = ""; // On vide les anciennes données de formulaire
+            zoneInputs.innerHTML = ""; 
             let total = 0;
 
             panier.forEach((item, index) => {
                 total += item.prix;
                 
-                // 1. Affichage texte dans la boîte blanche
+                // 1. Affichage visuel dans la boîte blanche
                 let li = document.createElement('li');
                 li.innerHTML = `
                     <span>• ${item.nom}</span>
@@ -226,7 +226,7 @@
                 `;
                 listeHTML.appendChild(li);
 
-                # 2. Ajout automatique dans le formulaire pour Python
+                // 2. Ajout dans le formulaire pour Python (Corrigé avec les vrais commentaires JavaScript !)
                 let input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'produits';
@@ -238,13 +238,12 @@
             totalPrix.innerText = total.toFixed(2);
         }
 
-        // Sécurité pour ne pas envoyer un panier vide
         function verifierPanierAvantEnvoi() {
             if (panier.length === 0) {
                 alert("Votre panier est vide ! Ajoutez des produits avant d'envoyer.");
-                return false; // Bloque l'envoi
+                return false; 
             }
-            return true; // Autorise le téléphone à changer de page vers le suivi
+            return true; 
         }
     </script>
 </body>
