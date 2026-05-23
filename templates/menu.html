@@ -11,8 +11,8 @@
             margin: 0;
             padding: 0;
             color: #333;
-            /* Grand espace en bas pour que la glace à l'eau remonte bien au-dessus du panier sur mobile */
-            padding-bottom: 200px; 
+            /* 🔥 ÉTAPE 1 : On pousse le fond de la page encore plus bas pour créer une vraie zone de défilement libre */
+            padding-bottom: 260px; 
         }
         .header {
             background: linear-gradient(135deg, #0056b3, #00a8ff);
@@ -56,6 +56,9 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            /* 🔥 ÉTAPE 2 : On force cette carte à repasser au-premier plan pour que le clic soit prioritaire */
+            position: relative;
+            z-index: 10;
         }
 
         .produit-infos {
@@ -75,6 +78,8 @@
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
+            position: relative;
+            z-index: 20;
         }
         .btn-ajouter:hover { background-color: #0084cc; }
 
@@ -85,13 +90,15 @@
             left: 0;
             right: 0;
             background: white;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            /* On réduit un peu l'ombre pour éviter la zone invisible interactive */
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
             padding: 15px;
             border-top-left-radius: 15px;
             border-top-right-radius: 15px;
             max-width: 600px;
             margin: 0 auto;
-            z-index: 1000;
+            /* Le panier reste en dessous des cartes de produit quand on fait défiler le menu */
+            z-index: 100; 
         }
 
         .panier-resume {
@@ -168,7 +175,6 @@
         {% endfor %}
     </div>
 
-    <!-- Le panier sous forme de formulaire direct pour contourner le blocage Safari -->
     <form id="panier-section" action="/commander" method="POST" onsubmit="return verifierPanierAvantEnvoi()">
         <div class="panier-resume">
             <span>🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
@@ -176,8 +182,6 @@
         </div>
         
         <ul id="liste-panier"></ul>
-        
-        <!-- Zone magique pour stocker les produits sélectionnés -->
         <div id="inputs-caches-zone"></div>
         
         <button type="submit" class="btn-valider">
@@ -218,7 +222,6 @@
             panier.forEach((item, index) => {
                 total += item.prix;
                 
-                // 1. Affichage visuel dans la boîte blanche
                 let li = document.createElement('li');
                 li.innerHTML = `
                     <span>• ${item.nom}</span>
@@ -226,7 +229,6 @@
                 `;
                 listeHTML.appendChild(li);
 
-                // 2. Ajout dans le formulaire pour Python (Corrigé avec les vrais commentaires JavaScript !)
                 let input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'produits';
