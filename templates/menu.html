@@ -17,10 +17,21 @@
             background: linear-gradient(135deg, #0056b3, #00a8ff);
             color: white;
             text-align: center;
-            padding: 30px 20px;
+            padding: 25px 20px;
         }
-        .header h1 { margin: 0; font-size: 28px; }
-        .header p { margin: 5px 0 0 0; opacity: 0.9; }
+        .header h1 { margin: 0; font-size: 26px; }
+        .header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
+        
+        /* Style pour la photo de la base nautique */
+        .header-img {
+            width: 100%;
+            max-width: 180px;
+            height: auto;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            object-fit: cover;
+        }
 
         .container {
             max-width: 600px;
@@ -40,7 +51,6 @@
             background: white;
             border-radius: 10px;
             padding: 15px;
-            margin-vertical: 10px;
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
@@ -134,6 +144,9 @@
 <body>
 
     <div class="header">
+       
+        <img src="https://www.ville-merville.fr/wp-content/uploads/2025/02/IMG_4803-1024x683.jpg" alt="Base Nautique" class="header-img">
+        
         <h1>⛵ Base Nautique de Merville</h1>
         <p>Commandez vos boissons & encas depuis votre transat</p>
     </div>
@@ -176,13 +189,11 @@
         let panier = [];
 
         function ajouterAuPanier(nom, prix) {
-            // On ajoute l'objet dans notre tableau JavaScript
             panier.push({ nom: nom, prix: prix });
             mettreAJourAffichage();
         }
 
         function supprimerDuPanier(index) {
-            // Supprime l'élément ciblé
             panier.splice(index, 1);
             mettreAJourAffichage();
         }
@@ -192,14 +203,12 @@
             let nbArticles = document.getElementById('panier-nb-articles');
             let totalPrix = document.getElementById('total-prix');
             
-            // On vide la liste avant de la reconstruire
             listeHTML.innerHTML = "";
             let total = 0;
 
             panier.forEach((item, index) => {
                 total += item.prix;
                 
-                // On crée une ligne propre pour chaque objet de la commande
                 let li = document.createElement('li');
                 li.innerHTML = `
                     <span>• ${item.nom}</span>
@@ -208,7 +217,6 @@
                 listeHTML.appendChild(li);
             });
 
-            // Mise à jour des compteurs du bandeau de commande
             nbArticles.innerText = panier.length;
             totalPrix.innerText = total.toFixed(2);
         }
@@ -219,13 +227,11 @@
                 return;
             }
 
-            // On extrait uniquement les noms des produits pour Python
             let formData = new URLSearchParams();
             panier.forEach(item => {
                 formData.append('produits', item.nom);
             });
 
-            // Envoi de la commande en arrière-plan à Flask
             fetch('/commander', {
                 method: 'POST',
                 headers: {
@@ -235,10 +241,10 @@
             })
             .then(response => {
                 if (response.ok) {
-                    // 🔥 L'ONGLET MAGIQUE : On ouvre la page de suivi dans un nouvel onglet
+                    // Ouverture de la page de suivi dans un nouvel onglet
                     window.open(response.url, '_blank');
                     
-                    // On nettoie le panier sur la carte pour une future commande
+                    // Nettoyage du panier
                     panier = [];
                     mettreAJourAffichage();
                 } else {
