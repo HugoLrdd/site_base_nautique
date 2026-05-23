@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 
 app = Flask(__name__)
 
-# Notre carte des produits
+# Notre carte des produits (Le dictionnaire s'appelle 'menu' en minuscules)
 menu = {
     "Boissons": [
         {"nom": "Coca-Cola", "prix": 2.50},
@@ -24,7 +24,7 @@ menu = {
 }
 
 # Listes pour gérer l'activité
-commandes = []  # Commandes actives à l'écran
+commandes = []  # Commandes actives à l'écran du bar
 historique = []  # Commandes terminées pour les stats du soir
 compteur_ticket = 1
 
@@ -38,13 +38,15 @@ def prendre_commande():
     produits_choisis = request.form.getlist('produits')
     
     if produits_choisis:
-        # On calcule le prix total de cette commande
         total_commande = 0
+        # Boucle ultra-robuste pour calculer le prix même si le nom inclut "Crêpe -" devant
         for prod in produits_choisis:
             for categorie in menu.values():
                 for item in categorie:
-                    if item['nom'] == prod:
+                    # Vérifie si le nom du produit est contenu dans ce que le panier a envoyé
+                    if item['nom'] == prod or prod.endswith(item['nom']):
                         total_commande += item['prix']
+                        break
 
         # On crée un dictionnaire de commande ultra complet
         nouvelle_commande = {
@@ -57,18 +59,18 @@ def prendre_commande():
         commandes.append(nouvelle_commande)
         compteur_ticket += 1
         
-        # On redirige le client vers sa page de suivi dédiée
+        # On redirige proprement vers l'URL de suivi
         return redirect(f'/suivi/{nouvelle_commande["id"]}')
     
     return redirect('/')
 
-# Nouvelle route pour que le client suive SA commande en direct
+# Route pour que le client suive SA commande en direct
 @app.route('/suivi/<int:commande_id>')
 def suivi_commande(commande_id):
     # On cherche la commande dans les commandes actives
     commande = next((c for c in commandes if c['id'] == commande_id), None)
     
-    # Si elle n'est plus dans les commandes actives, on cherche dans l'historique
+    # Si elle n'est plus active, on cherche dans l'historique
     if not commande:
         commande = next((c for c in historique if c['id'] == commande_id), None)
     
@@ -78,7 +80,6 @@ def suivi_commande(commande_id):
 
 @app.route('/bar')
 def ecran_bar():
-    # On calcule le temps écoulé en minutes pour chaque commande avant de l'envoyer à l'écran
     maintenant = datetime.now()
     for c in commandes:
         minutes_attente = int((maintenant - c['heure']).total_seconds() / 60)
