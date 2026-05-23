@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- On garde tes balises Google Tag Manager en haut de ton head si tu les as mises -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu - Base Nautique de Merville</title>
@@ -180,6 +179,9 @@
         </button>
     </div>
 
+    <!-- 🛠️ LE FORMULAIRE INVISIBLE SECRETS POUR SAFARI -->
+    <form id="safari-form" action="/commander" method="POST" style="display: none;"></form>
+
     <script>
         let panier = [];
 
@@ -228,30 +230,22 @@
                 return;
             }
 
-            let formData = new URLSearchParams();
+            // On récupère notre formulaire invisible
+            let form = document.getElementById('safari-form');
+            form.innerHTML = ""; // On le vide au cas où
+
+            // On crée un champ caché pour chaque produit du panier
             panier.forEach(item => {
-                formData.append('produits', item.nom);
+                let input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'produits';
+                input.value = item.nom;
+                form.appendChild(input);
             });
 
-            fetch('/commander', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    // 🔥 LA CORRECTION MOBILE : Redirection directe sur la page de suivi dans la même fenêtre
-                    window.location.href = response.url;
-                } else {
-                    alert("Oups, impossible de transmettre la commande au bar.");
-                }
-            })
-            .catch(error => {
-                alert("Erreur de connexion avec le comptoir.");
-                console.error(error);
-            });
+            // On envoie le formulaire de manière classique. 
+            // Safari l'accepte obligatoirement car c'est une action directe du bouton.
+            form.submit();
         }
     </script>
 </body>
