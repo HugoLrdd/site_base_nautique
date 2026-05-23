@@ -11,7 +11,8 @@
             margin: 0;
             padding: 0;
             color: #333;
-            padding-bottom: 120px; /* Espace pour pas que le panier cache les produits */
+            /* 🔥 ON AGRANDIT L'ESPACE EN BAS : 180px pour que la glace à l'eau remonte bien au-dessus du panier */
+            padding-bottom: 180px; 
         }
         .header {
             background: linear-gradient(135deg, #0056b3, #00a8ff);
@@ -22,7 +23,6 @@
         .header h1 { margin: 0; font-size: 26px; }
         .header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
         
-        /* Style de la photo agrandie */
         .header-img {
             width: 100%;
             max-width: 280px;
@@ -168,7 +168,8 @@
         {% endfor %}
     </div>
 
-    <div id="panier-section">
+    <!-- 🔥 LE PANIER DEVIENT UN VRAI FORMULAIRE HTML ULTRA STABLE POUR SAFARI -->
+    <form id="panier-section" action="/commander" method="POST" onsubmit="return verifierPanierAvantEnvoi()">
         <div class="panier-resume">
             <span>🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
             <span class="panier-total"><span id="total-prix">0.00</span> €</span>
@@ -176,15 +177,17 @@
         
         <ul id="liste-panier"></ul>
         
-        <button class="btn-valider" onclick="envoyerCommande()">
+        <!-- Cette zone va recevoir les inputs cachés automatiquement -->
+        <div id="inputs-caches-zone"></div>
+        
+        <button type="submit" class="btn-valider">
             🚀 Envoyer la commande au bar
         </button>
-    </div>
+    </form>
 
     <script>
         let panier = [];
 
-        // Gestion de l'affichage intelligent (ex: Crêpe Confiture)
         function ajouterAuPanier(nom, prix, categorie) {
             let nomComplet = nom;
             if (categorie === "Crêpes" && !nom.toLowerCase().includes("crêpe")) {
@@ -206,59 +209,42 @@
             let listeHTML = document.getElementById('liste-panier');
             let nbArticles = document.getElementById('panier-nb-articles');
             let totalPrix = document.getElementById('total-prix');
+            let zoneInputs = document.getElementById('inputs-caches-zone');
             
             listeHTML.innerHTML = "";
+            zoneInputs.innerHTML = ""; // On vide les anciennes données de formulaire
             let total = 0;
 
             panier.forEach((item, index) => {
                 total += item.prix;
+                
+                // 1. Affichage texte dans la boîte blanche
                 let li = document.createElement('li');
                 li.innerHTML = `
                     <span>• ${item.nom}</span>
                     <span>${item.prix.toFixed(2)} € <span class="btn-supprimer" onclick="supprimerDuPanier(${index})">❌</span></span>
                 `;
                 listeHTML.appendChild(li);
+
+                # 2. Ajout automatique dans le formulaire pour Python
+                let input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'produits';
+                input.value = item.nom;
+                zoneInputs.appendChild(input);
             });
 
             nbArticles.innerText = panier.length;
             totalPrix.innerText = total.toFixed(2);
         }
 
-        // Envoi des données en arrière-plan et ouverture du nouvel onglet sécurisé par URL
-        function envoyerCommande() {
+        // Sécurité pour ne pas envoyer un panier vide
+        function verifierPanierAvantEnvoi() {
             if (panier.length === 0) {
                 alert("Votre panier est vide ! Ajoutez des produits avant d'envoyer.");
-                return;
+                return false; // Bloque l'envoi
             }
-
-            let formData = new URLSearchParams();
-            panier.forEach(item => {
-                formData.append('produits', item.nom);
-            });
-
-            fetch('/commander', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    // 🚀 Ouverture du ticket dans un NOUVEL onglet
-                    window.open(response.url, '_blank');
-                    
-                    // On vide le panier sur la carte du menu
-                    panier = [];
-                    mettreAJourAffichage();
-                } else {
-                    alert("Oups, impossible de transmettre la commande au bar.");
-                }
-            })
-            .catch(error => {
-                alert("Erreur de connexion avec le comptoir.");
-                console.error(error);
-            });
+            return true; // Autorise le téléphone à changer de page vers le suivi
         }
     </script>
 </body>
