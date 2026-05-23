@@ -1,64 +1,128 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, redirect, url_to_file
+from datetime import datetime
 
 app = Flask(__name__)
 
-# Le vrai menu de la base nautique classé par catégories
-MENU = {
+# Notre carte des produits
+menu = {
     "Boissons": [
-        {"nom": "Coca-Cola (33cl)", "prix": 2.50},
-        {"nom": "Ice Tea Pêche (33cl)", "prix": 2.50},
-        {"nom": "Eau minérale (50cl)", "prix": 1.50},
-        {"nom": "Sirop à l'eau (Fraise/Menthe)", "prix": 1.20},
+        {"nom": "Coca-Cola", "prix": 2.50},
+        {"nom": "Ice Tea", "prix": 2.50},
+        {"nom": "Oasis", "prix": 2.50},
+        {"nom": "Eau Minérale", "prix": 1.50}
+    ],
+    "Crêpes": [
+        {"nom": "Sucre", "prix": 3.00},
+        {"nom": "Nutella", "prix": 3.50},
+        {"nom": "Confiture", "prix": 3.50}
     ],
     "Glaces": [
-        {"nom": "Cône Vanille/Chocolat", "prix": 2.50},
-        {"nom": "Bâtonnet Fraise", "prix": 2.00},
-        {"nom": "Glace à l'eau (Fusée)", "prix": 1.50},
-    ],
-    "Encas": [
-        {"nom": "Sandwich Jambon-Beurre", "prix": 4.00},
-        {"nom": "Paquet de Chips", "prix": 1.50},
-        {"nom": "Gaufre au sucre", "prix": 2.50},
-        {"nom": "Crêpe au Nutella", "prix": 3.00},
+        {"nom": "Magnum", "prix": 3.00},
+        {"nom": "Cornet Vanille", "prix": 2.50},
+        {"nom": "Glace à l'eau", "prix": 1.50}
     ]
 }
 
-# La liste qui va stocker les commandes des clients en mémoire
-COMMANDES = []
-compteur_commande = 1
+# Listes pour gérer l'activité
+commandes = []  # Commandes actives à l'écran
+historique = []  # Commandes terminées pour les stats du soir
+compteur_ticket = 1
 
 @app.route('/')
-def page_menu():
-    return render_template('menu.html', menu=MENU)
+def afficher_menu():
+    return render_template('menu.html', menu=menu)
 
 @app.route('/commander', methods=['POST'])
-def passer_commande():
-    global compteur_commande
-    data = request.json
+def prendre_commande():
+    global compteur_ticket
+    produits_choisis = request.form.getlist('produits')
     
-    if not data or 'panier' not in data:
-        return jsonify({"erreur": "Panier vide"}), 400
+    if produits_choisis:
+        # On calcule le prix total de cette commande
+        total_commande = 0
+        for prod in produits_choisis:
+            for categorie in menu.values():
+                for item in categorie:
+                    if item['nom'] == prod:
+                        total_commande += item['prix']
+
+        # On crée un dictionnaire de commande ultra complet
+        nouvelle_commande = {
+            "id": compteur_ticket,
+            "produits": produits_choisis,
+            "heure": datetime.now(),  # Stocke l'heure de création
+            "statut": "En préparation",  # Statut initial
+            "total": total_commande
+        }
+        commandes.append(nouvelle_commande)
+        compteur_ticket += 1
         
-    nouvelle_commande = {
-        "numero": f"#{compteur_commande:03d}",
-        "articles": data['panier'],
-        "total": data['total']
-    }
+        # On redirige le client vers sa page de suivi dédiée
+        return redirect(f'/suivi/{nouvelle_commande["id"]}')
     
-    COMMANDES.append(nouvelle_commande)
-    compteur_commande += 1
+    return redirect('/')
+
+# Nouvelle route pour que le client suive SA commande en direct
+@app.route('/suivi/<int:commande_id>')
+def suivi_commande(commande_id):
+    # On cherche la commande dans les commandes actives
+    commande = next((c for c in commandes if c['id'] == commande_id), None)
     
-    return jsonify({"statut": "succes", "numero": nouvelle_commande["numero"]})
+    # Si elle n'est plus dans les commandes actives, on cherche dans l'historique
+    if not commande:
+        commande = next((c for c in historique if c['id'] == commande_id), None)
+    
+    if commande:
+        return render_template('suivi.html', commande=commande)
+    return "Commande introuvable", 404
 
 @app.route('/bar')
-def page_bar():
-    return render_template('bar.html', commandes=COMMANDES)
+def ecran_bar():
+    # On calcule le temps écoulé en minutes pour chaque commande avant de l'envoyer à l'écran
+    maintenant = datetime.now()
+    for c in commandes:
+        minutes_attente = int((maintenant - c['heure']).total_seconds() / 60)
+        c['attente'] = minutes_attente
+    return render_template('bar.html', commandes=commandes)
 
-@app.route('/supprimer/<numero>', methods=['POST'])
-def supprimer_commande(numero):
-    global COMMANDES
-    COMMANDES = [cmd for cmd in COMMANDES if cmd['numero'] != numero]
-    return jsonify({"statut": "succes"})
+# Changer le statut d'une commande (En préparation -> Prête !)
+@app.route('/prete/<int:commande_id>')
+def commande_prete(commande_id):
+    for c in commandes:
+        if c['id'] == commande_id:
+            c['statut'] = "Prête ! Passez au comptoir"
+            break
+    return redirect('/bar')
+
+# Valider et archiver la commande (Suppression de l'écran + ajout aux statistiques)
+@app.route('/archiver/<int:commande_id>')
+def archiver_commande(commande_id):
+    global commandes
+    for c in commandes:
+        if c['id'] == commande_id:
+            c['statut'] = "Récupérée"
+            historique.append(c)  # Sauvegarde pour le bilan
+            break
+    commandes = [c for c in commandes if c['id'] != commande_id]
+    return redirect('/bar')
+
+# Page du bilan pour ton père le soir
+@app.route('/bilan')
+def afficher_bilan():
+    total_recettes = sum(c['total'] for c in historique)
+    total_articles = 0
+    stats_produits = {}
+
+    for c in historique:
+        for prod in c['produits']:
+            total_articles += 1
+            stats_produits[prod] = stats_produits.get(prod, 0) + 1
+
+    return render_template('bilan.html', 
+                           historique=historique, 
+                           total_recettes=total_recettes, 
+                           total_articles=total_articles,
+                           stats_produits=stats_produits)
 
 if __name__ == '__main__':
     app.run(debug=True)
