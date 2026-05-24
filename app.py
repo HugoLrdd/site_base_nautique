@@ -158,7 +158,8 @@ def afficher_bilan():
                            nb_commandes=nb_commandes,
                            produit_star=produit_star,
                            commandes_par_heure=commandes_par_heure_triees,
-                           now=datetime.now())
+                           now=datetime.now()
+                           menu=menu)
 
 @app.route('/reset', methods=['POST'])
 def reset_bilan():
