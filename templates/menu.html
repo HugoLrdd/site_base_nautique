@@ -11,6 +11,7 @@
             margin: 0;
             padding: 0;
             color: #333;
+            padding-bottom: 260px;
         }
 
         .header {
@@ -55,6 +56,8 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            position: relative;
+            z-index: 10;
         }
 
         .produit-infos { display: flex; flex-direction: column; }
@@ -70,22 +73,40 @@
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
+            position: relative;
+            z-index: 20;
         }
         .btn-ajouter:hover { background-color: #0084cc; }
 
-        /* PANIER — dans le flux normal, pas fixed */
-        #panier-section {
-            max-width: 600px;
-            margin: 30px auto;
-            padding: 0 15px 20px 15px;
+        /* FOOTER dans le flux, au dessus du panier fixed */
+        .footer {
+            background: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 25px 20px;
+            font-size: 14px;
+            line-height: 1.8;
+            position: relative;
+            z-index: 10;
         }
+        .footer a { color: #00a8ff; text-decoration: none; }
+        .footer .footer-titre { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: white; }
+        .footer .footer-item { margin: 4px 0; }
 
-        .panier-box {
+        /* PANIER FIXED en bas */
+        #panier-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background: white;
-            border-radius: 15px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
             padding: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-top: 4px solid #2ecc71;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+            z-index: 100;
         }
 
         .panier-resume {
@@ -102,7 +123,7 @@
             list-style: none;
             padding: 0;
             margin: 0 0 15px 0;
-            max-height: 120px;
+            max-height: 80px;
             overflow-y: auto;
             font-size: 14px;
             color: #555;
@@ -110,7 +131,7 @@
         #liste-panier li {
             display: flex;
             justify-content: space-between;
-            padding: 4px 0;
+            padding: 3px 0;
             border-bottom: 1px dashed #eee;
         }
         .btn-supprimer {
@@ -119,6 +140,20 @@
             font-weight: bold;
             margin-left: 10px;
         }
+
+        .btn-valider {
+            width: 100%;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
+        }
+        .btn-valider:hover { background-color: #27ae60; }
 
         .note-input {
             width: 100%;
@@ -129,33 +164,6 @@
             box-sizing: border-box;
             margin-bottom: 10px;
         }
-
-        .btn-valider {
-            width: 100%;
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
-        }
-        .btn-valider:hover { background-color: #27ae60; }
-
-        /* FOOTER */
-        .footer {
-            background: #2c3e50;
-            color: #ecf0f1;
-            text-align: center;
-            padding: 25px 20px;
-            font-size: 14px;
-            line-height: 1.8;
-        }
-        .footer a { color: #00a8ff; text-decoration: none; }
-        .footer .footer-titre { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: white; }
-        .footer .footer-item { margin: 4px 0; }
     </style>
 </head>
 <body>
@@ -181,33 +189,33 @@
                 </div>
             {% endfor %}
         {% endfor %}
+
+        <!-- Leurre invisible pour que le dernier produit ne soit pas bloqué par le panier -->
+        <div style="height: 20px; pointer-events: none;"></div>
     </div>
 
-    <div id="panier-section">
-        <div class="panier-box">
-            <div class="panier-resume">
-                <span>🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
-                <span class="panier-total"><span id="total-prix">0.00</span> €</span>
-            </div>
-            <ul id="liste-panier"></ul>
-            <form action="/commander" method="POST" onsubmit="return verifierPanierAvantEnvoi()">
-                <div id="inputs-caches-zone"></div>
-                <input type="text" name="note" id="note-commande"
-                    class="note-input"
-                    placeholder="Une note ? (ex: sans sucre, allergie...)">
-                <button type="submit" class="btn-valider">
-                    🚀 Envoyer la commande au bar
-                </button>
-            </form>
-        </div>
-    </div>
-
+    <!-- Footer au dessus du panier -->
     <div class="footer">
         <div class="footer-titre">⛵ Base Nautique Claude Boulenguer</div>
         <div class="footer-item">📍 <a href="https://maps.google.com/?q=5+Rue+Duhamel+Liard,+59660+Merville" target="_blank">5 Rue Duhamel Liard, 59660 Merville</a></div>
         <div class="footer-item">📞 <a href="tel:0635211642">06 35 21 16 42</a></div>
         <div class="footer-item">🕐 Ouvert du mercredi au dimanche — 10h à 18h</div>
     </div>
+
+    <form id="panier-section" action="/commander" method="POST" onsubmit="return verifierPanierAvantEnvoi()">
+        <div class="panier-resume">
+            <span>🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
+            <span class="panier-total"><span id="total-prix">0.00</span> €</span>
+        </div>
+        <ul id="liste-panier"></ul>
+        <div id="inputs-caches-zone"></div>
+        <input type="text" name="note" id="note-commande"
+            class="note-input"
+            placeholder="Une note ? (ex: sans sucre, allergie...)">
+        <button type="submit" class="btn-valider">
+            🚀 Envoyer la commande au bar
+        </button>
+    </form>
 
     <script>
         let panier = [];
@@ -221,9 +229,6 @@
             }
             panier.push({ nom: nomComplet, prix: prix });
             mettreAJourAffichage();
-
-            // Scroll vers le panier pour que le client voit l'ajout
-            document.getElementById('panier-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         function supprimerDuPanier(index) {
