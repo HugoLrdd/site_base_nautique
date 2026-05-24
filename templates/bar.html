@@ -50,6 +50,15 @@
         </div>
     </div>
 
+    <div class="actions">
+    {% if c.statut == "En préparation" %}
+        <a href="/prete/{{ c.id }}" class="btn-action btn-prete">📢 Prête !</a>
+    {% endif %}
+    <a href="/archiver/{{ c.id }}" class="btn-action btn-valider">✓ Servie</a>
+    <a href="/recu/{{ c.id }}" target="_blank" class="btn-action" 
+       style="background-color: #9b59b6; color: white;">🧾 Reçu</a>
+</div>
+
     <div class="zone-tickets">
         {% for c in commandes %}
             <!-- On applique la couleur en fonction du temps d'attente calculé par Python -->
