@@ -101,7 +101,6 @@ def archiver_commande(commande_id):
 
 @app.route('/bilan', methods=['GET', 'POST'])
 def afficher_bilan():
-    # Vérification mot de passe
     if request.method == 'POST':
         mdp = request.form.get('mot_de_passe', '')
         if mdp == MOT_DE_PASSE_BILAN:
@@ -112,7 +111,6 @@ def afficher_bilan():
     if not session.get('bilan_ok'):
         return render_template('login_bilan.html', erreur=False)
 
-    # Calculs stats
     total_recettes = sum(c['total'] for c in historique)
     total_articles = 0
     stats_produits = {}
