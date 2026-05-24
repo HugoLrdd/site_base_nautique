@@ -3,7 +3,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# Notre carte des produits
+# Notre carte des produits (Le dictionnaire s'appelle 'menu' en minuscules)
 menu = {
     "Boissons": [
         {"nom": "Coca-Cola", "prix": 2.50},
@@ -23,8 +23,9 @@ menu = {
     ]
 }
 
-commandes = []  # Commandes actives
-historique = []  # Commandes terminées
+# Listes pour gérer l'activité
+commandes = []  # Commandes actives à l'écran du bar
+historique = []  # Commandes terminées pour les stats du soir
 compteur_ticket = 1
 
 @app.route('/')
@@ -38,36 +39,38 @@ def prendre_commande():
     
     if produits_choisis:
         total_commande = 0
-        
+        # Boucle ultra-robuste pour calculer le prix même si le nom inclut "Crêpe -" devant
         for prod in produits_choisis:
-            trouve = False
             for categorie in menu.values():
                 for item in categorie:
-                    # Vérification stricte ou adaptative pour les crêpes
-                    if item['nom'] == prod or prod.endswith(" " + item['nom']) or prod == f"Crêpe {item['nom']}":
+                    # Vérifie si le nom du produit est contenu dans ce que le panier a envoyé
+                    if item['nom'] == prod or prod.endswith(item['nom']):
                         total_commande += item['prix']
-                        trouve = True
                         break
-                if trouve:
-                    break # On sort aussi de la boucle de la catégorie
 
+        # On crée un dictionnaire de commande ultra complet
         nouvelle_commande = {
             "id": compteur_ticket,
             "produits": produits_choisis,
-            "heure": datetime.now(),
-            "statut": "En préparation",
+            "heure": datetime.now(),  # Stocke l'heure de création
+            "statut": "En préparation",  # Statut initial
             "total": total_commande
         }
         commandes.append(nouvelle_commande)
         compteur_ticket += 1
         
+        # On redirige proprement vers l'URL de suivi
         return redirect(f'/suivi/{nouvelle_commande["id"]}')
     
     return redirect('/')
 
+# Route pour que le client suive SA commande en direct
 @app.route('/suivi/<int:commande_id>')
 def suivi_commande(commande_id):
+    # On cherche la commande dans les commandes actives
     commande = next((c for c in commandes if c['id'] == commande_id), None)
+    
+    # Si elle n'est plus active, on cherche dans l'historique
     if not commande:
         commande = next((c for c in historique if c['id'] == commande_id), None)
     
@@ -83,6 +86,7 @@ def ecran_bar():
         c['attente'] = minutes_attente
     return render_template('bar.html', commandes=commandes)
 
+# Changer le statut d'une commande (En préparation -> Prête !)
 @app.route('/prete/<int:commande_id>')
 def commande_prete(commande_id):
     for c in commandes:
@@ -91,17 +95,19 @@ def commande_prete(commande_id):
             break
     return redirect('/bar')
 
+# Valider et archiver la commande (Suppression de l'écran + ajout aux statistiques)
 @app.route('/archiver/<int:commande_id>')
 def archiver_commande(commande_id):
     global commandes
     for c in commandes:
         if c['id'] == commande_id:
             c['statut'] = "Récupérée"
-            historique.append(c)
+            historique.append(c)  # Sauvegarde pour le bilan
             break
     commandes = [c for c in commandes if c['id'] != commande_id]
     return redirect('/bar')
 
+# Page du bilan pour ton père le soir
 @app.route('/bilan')
 def afficher_bilan():
     total_recettes = sum(c['total'] for c in historique)
@@ -113,14 +119,11 @@ def afficher_bilan():
             total_articles += 1
             stats_produits[prod] = stats_produits.get(prod, 0) + 1
 
-    # On trie les produits du plus vendu au moins vendu ici en Python
-    stats_triees = sorted(stats_produits.items(), key=lambda x: x[1], reverse=True)
-
     return render_template('bilan.html', 
                            historique=historique, 
                            total_recettes=total_recettes, 
                            total_articles=total_articles,
-                           stats_produits=stats_triees) # On envoie la liste triée
+                           stats_produits=stats_produits)
 
 if __name__ == '__main__':
     app.run(debug=True)
