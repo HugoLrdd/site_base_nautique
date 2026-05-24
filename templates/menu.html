@@ -1,3 +1,10 @@
+Pas de panique, c'est normal de s'y perdre un peu au milieu des balises Jinja (`{% %}`).
+
+Comme tu as déjà retiré la glace à l'eau de ton fichier `app.py`, la boucle de ton HTML ne va plus l'afficher automatiquement. J'ai injecté l'encadré d'information avec le message pour le bar juste après la fin de la boucle des produits, pile avant le footer.
+
+Voici ton code `menu.html` corrigé et prêt à être copié-collé :
+
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -199,6 +206,10 @@
                 </div>
             {% endfor %}
         {% endfor %}
+
+        <div style="background-color: #e8f4f8; border-left: 4px solid #0056b3; padding: 15px; border-radius: 8px; margin-top: 30px; margin-bottom: 10px; text-align: center; font-size: 14px; font-weight: 500; color: #0056b3;">
+            ℹ️ Pour plus d'informations ou d'autres demandes, n'hésitez pas à aller directement au bar !
+        </div>
     </div>
 
     <div class="footer">
@@ -244,14 +255,14 @@
 
 
         // Ajuste le padding-bottom selon la hauteur réelle du panier
-function ajusterPadding() {
-    const hauteurPanier = document.getElementById('panier-section').offsetHeight;
-    document.body.style.paddingBottom = (hauteurPanier + 20) + 'px';
-}
+        function ajusterPadding() {
+            const hauteurPanier = document.getElementById('panier-section').offsetHeight;
+            document.body.style.paddingBottom = (hauteurPanier + 20) + 'px';
+        }
 
-// Au chargement et à chaque mise à jour du panier
-ajusterPadding();
-window.addEventListener('resize', ajusterPadding);
+        // Au chargement et à chaque mise à jour du panier
+        ajusterPadding();
+        window.addEventListener('resize', ajusterPadding);
 
         function mettreAJourAffichage() {
             let listeHTML = document.getElementById('liste-panier');
@@ -284,8 +295,6 @@ window.addEventListener('resize', ajusterPadding);
             ajusterPadding();
         }
 
-        
-
         function verifierPanierAvantEnvoi() {
             if (panier.length === 0) {
                 alert("Votre panier est vide ! Ajoutez des produits avant d'envoyer.");
@@ -297,3 +306,5 @@ window.addEventListener('resize', ajusterPadding);
 
 </body>
 </html>
+
+```
