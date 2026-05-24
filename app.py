@@ -162,9 +162,8 @@ def afficher_bilan():
 
 @app.route('/reset', methods=['POST'])
 def reset_bilan():
-    global historique, compteur_ticket
+    global historique
     historique = []
-    compteur_ticket = 1
     return redirect('/bilan')
 
 @app.route('/logout_bilan')
