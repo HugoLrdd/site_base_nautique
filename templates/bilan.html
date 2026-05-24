@@ -1,4 +1,47 @@
-<h2>📦 Ventes par produit</h2>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilan de la journée - Base Nautique</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f7; margin: 0; padding: 30px; color: #2c3e50; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ecf0f1; padding-bottom: 15px; margin-bottom: 25px; }
+        h1 { margin: 0; color: #2c3e50; }
+        .btn-retour { background-color: #7f8c8d; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; text-decoration: none; }
+        
+        .grid-stats { display: flex; gap: 20px; margin-bottom: 30px; }
+        .stat-box { flex: 1; background: #e8f4f8; padding: 20px; border-radius: 8px; text-align: center; border-left: 5px solid #3498db; }
+        .stat-box.argent { background: #eafaf1; border-left-color: #2ecc71; }
+        .stat-box .chiffre { font-size: 32px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ecf0f1; }
+        th { background-color: #f8f9fa; color: #7f8c8d; text-transform: uppercase; font-size: 13px; }
+        .quantite { font-weight: bold; color: #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>📊 Bilan de la Journée</h1>
+            <a href="/bar" class="btn-retour">‹ Retour Écran Bar</a>
+        </div>
+
+        <div class="grid-stats">
+            <div class="stat-box">
+                <div>Articles vendus</div>
+                <div class="chiffre">{{ total_articles }}</div>
+            </div>
+            <div class="stat-box argent">
+                <div>Chiffre d'Affaires</div>
+                <div class="chiffre">{{ "%.2f" | format(total_recettes) }} €</div>
+            </div>
+        </div>
+
+        <h2>📦 Ventes par produit</h2>
         <table>
             <thead>
                 <tr>
@@ -7,8 +50,7 @@
                 </tr>
             </thead>
             <tbody>
-                {# stats_produits est déjà trié par le code Python #}
-                {% for produit, quantite in stats_produits %}
+                {% for produit, quantite in stats_produits.items() | sort(attribute='1', reverse=True) %}
                 <tr>
                     <td>{{ produit }}</td>
                     <td class="quantite">x {{ quantite }}</td>
@@ -20,3 +62,7 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+
+</body>
+</html>
