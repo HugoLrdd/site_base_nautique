@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 app = Flask(__name__)
 app.secret_key = 'nautique_merville_secret'
@@ -51,7 +51,7 @@ def prendre_commande():
         nouvelle_commande = {
             "id": compteur_ticket,
             "produits": produits_choisis,
-            "heure": datetime.now(),
+            "heure": datetime.now(timezone.utc) + timedelta(hours=2),
             "statut": "En préparation",
             "total": total_commande,
             "note": note
@@ -74,7 +74,7 @@ def suivi_commande(commande_id):
 
 @app.route('/bar')
 def ecran_bar():
-    maintenant = datetime.now()
+    maintenant = datetime.now(timezone.utc) + timedelta(hours=2)
     for c in commandes:
         minutes_attente = int((maintenant - c['heure']).total_seconds() / 60)
         c['attente'] = minutes_attente
@@ -158,7 +158,7 @@ def afficher_bilan():
                            nb_commandes=nb_commandes,
                            produit_star=produit_star,
                            commandes_par_heure=commandes_par_heure_triees,
-                           now=datetime.now(),
+                           datetime.now(timezone.utc) + timedelta(hours=2),
                            menu=menu)
 
 @app.route('/reset', methods=['POST'])
