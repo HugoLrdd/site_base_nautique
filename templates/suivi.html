@@ -31,7 +31,7 @@
         <div class="statut-container">
             {% if commande.statut == "En préparation" %}
                 <div class="badge preparation">🟠 En préparation...</div>
-            {% elif commande.statut == "Prête ! Passez au comptoir pour payer et récuperer votre commande" %}
+            {% elif commande.statut == "Prête ! Passez au comptoir" %}
                 <div class="badge prete">🟢 Prête ! Passez au comptoir</div>
             {% else %}
                 <div class="badge recuperee">✓ Commande récupérée</div>
