@@ -31,7 +31,7 @@
         <div class="statut-container">
             {% if commande.statut == "En préparation" %}
                 <div class="badge preparation">🟠 En préparation...</div>
-            {% elif commande.statut == "Prête ! Passez au comptoir" %}
+            {% elif commande.statut == "Prête ! Passez au comptoir pour payer et récuperer votre commande" %}
                 <div class="badge prete">🟢 Prête ! Passez au comptoir</div>
             {% else %}
                 <div class="badge recuperee">✓ Commande récupérée</div>
@@ -45,9 +45,14 @@
                     <li>{{ prod }}</li>
                 {% endfor %}
             </ul>
+            {% if commande.note %}
+                <div style="background: #fff3cd; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 14px; color: #856404;">
+                    📝 Note : {{ commande.note }}
+                </div>
+            {% endif %}
             <strong style="display: block; margin-top: 10px; font-size: 16px; color: #0056b3;">
-        💰 Total : {{ "%.2f" | format(commande.total) }} €
-    </strong>
+                💰 Total : {{ "%.2f" | format(commande.total) }} €
+            </strong>
         </div>
 
         <a href="/recu/{{ commande.id }}" target="_blank" 
