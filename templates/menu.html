@@ -78,7 +78,6 @@
         }
         .btn-ajouter:hover { background-color: #0084cc; }
 
-        /* FOOTER dans le flux, au dessus du panier fixed */
         .footer {
             background: #2c3e50;
             color: #ecf0f1;
@@ -93,7 +92,7 @@
         .footer .footer-titre { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: white; }
         .footer .footer-item { margin: 4px 0; }
 
-        /* PANIER FIXED en bas */
+        /* PANIER FIXED — fond transparent aux clics, seuls les enfants sont cliquables */
         #panier-section {
             position: fixed;
             bottom: 0;
@@ -107,6 +106,16 @@
             max-width: 600px;
             margin: 0 auto;
             z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Tous les éléments interactifs du panier restent cliquables */
+        #panier-section button,
+        #panier-section input,
+        #panier-section ul,
+        #panier-section .btn-supprimer,
+        #panier-section .panier-resume {
+            pointer-events: auto;
         }
 
         .panier-resume {
@@ -163,6 +172,7 @@
             font-size: 14px;
             box-sizing: border-box;
             margin-bottom: 10px;
+            pointer-events: auto;
         }
     </style>
 </head>
@@ -189,12 +199,8 @@
                 </div>
             {% endfor %}
         {% endfor %}
-
-        <!-- Leurre invisible pour que le dernier produit ne soit pas bloqué par le panier -->
-        <div style="height: 20px; pointer-events: none;"></div>
     </div>
 
-    <!-- Footer au dessus du panier -->
     <div class="footer">
         <div class="footer-titre">⛵ Base Nautique Claude Boulenguer</div>
         <div class="footer-item">📍 <a href="https://maps.google.com/?q=5+Rue+Duhamel+Liard,+59660+Merville" target="_blank">5 Rue Duhamel Liard, 59660 Merville</a></div>
