@@ -242,6 +242,17 @@
             mettreAJourAffichage();
         }
 
+
+        // Ajuste le padding-bottom selon la hauteur réelle du panier
+function ajusterPadding() {
+    const hauteurPanier = document.getElementById('panier-section').offsetHeight;
+    document.body.style.paddingBottom = (hauteurPanier + 20) + 'px';
+}
+
+// Au chargement et à chaque mise à jour du panier
+ajusterPadding();
+window.addEventListener('resize', ajusterPadding);
+
         function mettreAJourAffichage() {
             let listeHTML = document.getElementById('liste-panier');
             let nbArticles = document.getElementById('panier-nb-articles');
@@ -270,7 +281,10 @@
 
             nbArticles.innerText = panier.length;
             totalPrix.innerText = total.toFixed(2);
+            ajusterPadding();
         }
+
+        
 
         function verifierPanierAvantEnvoi() {
             if (panier.length === 0) {
