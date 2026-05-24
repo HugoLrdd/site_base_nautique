@@ -24,7 +24,13 @@ menu = {
     "Glaces": [
         {"nom": "Magnum", "prix": 3.00},
         {"nom": "Cornet Vanille", "prix": 2.50}
-    ]
+    ],
+    "Planches": [
+        {"nom": " Planche apéritif (saucisson,légume,jambon,cornichon,cacahuètes...)", "prix": 8.00},
+        {"nom": " Planche charcuterie (saucisson,pâté,jambon,fromage,cacahuètes...)", "prix": 10.00},
+        {"nom": " Planche fromage (brie,camembert,comté,pain,cacahuètes...)", "prix": 8.50}
+    ]   
+    
 }
 
 commandes = []
