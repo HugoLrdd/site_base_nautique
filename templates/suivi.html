@@ -45,6 +45,9 @@
                     <li>{{ prod }}</li>
                 {% endfor %}
             </ul>
+            <strong style="display: block; margin-top: 10px; font-size: 16px; color: #0056b3;">
+        💰 Total : {{ "%.2f" | format(commande.total) }} €
+    </strong>
         </div>
         
         <p class="info">Cette page s'actualise automatiquement.</p>
