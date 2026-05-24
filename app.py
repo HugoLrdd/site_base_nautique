@@ -33,6 +33,7 @@ def afficher_menu():
 @app.route('/commander', methods=['POST'])
 def prendre_commande():
     global compteur_ticket
+    note = request.form.get('note', '').strip()
     produits_choisis = request.form.getlist('produits')
     
     if produits_choisis:
@@ -50,6 +51,7 @@ def prendre_commande():
             "heure": datetime.now(),
             "statut": "En préparation",
             "total": total_commande
+            "note": note
         }
         commandes.append(nouvelle_commande)
         compteur_ticket += 1
