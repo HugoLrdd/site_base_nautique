@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Notre carte des produits (Le dictionnaire s'appelle 'menu' en minuscules)
 menu = {
     "Boissons": [
-        {"nom": "Coca-Cola", "prix": 2.50},
+        {"nom": "Perrier", "prix": 100},
         {"nom": "Ice Tea", "prix": 2.50},
         {"nom": "Oasis", "prix": 2.50},
         {"nom": "Eau Minérale", "prix": 1.50}
