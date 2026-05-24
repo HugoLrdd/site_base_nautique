@@ -73,6 +73,9 @@
                 
                 <div>
                     <div class="statut-actuel">Statut : {{ c.statut }}</div>
+                    <div style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 8px;">
+        💰 {{ "%.2f" | format(c.total) }} €
+    </div>
                     <div class="actions">
                         {% if c.statut == "En préparation" %}
                             <a href="/prete/{{ c.id }}" class="btn-action btn-prete">📢 Prête !</a>
