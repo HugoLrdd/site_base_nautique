@@ -35,7 +35,7 @@ def prendre_commande():
     global compteur_ticket
     produits_choisis = request.form.getlist('produits')
     note = request.form.get('note', '').strip()
-    
+
     if produits_choisis:
         total_commande = 0
         for prod in produits_choisis:
@@ -55,9 +55,9 @@ def prendre_commande():
         }
         commandes.append(nouvelle_commande)
         compteur_ticket += 1
-        
+
         return redirect(f'/suivi/{nouvelle_commande["id"]}')
-    
+
     return redirect('/')
 
 @app.route('/suivi/<int:commande_id>')
@@ -101,17 +101,41 @@ def afficher_bilan():
     total_recettes = sum(c['total'] for c in historique)
     total_articles = 0
     stats_produits = {}
+    nb_commandes = len(historique)
+
+    # Panier moyen
+    panier_moyen = round(total_recettes / nb_commandes, 2) if nb_commandes > 0 else 0
+
+    # Heure de pointe : on compte les commandes par heure
+    commandes_par_heure = {}
+    for c in historique:
+        heure = c['heure'].strftime('%H:00')
+        commandes_par_heure[heure] = commandes_par_heure.get(heure, 0) + 1
+
+    heure_pointe = None
+    if commandes_par_heure:
+        heure_pointe = max(commandes_par_heure, key=commandes_par_heure.get)
 
     for c in historique:
         for prod in c['produits']:
             total_articles += 1
             stats_produits[prod] = stats_produits.get(prod, 0) + 1
 
-    return render_template('bilan.html', 
-                           historique=historique, 
-                           total_recettes=total_recettes, 
+    return render_template('bilan.html',
+                           historique=historique,
+                           total_recettes=total_recettes,
                            total_articles=total_articles,
-                           stats_produits=stats_produits)
+                           stats_produits=stats_produits,
+                           panier_moyen=panier_moyen,
+                           heure_pointe=heure_pointe,
+                           nb_commandes=nb_commandes)
+
+@app.route('/reset', methods=['POST'])
+def reset_bilan():
+    global historique, compteur_ticket
+    historique = []
+    compteur_ticket = 1
+    return redirect('/bilan')
 
 @app.route('/recu/<int:commande_id>')
 def recu_commande(commande_id):
