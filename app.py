@@ -121,7 +121,7 @@ def recu_commande(commande_id):
     if not commande:
         commande = next((c for c in historique if c['id'] == commande_id), None)
     if commande:
-        return render_template('recu.html', commande=commande)
+        return render_template('recu.html', commande=commande, menu=menu)
     return "Commande introuvable", 404
 
     for c in historique:
