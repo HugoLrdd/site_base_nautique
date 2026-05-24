@@ -101,7 +101,7 @@ def archiver_commande(commande_id):
 
 @app.route('/bilan', methods=['GET', 'POST'])
 def afficher_bilan():
-    if request.method == 'POST':
+    if request.method == 'POST' and 'mot_de_passe' in request.form:
         mdp = request.form.get('mot_de_passe', '')
         if mdp == MOT_DE_PASSE_BILAN:
             session['bilan_ok'] = True
@@ -114,10 +114,12 @@ def afficher_bilan():
     total_recettes = sum(c['total'] for c in historique)
     total_articles = 0
     stats_produits = {}
+    stats_categories = {}
     nb_commandes = len(historique)
 
     panier_moyen = round(total_recettes / nb_commandes, 2) if nb_commandes > 0 else 0
 
+    # Commandes par heure
     commandes_par_heure = {}
     for c in historique:
         heure = c['heure'].strftime('%H:00')
@@ -127,19 +129,36 @@ def afficher_bilan():
     if commandes_par_heure:
         heure_pointe = max(commandes_par_heure, key=commandes_par_heure.get)
 
+    # Stats produits et catégories
     for c in historique:
         for prod in c['produits']:
             total_articles += 1
             stats_produits[prod] = stats_produits.get(prod, 0) + 1
+            # Trouver la catégorie du produit
+            for cat, items in menu.items():
+                for item in items:
+                    if item['nom'] == prod or prod.endswith(item['nom']):
+                        stats_categories[cat] = stats_categories.get(cat, 0) + 1
+                        break
+
+    # Produit star
+    produit_star = max(stats_produits, key=stats_produits.get) if stats_produits else None
+
+    # Trier commandes_par_heure par heure
+    commandes_par_heure_triees = dict(sorted(commandes_par_heure.items()))
 
     return render_template('bilan.html',
                            historique=historique,
                            total_recettes=total_recettes,
                            total_articles=total_articles,
                            stats_produits=stats_produits,
+                           stats_categories=stats_categories,
                            panier_moyen=panier_moyen,
                            heure_pointe=heure_pointe,
-                           nb_commandes=nb_commandes)
+                           nb_commandes=nb_commandes,
+                           produit_star=produit_star,
+                           commandes_par_heure=commandes_par_heure_triees,
+                           now=datetime.now())
 
 @app.route('/reset', methods=['POST'])
 def reset_bilan():
