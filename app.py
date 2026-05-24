@@ -114,6 +114,15 @@ def afficher_bilan():
     total_recettes = sum(c['total'] for c in historique)
     total_articles = 0
     stats_produits = {}
+    
+@app.route('/recu/<int:commande_id>')
+def recu_commande(commande_id):
+    commande = next((c for c in commandes if c['id'] == commande_id), None)
+    if not commande:
+        commande = next((c for c in historique if c['id'] == commande_id), None)
+    if commande:
+        return render_template('recu.html', commande=commande)
+    return "Commande introuvable", 404
 
     for c in historique:
         for prod in c['produits']:
