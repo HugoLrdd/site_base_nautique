@@ -23,8 +23,7 @@ menu = {
     ],
     "Glaces": [
         {"nom": "Magnum", "prix": 3.00},
-        {"nom": "Cornet Vanille", "prix": 2.50},
-        {"nom": "Glace à l'eau", "prix": 1.50}
+        {"nom": "Cornet Vanille", "prix": 2.50}
     ]
 }
 
