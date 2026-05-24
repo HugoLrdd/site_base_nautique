@@ -6,6 +6,9 @@ app.secret_key = 'nautique_merville_secret'
 
 MOT_DE_PASSE_BILAN = 'BNM2026'
 
+def maintenant():
+    return datetime.now(timezone.utc) + timedelta(hours=2)
+
 menu = {
     "Boissons": [
         {"nom": "Coca-Cola", "prix": 2.50},
@@ -51,7 +54,7 @@ def prendre_commande():
         nouvelle_commande = {
             "id": compteur_ticket,
             "produits": produits_choisis,
-            "heure": datetime.now(timezone.utc) + timedelta(hours=2),
+            "heure": maintenant(),
             "statut": "En préparation",
             "total": total_commande,
             "note": note
@@ -74,9 +77,9 @@ def suivi_commande(commande_id):
 
 @app.route('/bar')
 def ecran_bar():
-    maintenant = datetime.now(timezone.utc) + timedelta(hours=2)
+    now = maintenant()
     for c in commandes:
-        minutes_attente = int((maintenant - c['heure']).total_seconds() / 60)
+        minutes_attente = int((now - c['heure']).total_seconds() / 60)
         c['attente'] = minutes_attente
     return render_template('bar.html', commandes=commandes)
 
@@ -119,7 +122,6 @@ def afficher_bilan():
 
     panier_moyen = round(total_recettes / nb_commandes, 2) if nb_commandes > 0 else 0
 
-    # Commandes par heure
     commandes_par_heure = {}
     for c in historique:
         heure = c['heure'].strftime('%H:00')
@@ -129,22 +131,17 @@ def afficher_bilan():
     if commandes_par_heure:
         heure_pointe = max(commandes_par_heure, key=commandes_par_heure.get)
 
-    # Stats produits et catégories
     for c in historique:
         for prod in c['produits']:
             total_articles += 1
             stats_produits[prod] = stats_produits.get(prod, 0) + 1
-            # Trouver la catégorie du produit
             for cat, items in menu.items():
                 for item in items:
                     if item['nom'] == prod or prod.endswith(item['nom']):
                         stats_categories[cat] = stats_categories.get(cat, 0) + 1
                         break
 
-    # Produit star
     produit_star = max(stats_produits, key=stats_produits.get) if stats_produits else None
-
-    # Trier commandes_par_heure par heure
     commandes_par_heure_triees = dict(sorted(commandes_par_heure.items()))
 
     return render_template('bilan.html',
@@ -158,7 +155,7 @@ def afficher_bilan():
                            nb_commandes=nb_commandes,
                            produit_star=produit_star,
                            commandes_par_heure=commandes_par_heure_triees,
-                           datetime.now(timezone.utc) + timedelta(hours=2),
+                           now=maintenant(),
                            menu=menu)
 
 @app.route('/reset', methods=['POST'])
