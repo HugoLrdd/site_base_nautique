@@ -134,6 +134,16 @@ def get_commande_by_id(commande_id):
         ).fetchone()
     return row_to_dict(row, offset) if row else None
 
+def get_historique_du_jour(date_str):
+    """Retourne les commandes archivées d'un jour donné (format YYYY-MM-DD)."""
+    offset = get_offset()
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT * FROM commandes WHERE archivee = 1 AND heure LIKE ? ORDER BY heure",
+            (date_str + '%',)
+        ).fetchall()
+    return [row_to_dict(r, offset) for r in rows]
+
 # ─────────────────────────────────────────────
 # Routes
 # ─────────────────────────────────────────────
@@ -340,6 +350,40 @@ def afficher_bilan():
             temps_prep_list.append(duree)
     temps_moyen_prep = round(sum(temps_prep_list) / len(temps_prep_list), 1) if temps_prep_list else None
 
+    # ── Comparaison J vs J-1 ──
+    today_str     = maintenant().strftime('%Y-%m-%d')
+    yesterday_str = (maintenant() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+    hist_j   = get_historique_du_jour(today_str)
+    hist_j1  = get_historique_du_jour(yesterday_str)
+
+    def stats_jour(hist):
+        if not hist:
+            return None
+        ca      = round(sum(c['total'] for c in hist), 2)
+        nb      = len(hist)
+        articles = sum(len(c['produits']) for c in hist)
+        panier   = round(ca / nb, 2) if nb else 0
+        return {'ca': ca, 'nb': nb, 'articles': articles, 'panier': panier}
+
+    compa_j  = stats_jour(hist_j)
+    compa_j1 = stats_jour(hist_j1)
+
+    def evolution(val_j, val_j1):
+        """Retourne le % d'évolution arrondi, ou None si pas de J-1."""
+        if val_j1 is None or val_j1 == 0:
+            return None
+        return round((val_j - val_j1) / val_j1 * 100, 1)
+
+    compa_evol = None
+    if compa_j and compa_j1:
+        compa_evol = {
+            'ca':      evolution(compa_j['ca'],      compa_j1['ca']),
+            'nb':      evolution(compa_j['nb'],       compa_j1['nb']),
+            'articles': evolution(compa_j['articles'], compa_j1['articles']),
+            'panier':  evolution(compa_j['panier'],   compa_j1['panier']),
+        }
+
     return render_template('bilan.html',
                            historique=historique,
                            total_recettes=total_recettes,
@@ -353,7 +397,12 @@ def afficher_bilan():
                            commandes_par_heure=commandes_par_heure_triees,
                            now=maintenant(),
                            menu=menu,
-                           temps_moyen_prep=temps_moyen_prep)
+                           temps_moyen_prep=temps_moyen_prep,
+                           compa_j=compa_j,
+                           compa_j1=compa_j1,
+                           compa_evol=compa_evol,
+                           today_str=today_str,
+                           yesterday_str=yesterday_str)
 
 
 @app.route('/export-excel')
