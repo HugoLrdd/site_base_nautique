@@ -189,7 +189,7 @@ def afficher_bilan():
         if 'heure_prete' in c:
         duree = (c['heure_prete'] - c['heure']).total_seconds() / 60
         temps_prep_list.append(duree)
-        temps_moyen_prep = round(sum(temps_prep_list) / len(temps_prep_list), 1) if temps_prep_list else None
+    temps_moyen_prep = round(sum(temps_prep_list) / len(temps_prep_list), 1) if temps_prep_list else None
 
     return render_template('bilan.html',
                            historique=historique,
