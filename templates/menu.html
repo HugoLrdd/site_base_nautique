@@ -22,6 +22,12 @@
         }
         .header h1 { margin: 0; font-size: 26px; }
         .header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
+        .header .sous-titre {
+            margin: 8px 0 0 0;
+            opacity: 0.85;
+            font-size: 13px;
+            font-style: italic;
+        }
 
         .header-img {
             width: 100%;
@@ -54,8 +60,8 @@
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start; /* ← était center */
-            gap: 10px;               /* ← ajouté */
+            align-items: flex-start;
+            gap: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             position: relative;
             z-index: 10;
@@ -64,16 +70,16 @@
         .produit-infos {
             display: flex;
             flex-direction: column;
-            flex: 1;          /* ← ajouté : prend tout l'espace dispo */
-            min-width: 0;     /* ← ajouté : permet le retour à la ligne */
+            flex: 1;
+            min-width: 0;
         }
 
         .produit-nom {
             font-weight: bold;
             font-size: 16px;
-            word-break: break-word; /* ← ajouté */
-            white-space: normal;    /* ← ajouté */
-            line-height: 1.4;       /* ← ajouté pour confort de lecture */
+            word-break: break-word;
+            white-space: normal;
+            line-height: 1.4;
         }
 
         .produit-prix { color: #2ecc71; font-weight: 600; margin-top: 4px; }
@@ -89,12 +95,13 @@
             transition: background 0.2s;
             position: relative;
             z-index: 20;
-            flex-shrink: 0;      /* ← ajouté : bouton ne rétrécit pas */
-            align-self: flex-start; /* ← ajouté : bouton collé en haut */
-            white-space: nowrap; /* ← ajouté : texte bouton sur une ligne */
+            flex-shrink: 0;
+            align-self: flex-start;
+            white-space: nowrap;
         }
         .btn-ajouter:hover { background-color: #0084cc; }
 
+        /* FOOTER */
         .footer {
             background: #2c3e50;
             color: #ecf0f1;
@@ -108,6 +115,42 @@
         .footer a { color: #00a8ff; text-decoration: none; }
         .footer .footer-titre { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: white; }
         .footer .footer-item { margin: 4px 0; }
+
+        .footer-horaires {
+            background: rgba(255,255,255,0.07);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 12px 0;
+            font-size: 13px;
+            line-height: 2;
+            text-align: left;
+        }
+        .footer-horaires .mois {
+            font-weight: bold;
+            color: #00a8ff;
+            display: block;
+            margin-top: 8px;
+        }
+        .footer-horaires .mois:first-child { margin-top: 0; }
+
+        .qr-zone {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .qr-zone img {
+            width: 110px;
+            height: 110px;
+            border-radius: 8px;
+            background: white;
+            padding: 6px;
+        }
+        .qr-zone span {
+            font-size: 12px;
+            color: #95a5a6;
+        }
 
         /* PANIER FIXED */
         #panier-section {
@@ -197,7 +240,8 @@
     <div class="header">
         <img src="https://i.postimg.cc/44r298dr/Flyer.png" alt="Base Nautique" class="header-img">
         <h1>⛵ Base Nautique de Merville</h1>
-        <p>Commandez vos boissons & encas</p>
+        <p>Commandez vos boissons &amp; encas</p>
+        <p class="sous-titre">💳 Paiement au bar une fois votre commande prête</p>
     </div>
 
     <div class="container">
@@ -223,9 +267,24 @@
 
     <div class="footer">
         <div class="footer-titre">⛵ Base Nautique Claude Boulenguer</div>
+
         <div class="footer-item">📍 <a href="https://maps.google.com/?q=5+Rue+Duhamel+Liard,+59660+Merville" target="_blank">5 Rue Duhamel Liard, 59660 Merville</a></div>
         <div class="footer-item">📞 <a href="tel:0635211642">06 35 21 16 42</a></div>
-        <div class="footer-item">🕐 Ouvert du mercredi au dimanche — 10h à 18h</div>
+        <div class="footer-item">✉️ <a href="mailto:basenautique@ville-merville.fr">basenautique@ville-merville.fr</a></div>
+
+        <div class="footer-horaires">
+            <span class="mois">🗓️ Juin</span>
+            Mercredi au Vendredi &amp; Dimanche : 14h – 18h<br>
+            Samedi : 14h – 19h
+
+            <span class="mois">🗓️ Août</span>
+            Mercredi au Dimanche : 14h – 19h
+        </div>
+
+        <div class="qr-zone">
+            <img src="/static/qr_facebook.png" alt="QR Code Facebook">
+            <span>📘 Retrouvez-nous sur Facebook</span>
+        </div>
     </div>
 
     <form id="panier-section" action="/commander" method="POST" onsubmit="return verifierPanierAvantEnvoi()">
