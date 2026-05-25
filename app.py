@@ -277,5 +277,43 @@ def raz_compteur():
     conn.close()
     return redirect('/bar')
 
+
+@app.route('/bilan')
+def afficher_bilan():
+    conn = get_db_connection()
+    
+    # 1. Calcul du chiffre d'affaires total de la journée
+    # On additionne le 'total' de toutes les commandes enregistrées
+    row_ca = conn.execute("SELECT SUM(total) as ca_total FROM commandes").fetchone()
+    chiffre_affaires = row_ca['ca_total'] if row_ca['ca_total'] is not None else 0.0
+    
+    # 2. Nombre total de commandes passées
+    row_nb = conn.execute("SELECT COUNT(id) as nb_total FROM commandes").fetchone()
+    nombre_commandes = row_nb['nb_total'] if row_nb['nb_total'] is not None else 0
+    
+    # 3. Classement des produits les plus vendus (Top 5)
+    top_produits_rows = conn.execute('''
+        SELECT nom_produit, COUNT(nom_produit) as quantite 
+        FROM produits_commande 
+        GROUP BY nom_produit 
+        ORDER BY quantite DESC 
+        LIMIT 5
+    ''').fetchall()
+    
+    top_produits = [{"nom": row["nom_produit"], "quantite": row["quantite"]} for row in top_produits_rows]
+    
+    conn.close()
+    
+    # On renvoie les données à votre fichier HTML existant
+    return render_template(
+        'bilan.html', 
+        chiffre_affaires=chiffre_affaires, 
+        nombre_commandes=nombre_commandes, 
+        top_produits=top_produits
+    )
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
