@@ -1,375 +1,243 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu - Base Nautique de Merville</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f7f9fa;
-            margin: 0;
-            padding: 0;
-            color: #333;
-            padding-bottom: 260px;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - Base Nautique de Merville</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            /* Padding supprimé ici pour être géré par JS */
+        }
 
-        .header {
-            background: linear-gradient(135deg, #0056b3, #00a8ff);
-            color: white;
-            text-align: center;
-            padding: 25px 20px;
-        }
-        .header h1 { margin: 0; font-size: 26px; }
-        .header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
-        .header .sous-titre {
-            margin: 8px 0 0 0;
-            opacity: 0.85;
-            font-size: 13px;
-            font-style: italic;
-        }
+        .header {
+            background: linear-gradient(135deg, #0056b3, #00a8ff);
+            color: white;
+            text-align: center;
+            padding: 25px 20px;
+        }
+        .header h1 { margin: 0; font-size: 26px; }
+        .header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
+        .header .sous-titre {
+            margin: 8px 0 0 0;
+            opacity: 0.85;
+            font-size: 13px;
+            font-style: italic;
+        }
 
-        .header-img {
-            width: 100%;
-            max-width: 280px;
-            height: auto;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            object-fit: cover;
-        }
+        .header-img {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            object-fit: cover;
+        }
 
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
 
-        .categorie-titre {
-            font-size: 20px;
-            color: #0056b3;
-            border-bottom: 2px solid #0056b3;
-            padding-bottom: 5px;
-            margin-top: 30px;
-        }
+        .categorie-titre {
+            font-size: 20px;
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
 
-        .produit-card {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            position: relative;
-            z-index: 10;
-        }
+        .produit-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            position: relative;
+            z-index: 10;
+        }
 
-        .produit-infos {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-width: 0;
-        }
+        .produit-infos {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+        }
 
-        .produit-nom {
-            font-weight: bold;
-            font-size: 16px;
-            word-break: break-word;
-            white-space: normal;
-            line-height: 1.4;
-        }
+        .produit-nom {
+            font-weight: bold;
+            font-size: 16px;
+            word-break: break-word;
+        }
 
-        .produit-prix { color: #2ecc71; font-weight: 600; margin-top: 4px; }
+        .produit-prix { color: #2ecc71; font-weight: 600; margin-top: 4px; }
 
-        .btn-ajouter {
-            background-color: #00a8ff;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            position: relative;
-            z-index: 20;
-            flex-shrink: 0;
-            align-self: flex-start;
-            white-space: nowrap;
-        }
-        .btn-ajouter:hover { background-color: #0084cc; }
+        .btn-ajouter {
+            background-color: #00a8ff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .btn-ajouter:hover { background-color: #0084cc; }
 
-        /* FOOTER */
-        .footer {
-            background: #2c3e50;
-            color: #ecf0f1;
-            text-align: center;
-            padding: 25px 20px;
-            font-size: 14px;
-            line-height: 1.8;
-            position: relative;
-            z-index: 10;
-        }
-        .footer a { color: #00a8ff; text-decoration: none; }
-        .footer .footer-titre { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: white; }
-        .footer .footer-item { margin: 4px 0; }
+        .footer {
+            background: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 25px 20px;
+            font-size: 14px;
+        }
+        .footer a { color: #00a8ff; text-decoration: none; }
+        .footer .footer-titre { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: white; }
+        .footer-horaires {
+            background: rgba(255,255,255,0.07);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 12px 0;
+        }
+        .footer-horaires .mois { font-weight: bold; color: #00a8ff; display: block; margin-top: 8px; }
 
-        .footer-horaires {
-            background: rgba(255,255,255,0.07);
-            border-radius: 8px;
-            padding: 10px 15px;
-            margin: 12px 0;
-            font-size: 13px;
-            line-height: 2;
-            text-align: left;
-        }
-        .footer-horaires .mois {
-            font-weight: bold;
-            color: #00a8ff;
-            display: block;
-            margin-top: 8px;
-        }
-        .footer-horaires .mois:first-child { margin-top: 0; }
+        #panier-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+            padding: 15px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+            z-index: 100;
+        }
 
-        .qr-zone {
-            margin-top: 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        .qr-zone img {
-            width: 110px;
-            height: 110px;
-            border-radius: 8px;
-            background: white;
-            padding: 6px;
-        }
-        .qr-zone span {
-            font-size: 12px;
-            color: #95a5a6;
-        }
+        .panier-resume { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; }
+        .panier-total { color: #2ecc71; font-size: 18px; }
 
-        /* PANIER FIXED */
-        #panier-section {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-            padding: 15px;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            max-width: 600px;
-            margin: 0 auto;
-            z-index: 100;
-            pointer-events: none;
-        }
-
-        #panier-section button,
-        #panier-section input,
-        #panier-section ul,
-        #panier-section .btn-supprimer,
-        #panier-section .panier-resume {
-            pointer-events: auto;
-        }
-
-        .panier-resume {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        .panier-total { color: #2ecc71; font-size: 18px; }
-
-        #liste-panier {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 15px 0;
-            max-height: 80px;
-            overflow-y: auto;
-            font-size: 14px;
-            color: #555;
-        }
-        #liste-panier li {
-            display: flex;
-            justify-content: space-between;
-            padding: 3px 0;
-            border-bottom: 1px dashed #eee;
-        }
-        .btn-supprimer {
-            color: #e74c3c;
-            cursor: pointer;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-
-        .btn-valider {
-            width: 100%;
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
-        }
-        .btn-valider:hover { background-color: #27ae60; }
-
-        .note-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-            pointer-events: auto;
-        }
-    </style>
+        #liste-panier { list-style: none; padding: 0; max-height: 120px; overflow-y: auto; font-size: 14px; margin-bottom: 10px; }
+        #liste-panier li { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed #eee; }
+        
+        .btn-supprimer { color: #e74c3c; cursor: pointer; margin-left: 10px; }
+        .btn-valider { width: 100%; background-color: #2ecc71; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .note-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
+    </style>
 </head>
 <body>
 
-    <div class="header">
-        <img src="https://i.postimg.cc/XYvzyWzG/logo.png" alt="Base Nautique" class="header-img">
-        
-        <p>Commandez vos boissons &amp; encas</p>
-        <p class="sous-titre"> Paiement au bar une fois votre commande prête</p>
-    </div>
+    <div class="header">
+        <img src="https://i.postimg.cc/XYvzyWzG/logo.png" alt="Base Nautique" class="header-img">
+        <p>Commandez vos boissons & encas</p>
+        <p class="sous-titre">Paiement au bar une fois votre commande prête</p>
+    </div>
 
-    <div class="container">
-        {% for categorie, produits in menu.items() %}
-            <div class="categorie-titre">{{ categorie }}</div>
-            {% for p in produits %}
-                <div class="produit-card">
-                    <div class="produit-infos">
-                        <span class="produit-nom">{{ p.nom }}</span>
-                        <span class="produit-prix">{{ "%.2f" | format(p.prix) }} €</span>
-                    </div>
-                    <button class="btn-ajouter" onclick="ajouterAuPanier('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}')">
-                        ＋ Ajouter
-                    </button>
-                </div>
-            {% endfor %}
-        {% endfor %}
+    <div class="container">
+        {% for categorie, produits in menu.items() %}
+            <div class="categorie-titre">{{ categorie }}</div>
+            {% for p in produits %}
+                <div class="produit-card">
+                    <div class="produit-infos">
+                        <span class="produit-nom">{{ p.nom }}</span>
+                        <span class="produit-prix">{{ "%.2f" | format(p.prix) }} €</span>
+                    </div>
+                    <button class="btn-ajouter" onclick="ajouterAuPanier('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}')">
+                        ＋ Ajouter
+                    </button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
 
-        <div style="background-color: #e8f4f8; border-left: 4px solid #0056b3; padding: 15px; border-radius: 8px; margin-top: 30px; margin-bottom: 10px; text-align: center; font-size: 14px; font-weight: 500; color: #0056b3;">
-            ℹ️ Pour plus d'informations ou d'autres demandes, n'hésitez pas à aller directement au comptoir !
-        </div>
-    </div>
+    <div class="footer">
+        <div class="footer-titre">⛵ Base Nautique Claude Boulenguer</div>
+        <div class="footer-item">📍 5 Rue Duhamel Liard, 59660 Merville</div>
+        <div class="footer-horaires">
+            <span class="mois">🗓️ Juin</span>
+            Mercredi au Vendredi & Dimanche : 14h – 18h | Samedi : 14h – 19h
+        </div>
+    </div>
 
-    <div class="footer">
-        <div class="footer-titre">⛵ Base Nautique Claude Boulenguer</div>
+    <form id="panier-section" action="/commander" method="POST" onsubmit="return verifierPanierAvantEnvoi()">
+        <div class="panier-resume">
+            <span>🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
+            <span class="panier-total"><span id="total-prix">0.00</span> €</span>
+        </div>
+        <ul id="liste-panier"></ul>
+        <div id="inputs-caches-zone"></div>
+        <input type="text" name="note" id="note-commande" class="note-input" placeholder="Une note ?">
+        <button type="submit" class="btn-valider">🚀 Envoyer la commande</button>
+    </form>
 
-        <div class="footer-item">📍 <a href="https://maps.google.com/?q=5+Rue+Duhamel+Liard,+59660+Merville" target="_blank">5 Rue Duhamel Liard, 59660 Merville</a></div>
-        <div class="footer-item">📞 <a href="tel:0635211642">06 35 21 16 42</a></div>
-        <div class="footer-item">✉️ <a href="mailto:basenautique@ville-merville.fr">basenautique@ville-merville.fr</a></div>
+    <script>
+        let panier = [];
 
-        <div class="footer-horaires">
-            <span class="mois">🗓️ Juin</span>
-            Mercredi au Vendredi &amp; Dimanche : 14h – 18h<br>
-            Samedi : 14h – 19h
+        function ajouterAuPanier(nom, prix, categorie) {
+            panier.push({ nom: nom, prix: prix });
+            mettreAJourAffichage();
+        }
 
-            <span class="mois">🗓️ Août</span>
-            Mercredi au Dimanche : 14h – 19h
-        </div>
+        function supprimerDuPanier(index) {
+            panier.splice(index, 1);
+            mettreAJourAffichage();
+        }
 
-        <div class="qr-zone">
-            <a href="https://www.facebook.com/share/1BDV3AnhJY/?mibextid=wwXIfr" target="_blank">
-                <img src="/static/qr_facebook.png" alt="QR Code Facebook">
-            </a>
-            <a href="https://www.facebook.com/share/1BDV3AnhJY/?mibextid=wwXIfr" target="_blank" style="color: #95a5a6; font-size: 12px; text-decoration: none;">📘 Retrouvez-nous sur Facebook</a>
-        </div>
-    </div>
+        function ajusterPadding() {
+            const hauteurPanier = document.getElementById('panier-section').offsetHeight;
+            document.body.style.paddingBottom = (hauteurPanier + 20) + 'px';
+        }
 
-    <form id="panier-section" action="/commander" method="POST" onsubmit="return verifierPanierAvantEnvoi()">
-        <div class="panier-resume">
-            <span>🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
-            <span class="panier-total"><span id="total-prix">0.00</span> €</span>
-        </div>
-        <ul id="liste-panier"></ul>
-        <div id="inputs-caches-zone"></div>
-        <input type="text" name="note" id="note-commande"
-            class="note-input"
-            placeholder="Une note ? (ex: sans sucre, allergie...)">
-        <button type="submit" class="btn-valider">
-            🚀 Envoyer la commande au bar
-        </button>
-    </form>
+        function mettreAJourAffichage() {
+            let listeHTML = document.getElementById('liste-panier');
+            let zoneInputs = document.getElementById('inputs-caches-zone');
+            listeHTML.innerHTML = "";
+            zoneInputs.innerHTML = "";
+            let total = 0;
 
-    <script>
-        let panier = [];
+            panier.forEach((item, index) => {
+                total += item.prix;
+                let li = document.createElement('li');
+                li.innerHTML = `<span>• ${item.nom}</span> <span>${item.prix.toFixed(2)} € <span class="btn-supprimer" onclick="supprimerDuPanier(${index})">❌</span></span>`;
+                listeHTML.appendChild(li);
 
-        function ajouterAuPanier(nom, prix, categorie) {
-            let nomComplet = nom;
-            if (categorie === "Crêpes" && !nom.toLowerCase().includes("crêpe")) {
-                nomComplet = "Crêpe " + nom;
-            } else if (categorie !== "Boissons" && categorie !== "Glaces") {
-                nomComplet = categorie + " - " + nom;
-            }
-            panier.push({ nom: nomComplet, prix: prix });
-            mettreAJourAffichage();
-        }
+                let input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'produits';
+                input.value = item.nom;
+                zoneInputs.appendChild(input);
+            });
 
-        function supprimerDuPanier(index) {
-            panier.splice(index, 1);
-            mettreAJourAffichage();
-        }
+            document.getElementById('panier-nb-articles').innerText = panier.length;
+            document.getElementById('total-prix').innerText = total.toFixed(2);
+            
+            // Recalculer le padding après mise à jour
+            ajusterPadding();
+        }
 
-        function ajusterPadding() {
-            const hauteurPanier = document.getElementById('panier-section').offsetHeight;
-            document.body.style.paddingBottom = (hauteurPanier + 20) + 'px';
-        }
+        window.addEventListener('load', ajusterPadding);
+        window.addEventListener('resize', ajusterPadding);
 
-        ajusterPadding();
-        window.addEventListener('resize', ajusterPadding);
-
-        function mettreAJourAffichage() {
-            let listeHTML = document.getElementById('liste-panier');
-            let nbArticles = document.getElementById('panier-nb-articles');
-            let totalPrix = document.getElementById('total-prix');
-            let zoneInputs = document.getElementById('inputs-caches-zone');
-
-            listeHTML.innerHTML = "";
-            zoneInputs.innerHTML = "";
-            let total = 0;
-
-            panier.forEach((item, index) => {
-                total += item.prix;
-                let li = document.createElement('li');
-                li.innerHTML = `
-                    <span>• ${item.nom}</span>
-                    <span>${item.prix.toFixed(2)} € <span class="btn-supprimer" onclick="supprimerDuPanier(${index})">❌</span></span>
-                `;
-                listeHTML.appendChild(li);
-
-                let input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'produits';
-                input.value = item.nom;
-                zoneInputs.appendChild(input);
-            });
-
-            nbArticles.innerText = panier.length;
-            totalPrix.innerText = total.toFixed(2);
-            ajusterPadding();
-        }
-
-        function verifierPanierAvantEnvoi() {
-            if (panier.length === 0) {
-                alert("Votre panier est vide ! Ajoutez des produits avant d'envoyer.");
-                return false;
-            }
-            return true;
-        }
-    </script>
-
+        function verifierPanierAvantEnvoi() {
+            if (panier.length === 0) {
+                alert("Votre panier est vide !");
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 </html>
