@@ -174,6 +174,34 @@ def prendre_commande():
     return redirect('/')
 
 
+@app.route('/commander-bar', methods=['POST'])
+def commander_bar():
+    if not session.get('bar_ok'):
+        return redirect('/login_bar')
+
+    produits_choisis = request.form.getlist('produits')
+    note = request.form.get('note', '').strip()
+
+    if produits_choisis:
+        total_commande = 0
+        for prod in produits_choisis:
+            for categorie in menu.values():
+                for item in categorie:
+                    if item['nom'] == prod or prod.endswith(item['nom']):
+                        total_commande += item['prix']
+                        break
+
+        with get_db() as conn:
+            conn.execute(
+                'INSERT INTO commandes (produits, heure, statut, total, note) VALUES (?, ?, ?, ?, ?)',
+                (json.dumps(produits_choisis), maintenant().isoformat(),
+                 "En préparation", total_commande, note)
+            )
+            conn.commit()
+
+    return redirect('/bar')
+
+
 @app.route('/suivi/<int:commande_id>')
 def suivi_commande(commande_id):
     commande = get_commande_by_id(commande_id)
