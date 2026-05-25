@@ -307,7 +307,7 @@ def afficher_bilan():
     # On renvoie les données à votre fichier HTML existant
     return render_template(
         'bilan.html', 
-        chiffre_affaires=chiffre_affaires, 
+        total_recettes=chiffre_affaires, 
         nombre_commandes=nombre_commandes, 
         top_produits=top_produits
     )
