@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, session, send_file
+from flask import Flask, render_template, request, redirect, session
 from datetime import datetime, timezone, timedelta
 from io import BytesIO
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
+from flask import send_file
 
 app = Flask(__name__)
 app.secret_key = 'nautique_merville_secret'
@@ -30,9 +31,9 @@ menu = {
         {"nom": "Cornet Vanille", "prix": 2.50}
     ],
     "Planches": [
-        {"nom": "Planche apéritif (saucisson,légume,jambon,cornichon,cacahuètes...)", "prix": 8.00},
-        {"nom": "Planche charcuterie (saucisson,pâté,jambon,fromage,cacahuètes...)", "prix": 10.00},
-        {"nom": "Planche fromage (brie,camembert,comté,pain,cacahuètes...)", "prix": 8.50}
+        {"nom": " Planche apéritif (saucisson,légume,jambon,cornichon,cacahuètes...)", "prix": 8.00},
+        {"nom": " Planche charcuterie (saucisson,pâté,jambon,fromage,cacahuètes...)", "prix": 10.00},
+        {"nom": " Planche fromage (brie,camembert,comté,pain,cacahuètes...)", "prix": 8.50}
     ]
 }
 
@@ -40,9 +41,11 @@ commandes = []
 historique = []
 compteur_ticket = 1
 
+
 @app.route('/')
 def afficher_menu():
     return render_template('menu.html', menu=menu)
+
 
 @app.route('/commander', methods=['POST'])
 def prendre_commande():
@@ -69,9 +72,11 @@ def prendre_commande():
         }
         commandes.append(nouvelle_commande)
         compteur_ticket += 1
+
         return redirect(f'/suivi/{nouvelle_commande["id"]}')
 
     return redirect('/')
+
 
 @app.route('/suivi/<int:commande_id>')
 def suivi_commande(commande_id):
@@ -82,6 +87,7 @@ def suivi_commande(commande_id):
         return render_template('suivi.html', commande=commande)
     return "Commande introuvable", 404
 
+
 @app.route('/bar')
 def ecran_bar():
     if not session.get('bar_ok'):
@@ -91,6 +97,7 @@ def ecran_bar():
         minutes_attente = int((now - c['heure']).total_seconds() / 60)
         c['attente'] = minutes_attente
     return render_template('bar.html', commandes=commandes)
+
 
 @app.route('/login_bar', methods=['GET', 'POST'])
 def login_bar():
@@ -103,10 +110,12 @@ def login_bar():
             return render_template('login_bar.html', erreur=True)
     return render_template('login_bar.html', erreur=False)
 
+
 @app.route('/logout_bar')
 def logout_bar():
     session.pop('bar_ok', None)
     return redirect('/login_bar')
+
 
 @app.route('/prete/<int:commande_id>')
 def commande_prete(commande_id):
@@ -116,6 +125,7 @@ def commande_prete(commande_id):
             c['heure_prete'] = maintenant()
             break
     return redirect('/bar')
+
 
 @app.route('/archiver/<int:commande_id>')
 def archiver_commande(commande_id):
@@ -128,6 +138,7 @@ def archiver_commande(commande_id):
     commandes = [c for c in commandes if c['id'] != commande_id]
     return redirect('/bar')
 
+
 @app.route('/archiver-tout', methods=['POST'])
 def archiver_tout():
     global commandes
@@ -136,6 +147,7 @@ def archiver_tout():
         historique.append(c)
     commandes = []
     return redirect('/bar')
+
 
 @app.route('/bilan', methods=['GET', 'POST'])
 def afficher_bilan():
@@ -154,6 +166,7 @@ def afficher_bilan():
     stats_produits = {}
     stats_categories = {}
     nb_commandes = len(historique)
+
     panier_moyen = round(total_recettes / nb_commandes, 2) if nb_commandes > 0 else 0
 
     commandes_par_heure = {}
@@ -161,7 +174,9 @@ def afficher_bilan():
         heure = c['heure'].strftime('%H:00')
         commandes_par_heure[heure] = commandes_par_heure.get(heure, 0) + 1
 
-    heure_pointe = max(commandes_par_heure, key=commandes_par_heure.get) if commandes_par_heure else None
+    heure_pointe = None
+    if commandes_par_heure:
+        heure_pointe = max(commandes_par_heure, key=commandes_par_heure.get)
 
     for c in historique:
         for prod in c['produits']:
@@ -198,12 +213,15 @@ def afficher_bilan():
                            menu=menu,
                            temps_moyen_prep=temps_moyen_prep)
 
+
 @app.route('/export-excel')
 def export_excel():
     if not session.get('bilan_ok'):
         return redirect('/bilan')
 
     wb = openpyxl.Workbook()
+
+    # ── Onglet 1 : Résumé ──
     ws1 = wb.active
     ws1.title = "Résumé"
 
@@ -244,6 +262,7 @@ def export_excel():
     ws1.column_dimensions['A'].width = 28
     ws1.column_dimensions['B'].width = 20
 
+    # ── Onglet 2 : Ventes par produit ──
     ws2 = wb.create_sheet("Ventes par produit")
     ws2.append(["Produit", "Quantité", "Recette (€)"])
     for cell in ws2[1]:
@@ -260,6 +279,7 @@ def export_excel():
     ws2.column_dimensions['B'].width = 12
     ws2.column_dimensions['C'].width = 15
 
+    # ── Onglet 3 : Détail commandes ──
     ws3 = wb.create_sheet("Détail commandes")
     ws3.append(["#", "Heure", "Produits", "Note", "Total (€)"])
     for cell in ws3[1]:
@@ -286,16 +306,19 @@ def export_excel():
     return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                      as_attachment=True, download_name=filename)
 
+
 @app.route('/reset', methods=['POST'])
 def reset_bilan():
     global historique
     historique = []
     return redirect('/bilan')
 
+
 @app.route('/logout_bilan')
 def logout_bilan():
     session.pop('bilan_ok', None)
     return redirect('/bilan')
+
 
 @app.route('/recu/<int:commande_id>')
 def recu_commande(commande_id):
@@ -305,6 +328,7 @@ def recu_commande(commande_id):
     if commande:
         return render_template('recu.html', commande=commande, menu=menu)
     return "Commande introuvable", 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)
