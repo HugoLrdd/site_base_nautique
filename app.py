@@ -187,8 +187,8 @@ def afficher_bilan():
     temps_prep_list = []
     for c in historique:
         if 'heure_prete' in c:
-        duree = (c['heure_prete'] - c['heure']).total_seconds() / 60
-        temps_prep_list.append(duree)
+            duree = (c['heure_prete'] - c['heure']).total_seconds() / 60
+            temps_prep_list.append(duree)
     temps_moyen_prep = round(sum(temps_prep_list) / len(temps_prep_list), 1) if temps_prep_list else None
 
     return render_template('bilan.html',
@@ -203,7 +203,8 @@ def afficher_bilan():
                            produit_star=produit_star,
                            commandes_par_heure=commandes_par_heure_triees,
                            now=maintenant(),
-                           menu=menu)
+                           menu=menu,
+                           temps_moyen_prep=temps_moyen_prep)
 
 
 @app.route('/export-excel')
