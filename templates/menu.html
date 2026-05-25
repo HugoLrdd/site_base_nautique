@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -129,34 +128,35 @@
     </div>
 
     <div class="container">
+        {% set ns = namespace(i=0) %}
         {% for categorie, produits in menu.items() %}
             <div class="categorie-titre">{{ categorie }}</div>
             {% for p in produits %}
+                {% set cle = ns.i %}
                 <div class="produit-card">
                     <div class="produit-infos">
                         <span class="produit-nom">{{ p.nom }}</span>
                         <span class="produit-prix">{{ "%.2f" | format(p.prix) }} €</span>
                     </div>
-                    <div class="qty-zone" id="zone-{{ loop.index0 }}-{{ loop.index }}">
-                        <!-- Bouton initial -->
+                    <div class="qty-zone" id="zone-{{ cle }}">
                         <button class="btn-ajouter"
-                                onclick="premierAjout('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}', '{{ loop.index0 }}-{{ loop.index }}')">
+                                onclick="premierAjout('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}', '{{ cle }}')">
                             ＋ Ajouter
                         </button>
-                        <!-- Sélecteur quantité (caché au départ) -->
-                        <div class="qty-ctrl" id="ctrl-{{ loop.index0 }}-{{ loop.index }}">
+                        <div class="qty-ctrl" id="ctrl-{{ cle }}">
                             <button class="qty-btn"
-                                    onclick="changerQty('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}', '{{ loop.index0 }}-{{ loop.index }}', -1)">
+                                    onclick="changerQty('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}', '{{ cle }}', -1)">
                                 −
                             </button>
-                            <span class="qty-num" id="num-{{ loop.index0 }}-{{ loop.index }}">1</span>
+                            <span class="qty-num" id="num-{{ cle }}">1</span>
                             <button class="qty-btn"
-                                    onclick="changerQty('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}', '{{ loop.index0 }}-{{ loop.index }}', +1)">
+                                    onclick="changerQty('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}', '{{ cle }}', +1)">
                                 ＋
                             </button>
                         </div>
                     </div>
                 </div>
+                {% set ns.i = ns.i + 1 %}
             {% endfor %}
         {% endfor %}
 
