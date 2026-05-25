@@ -17,7 +17,13 @@
         .prete { background-color: #55efc4; color: #00b894; animation: pulse 1.5s infinite; }
         .recuperee { background-color: #b2bec3; color: #2d3436; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
-        .produits { text-align: left; background: #f1f2f6; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        .produits {
+            text-align: left; background: #f1f2f6;
+            padding: 15px; border-radius: 8px; margin-top: 20px;
+            overflow: hidden; word-break: break-word;
+        }
+        .produits ul { padding-left: 18px; margin: 8px 0 0; }
+        .produits li { line-height: 1.5; overflow-wrap: break-word; }
         .paiement-info { margin-top: 15px; padding: 12px 15px; background: #eaf4ff; border-radius: 8px; font-size: 13px; color: #0056b3; text-align: center; }
         .paiement-logos { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
         .paiement-logos img { height: 28px; width: auto; }
