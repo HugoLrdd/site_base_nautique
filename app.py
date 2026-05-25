@@ -117,6 +117,7 @@ def commande_prete(commande_id):
     for c in commandes:
         if c['id'] == commande_id:
             c['statut'] = "Prête ! Passez au comptoir"
+            c['heure_prete'] = maintenant()  # ← ajouter cette ligne
             break
     return redirect('/bar')
 
