@@ -261,5 +261,21 @@ def voir_recu(commande_id):
 def logout_bar():
     return "Déconnexion réussie (Écran Bar clos)"
 
+@app.route('/raz-compteur', methods=['POST'])
+def raz_compteur():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # 1. On supprime tous les produits des commandes
+    cursor.execute("DELETE FROM produits_commande")
+    # 2. On supprime toutes les commandes
+    cursor.execute("DELETE FROM commandes")
+    # 3. On remet le compteur interne de SQLite à zéro
+    cursor.execute("DELETE FROM sqlite_sequence WHERE name='commandes'")
+    
+    conn.commit()
+    conn.close()
+    return redirect('/bar')
+
 if __name__ == '__main__':
     app.run(debug=True)
