@@ -221,7 +221,7 @@
         <tbody>
             {% for c in historique | sort(attribute='heure') %}
             <tr>
-                <td><strong>#{{ "%03d" | format(c.id) }}</strong></td>
+                <td><strong>#{{ "%03d" | format(c.numero_affiche) }}</strong></td>
                 <td>{{ c.heure.strftime('%H:%M') }}</td>
                 <td>{{ c.produits | join(', ') }}</td>
                 <td style="color:#856404;">{{ c.note if c.note else '—' }}</td>
