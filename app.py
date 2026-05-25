@@ -6,6 +6,8 @@ app.secret_key = 'nautique_merville_secret'
 
 MOT_DE_PASSE_BILAN = 'BNM2026'
 
+MOT_DE_PASSE_BAR = 'BNM2026BAR' 
+
 def maintenant():
     return datetime.now(timezone.utc) + timedelta(hours=2)
 
@@ -82,11 +84,29 @@ def suivi_commande(commande_id):
 
 @app.route('/bar')
 def ecran_bar():
+    if not session.get('bar_ok'):
+        return redirect('/login_bar')
     now = maintenant()
     for c in commandes:
         minutes_attente = int((now - c['heure']).total_seconds() / 60)
         c['attente'] = minutes_attente
     return render_template('bar.html', commandes=commandes)
+
+@app.route('/login_bar', methods=['GET', 'POST'])
+def login_bar():
+    if request.method == 'POST':
+        mdp = request.form.get('mot_de_passe', '')
+        if mdp == MOT_DE_PASSE_BAR:
+            session['bar_ok'] = True
+            return redirect('/bar')
+        else:
+            return render_template('login_bar.html', erreur=True)
+    return render_template('login_bar.html', erreur=False)
+
+@app.route('/logout_bar')
+def logout_bar():
+    session.pop('bar_ok', None)
+    return redirect('/login_bar')
 
 @app.route('/prete/<int:commande_id>')
 def commande_prete(commande_id):
