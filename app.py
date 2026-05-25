@@ -179,7 +179,7 @@ def suivi_commande(commande_id):
         "produits": [p["nom_produit"] for p in produits_rows]
     }
     
-    return render_template('suivi.html', c=commande_dict)
+    return render_template('suivi.html', commande=commande_dict)
 
 # --- ROUTES BAR / COMPTOIR ---
 
