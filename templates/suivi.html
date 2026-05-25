@@ -9,6 +9,16 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7f9fa; margin: 0; padding: 20px; text-align: center; color: #333; }
         .card { background: white; max-width: 400px; margin: 40px auto; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         h1 { color: #0056b3; margin-bottom: 5px; }
+        
+        /* Style ajouté pour le logo sous le titre */
+        .suivi-logo {
+            max-width: 120px; /* Ajustez la taille maximale selon vos besoins */
+            height: auto;
+            margin: 10px auto 5px auto;
+            display: block;
+            object-fit: contain;
+        }
+
         .numero { font-size: 48px; font-weight: bold; color: #ff6b6b; margin: 20px 0; }
         .statut-container { margin: 30px 0; }
         .badge { display: inline-block; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 18px; }
@@ -17,12 +27,36 @@
         .recuperee { background-color: #b2bec3; color: #2d3436; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
         .produits { text-align: left; background: #f1f2f6; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        
+        /* Style ajouté pour la zone de paiement */
+        .paiement-zone {
+            margin-top: 20px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            background-color: #fff;
+            border: 1px dashed #b2bec3;
+            border-radius: 8px;
+        }
+        .paiement-img {
+            max-width: 180px; /* Ajustez la taille de l'image des CB / Logos */
+            height: auto;
+            margin-top: 8px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         .info { font-size: 12px; color: #a4b0be; margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="card">
         <h1>O'Quai</h1>
+        
+        <img src="METTRE_ICI_LIEN_VERS_LE_LOGO" alt="Logo O'Quai" class="suivi-logo">
+
         <p>Merci pour votre commande !</p>
         
         <div class="numero">#{{ "%03d" | format(commande.id) }}</div>
@@ -51,6 +85,12 @@
                 💰 Total : {{ "%.2f" | format(commande.total) }} €
             </strong>
         </div>
+
+        <div class="paiement-zone">
+            💳 Paiement au comptoir O'Quai lorsque la commande sera prête.
+            <img src="METTRE_ICI_LIEN_VERS_IMAGE_PAIEMENT" alt="Moyens de paiement acceptés" class="paiement-img">
+        </div>
+
         <a href="/recu/{{ commande.id }}" target="_blank" 
            style="display: inline-block; margin-top: 20px; background-color: #0056b3; color: white; padding: 10px 25px; border-radius: 20px; font-weight: bold; text-decoration: none;">
             🧾 Voir mon reçu
