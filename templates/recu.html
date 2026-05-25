@@ -16,7 +16,6 @@
             padding: 30px 20px;
         }
 
-        /* Bouton imprimer — masqué à l'impression */
         .btn-imprimer {
             background-color: #0056b3;
             color: white;
@@ -31,14 +30,12 @@
         }
         .btn-imprimer:hover { background-color: #003d82; }
 
-        /* Le ticket lui-même */
         .ticket {
             background: white;
             width: 320px;
             padding: 25px 20px;
             border-radius: 4px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            /* Découpe en haut et en bas style ticket de caisse */
             border-top: 3px dashed #ccc;
             border-bottom: 3px dashed #ccc;
         }
@@ -56,11 +53,25 @@
         .ligne-produit {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start; /* ← était implicitement center */
             font-size: 14px;
             margin-bottom: 8px;
+            gap: 8px;               /* ← ajouté */
         }
-        .ligne-produit .nom { flex: 1; }
-        .ligne-produit .prix { font-weight: bold; white-space: nowrap; }
+
+        .ligne-produit .nom {
+            flex: 1;
+            word-break: break-word; /* ← ajouté */
+            white-space: normal;    /* ← ajouté */
+            line-height: 1.4;       /* ← ajouté */
+            padding-right: 4px;     /* ← ajouté */
+        }
+
+        .ligne-produit .prix {
+            font-weight: bold;
+            white-space: nowrap;
+            flex-shrink: 0;         /* ← ajouté : le prix ne se compresse pas */
+        }
 
         .total-zone {
             margin-top: 15px;
@@ -74,7 +85,6 @@
 
         .ticket-footer { text-align: center; margin-top: 20px; font-size: 11px; color: #999; line-height: 1.6; }
 
-        /* ===== IMPRESSION ===== */
         @media print {
             body { background: white; padding: 0; }
             .btn-imprimer { display: none; }
@@ -106,7 +116,6 @@
 
         <hr class="separateur">
 
-        <!-- Liste des articles avec leur prix -->
         {% for prod in commande.produits %}
             {% set prix_produit = namespace(valeur=0) %}
             {% for categorie in menu.values() %}
