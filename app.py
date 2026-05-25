@@ -9,8 +9,10 @@ app = Flask(__name__)
 app.secret_key = 'nautique_merville_secret'
 
 MOT_DE_PASSE_BILAN = 'BNM2026'
-
 MOT_DE_PASSE_BAR = 'BNM2026BAR' 
+
+# Variable pour suivre l'état d'ouverture du bar
+bar_ouvert = True
 
 def maintenant():
     return datetime.now(timezone.utc) + timedelta(hours=2)
@@ -36,7 +38,6 @@ menu = {
         {"nom": " Planche charcuterie (saucisson,pâté,jambon,fromage,cacahuètes...)", "prix": 10.00},
         {"nom": " Planche fromage (brie,camembert,comté,pain,cacahuètes...)", "prix": 8.50}
     ]   
-    
 }
 
 commandes = []
@@ -45,11 +46,20 @@ compteur_ticket = 1
 
 @app.route('/')
 def afficher_menu():
+    global bar_ouvert
+    # Si le bar est fermé, on affiche la page d'information au client
+    if not bar_ouvert:
+        return render_template('bar_ferme.html')
     return render_template('menu.html', menu=menu)
 
 @app.route('/commander', methods=['POST'])
 def prendre_commande():
-    global compteur_ticket
+    global compteur_ticket, bar_ouvert
+    
+    # Sécurité supplémentaire au cas où le formulaire est soumis alors que le bar est fermé
+    if not bar_ouvert:
+        return render_template('bar_ferme.html')
+        
     produits_choisis = request.form.getlist('produits')
     note = request.form.get('note', '').strip()
 
@@ -88,13 +98,23 @@ def suivi_commande(commande_id):
 
 @app.route('/bar')
 def ecran_bar():
+    global bar_ouvert
     if not session.get('bar_ok'):
         return redirect('/login_bar')
     now = maintenant()
     for c in commandes:
         minutes_attente = int((now - c['heure']).total_seconds() / 60)
         c['attente'] = minutes_attente
-    return render_template('bar.html', commandes=commandes)
+    # On passe "bar_ouvert" au template pour que le bouton puisse adapter son affichage
+    return render_template('bar.html', commandes=commandes, bar_ouvert=bar_ouvert)
+
+@app.route('/toggle-bar', methods=['POST'])
+def toggle_bar():
+    global bar_ouvert
+    if not session.get('bar_ok'):
+        return redirect('/login_bar')
+    bar_ouvert = not bar_ouvert  # Alterne entre Ouvert (True) et Fermé (False)
+    return redirect('/bar')
 
 @app.route('/login_bar', methods=['GET', 'POST'])
 def login_bar():
@@ -117,7 +137,7 @@ def commande_prete(commande_id):
     for c in commandes:
         if c['id'] == commande_id:
             c['statut'] = "Prête ! Passez au comptoir"
-            c['heure_prete'] = maintenant()  # ← ajouter cette ligne
+            c['heure_prete'] = maintenant()
             break
     return redirect('/bar')
 
