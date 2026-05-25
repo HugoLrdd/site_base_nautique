@@ -1,230 +1,93 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Écran Bar - Gestion des commandes</title>
-    <style>
-        * { box-sizing: border-box; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Écran Bar - Gestion des commandes</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #2c3e50; margin: 0; padding: 0; color: #ecf0f1; }
 
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #2c3e50;
-            margin: 0;
-            padding: 0;
-            color: #ecf0f1;
-        }
+        .header { background-color: #1a252f; padding: 12px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .header h1 { margin: 0; color: #3498db; font-size: 1.1rem; }
+        .header-btns { display: flex; gap: 5px; }
+        .btn-header { border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 0.8rem; color: white; }
+        
+        .zone-tickets { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; padding: 15px; }
 
-        .header {
-            background-color: #1a252f;
-            padding: 12px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        .header h1 { margin: 0; color: #3498db; font-size: 18px; }
-        .header-btns { display: flex; gap: 8px; }
-        .btn-refresh { background-color: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
-        .btn-archiver-tout { background-color: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
-        .btn-logout { background-color: #7f8c8d; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
+        .ticket { border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); color: white; display: flex; flex-direction: column; }
+        .ticket-vert { background-color: #27ae60; }
+        .ticket-orange { background-color: #e67e22; }
+        .ticket-rouge-flash { background-color: #c0392b; animation: flash 1.5s infinite; }
 
-        /* Confirmation archiver tout */
-        .confirm-bar {
-            display: none;
-            background: #c0392b;
-            padding: 10px 15px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .confirm-bar.visible { display: flex; }
-        .confirm-bar span { flex: 1; min-width: 160px; }
-        .btn-confirmer-tout { background: white; color: #c0392b; border: none; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
-        .btn-annuler-tout { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-        .zone-tickets {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 15px;
-        }
+        .ticket-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 8px; }
+        .ticket-numero { font-size: 1.5rem; font-weight: bold; }
+        .ticket-temps { font-size: 0.9rem; background: rgba(0,0,0,0.2); padding: 3px 8px; border-radius: 10px; }
 
-        .ticket {
-            border-radius: 12px;
-            padding: 15px;
-            width: 100%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            color: white;
-        }
-        .ticket-vert { background-color: #2ecc71; }
-        .ticket-orange { background-color: #e67e22; }
-        .ticket-rouge-flash { background-color: #e74c3c; animation: flash 1s infinite alternate; }
+        .liste-produits { list-style: none; padding: 0; margin: 0 0 10px 0; font-size: 1.05rem; }
+        .liste-produits li { margin-bottom: 4px; word-break: break-word; }
 
-        @keyframes flash {
-            from { background-color: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
-            to { background-color: #c0392b; box-shadow: 0 0 25px #e74c3c; }
-        }
-
-        .ticket-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(255,255,255,0.3);
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        .ticket-numero { font-size: 26px; }
-        .ticket-temps { font-size: 14px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 10px; }
-
-        .liste-produits {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 10px 0;
-            font-size: 17px;
-            font-weight: 500;
-        }
-        .liste-produits li { margin-bottom: 5px; padding-left: 5px; }
-
-        .note-box {
-            background: rgba(0,0,0,0.15);
-            border-radius: 6px;
-            padding: 6px 10px;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-
-        .ticket-bottom { margin-top: 10px; }
-        .statut-actuel { font-size: 12px; font-style: italic; text-align: center; margin-bottom: 6px; opacity: 0.9; }
-        .total-ligne { text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
-
-        .actions { display: flex; gap: 8px; }
-        .btn-action {
-            flex: 1;
-            border: none;
-            padding: 12px 8px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .btn-prete { background-color: #f39c12; color: white; border: 1px solid rgba(255,255,255,0.4); }
-        .btn-valider { background-color: white; color: #2c3e50; }
-        .btn-recu { background-color: #9b59b6; color: white; }
-
-        .vide { text-align: center; margin-top: 80px; color: #95a5a6; font-size: 20px; padding: 0 20px; }
-    </style>
+        .actions { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; }
+        .btn-action { flex: 1; border: none; padding: 12px 5px; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; font-size: 0.9rem; }
+        .btn-prete { background-color: #f39c12; color: white; }
+        .btn-valider { background-color: white; color: #2c3e50; }
+        .btn-recu { background-color: #8e44ad; color: white; }
+    </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>👨‍🍳 Comptoir</h1>
-        <div class="header-btns">
-            <a href="/bar" class="btn-refresh">🔄 ({{ commandes|length }})</a>
-            {% if commandes %}
-            <button class="btn-archiver-tout" onclick="document.getElementById('confirm-tout').classList.add('visible')">
-                🗂️ Tout archiver
-            </button>
-            {% endif %}
-            <a href="/logout_bar" class="btn-logout">🔒</a>
-        </div>
-    </div>
+    <div class="header">
+        <h1>👨‍🍳 Comptoir</h1>
+        <div class="header-btns">
+            <a href="/bar" class="btn-header" style="background: #3498db;">🔄 {{ commandes|length }}</a>
+            {% if commandes %}
+                <button class="btn-header" style="background: #e74c3c;" onclick="document.getElementById('confirm-tout').style.display='flex'">🗂️ Archiver tout</button>
+            {% endif %}
+        </div>
+    </div>
 
-    <!-- Bande de confirmation -->
-    <div class="confirm-bar" id="confirm-tout">
-        <span>⚠️ Archiver toutes les commandes en cours ?</span>
-        <form action="/archiver-tout" method="POST" style="display:inline;">
-            <button type="submit" class="btn-confirmer-tout">✓ Confirmer</button>
-        </form>
-        <button class="btn-annuler-tout" onclick="document.getElementById('confirm-tout').classList.remove('visible')">
-            ✕ Annuler
-        </button>
-    </div>
+    <div id="confirm-tout" style="display:none; background: #c0392b; padding: 15px; text-align: center;">
+        <p>Archiver tout ?</p>
+        <form action="/archiver-tout" method="POST" style="display:inline;">
+            <button type="submit" class="btn-header" style="background:white; color:#c0392b; margin-right:10px;">✓ Oui</button>
+        </form>
+        <button class="btn-header" style="background:transparent; border:1px solid white;" onclick="this.parentElement.style.display='none'">✕ Non</button>
+    </div>
 
-    <div class="zone-tickets">
-        {% for c in commandes %}
-            <div class="ticket
-                {% if c.attente >= 10 %} ticket-rouge-flash
-                {% elif c.attente >= 5 %} ticket-orange
-                {% else %} ticket-vert
-                {% endif %}">
+    <div class="zone-tickets">
+        {% for c in commandes %}
+            <div class="ticket {% if c.attente >= 10 %}ticket-rouge-flash{% elif c.attente >= 5 %}ticket-orange{% else %}ticket-vert{% endif %}">
+                <div class="ticket-top">
+                    <span class="ticket-numero">#{{ "%03d" | format(c.id) }}</span>
+                    <span class="ticket-temps">⏱️ {{ c.attente }} min</span>
+                </div>
+                <ul class="liste-produits">
+                    {% for prod in c.produits %}<li>• {{ prod }}</li>{% endfor %}
+                </ul>
+                {% if c.note %}<div style="background:rgba(0,0,0,0.2); padding:5px; border-radius:5px; font-size:0.8rem; margin-bottom:10px;">📝 {{ c.note }}</div>{% endif %}
+                <div style="font-weight:bold; margin-bottom:10px;">💰 {{ "%.2f" | format(c.total) }} €</div>
+                <div class="actions">
+                    {% if c.statut == "En préparation" %}<a href="/prete/{{ c.id }}" class="btn-action btn-prete">📢 Prête</a>{% endif %}
+                    <a href="/archiver/{{ c.id }}" class="btn-action btn-valider">✓ Servie</a>
+                    <a href="/recu/{{ c.id }}" target="_blank" class="btn-action btn-recu">🧾 Reçu</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 
-                <div class="ticket-top">
-                    <span class="ticket-numero">#{{ "%03d" | format(c.id) }}</span>
-                    <span class="ticket-temps">⏱️ {{ c.attente }} min</span>
-                </div>
-
-                <ul class="liste-produits">
-                    {% for prod in c.produits %}
-                        <li>• {{ prod }}</li>
-                    {% endfor %}
-                </ul>
-
-                {% if c.note %}
-                    <div class="note-box">📝 {{ c.note }}</div>
-                {% endif %}
-
-                <div class="ticket-bottom">
-                    <div class="statut-actuel">Statut : {{ c.statut }}</div>
-                    <div class="total-ligne">💰 {{ "%.2f" | format(c.total) }} €</div>
-                    <div class="actions">
-                        {% if c.statut == "En préparation" %}
-                            <a href="/prete/{{ c.id }}" class="btn-action btn-prete">📢 Prête !</a>
-                        {% endif %}
-                        <a href="/archiver/{{ c.id }}" class="btn-action btn-valider">✓ Servie</a>
-                        <a href="/recu/{{ c.id }}" target="_blank" class="btn-action btn-recu">🧾 Reçu</a>
-                    </div>
-                </div>
-
-            </div>
-        {% else %}
-            <div class="vide">🎉 Aucune commande en attente. Tout est à jour !</div>
-        {% endfor %}
-    </div>
-
-    <script>
-        const nbCommandesActuel = {{ commandes|length }};
-        const nbCommandesPrecedent = parseInt(localStorage.getItem('nb_commandes') || '0');
-
-        if (nbCommandesActuel > nbCommandesPrecedent) {
-            jouerSonAlerte();
-        }
-
-        localStorage.setItem('nb_commandes', nbCommandesActuel);
-
-        function jouerSonAlerte() {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-            function bip(freq, debut, duree) {
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                gain.gain.setValueAtTime(0.4, ctx.currentTime + debut);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + debut + duree);
-                osc.start(ctx.currentTime + debut);
-                osc.stop(ctx.currentTime + debut + duree);
-            }
-
-            bip(520, 0.0, 0.15);
-            bip(660, 0.2, 0.15);
-            bip(800, 0.4, 0.25);
-        }
-
-        setTimeout(() => location.reload(), 15000);
-    </script>
-
+    <script>
+        // Recharge auto
+        setTimeout(() => location.reload(), 15000);
+        
+        // Notification sonore simple
+        const currentCount = {{ commandes|length }};
+        const lastCount = parseInt(localStorage.getItem('nb_cmd') || '0');
+        if (currentCount > lastCount) {
+            new AudioContext().createOscillator().start(); // Note: Nécessite interaction utilisateur pour démarrer l'audio dans certains navigateurs
+        }
+        localStorage.setItem('nb_cmd', currentCount);
+    </script>
 </body>
-</html> 
+</html>
