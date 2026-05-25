@@ -1,103 +1,147 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi de commande - Merville</title>
-    <meta http-equiv="refresh" content="15">
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7f9fa; margin: 0; padding: 20px; text-align: center; color: #333; }
-        .card { background: white; max-width: 400px; margin: 40px auto; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h1 { color: #0056b3; margin-bottom: 5px; }
-        .numero { font-size: 48px; font-weight: bold; color: #ff6b6b; margin: 20px 0; }
-        .statut-container { margin: 30px 0; }
-        .badge { display: inline-block; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 18px; }
-        .preparation { background-color: #ffeaa7; color: #d63031; }
-        .prete { background-color: #55efc4; color: #00b894; animation: pulse 1.5s infinite; }
-        .recuperee { background-color: #b2bec3; color: #2d3436; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
-        .produits { text-align: left; background: #f1f2f6; padding: 15px; border-radius: 8px; margin-top: 20px; }
-        .info { font-size: 12px; color: #a4b0be; margin-top: 20px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Suivi de commande - Merville</title>
+    <meta http-equiv="refresh" content="15">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f7f9fa; 
+            margin: 0; 
+            padding: 15px; /* Padding global pour éviter de coller aux bords */
+            text-align: center; 
+            color: #333;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .card { 
+            background: white; 
+            max-width: 400px; 
+            margin: 20px auto; 
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-sizing: border-box; /* Assure que le padding ne dépasse pas la largeur */
+        }
+
+        h1 { color: #0056b3; margin-bottom: 5px; }
+        
+        .numero { font-size: 3rem; font-weight: bold; color: #ff6b6b; margin: 15px 0; }
+        
+        .statut-container { margin: 20px 0; }
+        
+        .badge { 
+            display: inline-block; 
+            padding: 10px 15px; 
+            border-radius: 20px; 
+            font-weight: bold; 
+            font-size: 16px; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .preparation { background-color: #ffeaa7; color: #d63031; }
+        .prete { background-color: #55efc4; color: #00b894; animation: pulse 1.5s infinite; }
+        .recuperee { background-color: #b2bec3; color: #2d3436; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+
+        .produits { 
+            text-align: left; 
+            background: #f1f2f6; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .produits ul { padding-left: 20px; margin: 10px 0; }
+
+        .info { font-size: 12px; color: #a4b0be; margin-top: 20px; }
+        
+        .btn-recu {
+            display: block; 
+            margin-top: 20px; 
+            background-color: #0056b3; 
+            color: white; 
+            padding: 12px; 
+            border-radius: 20px; 
+            font-weight: bold; 
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <div class="card">
-        <h1>O'Quai</h1>
-        <p>Merci pour votre commande !</p>
-        
-        <div class="numero">#{{ "%03d" | format(commande.id) }}</div>
-        <div class="statut-container">
-            {% if commande.statut == "En préparation" %}
-                <div class="badge preparation">🟠 En préparation...</div>
-            {% elif commande.statut == "Prête ! Passez au comptoir" %}
-                <div class="badge prete">🟢 Prête ! Passez au comptoir</div>
-            {% else %}
-                <div class="badge recuperee">✓ Commande récupérée</div>
-            {% endif %}
-        </div>
-        <div class="produits">
-            <strong>Votre commande :</strong>
-            <ul>
-                {% for prod in commande.produits %}
-                    <li>{{ prod }}</li>
-                {% endfor %}
-            </ul>
-            {% if commande.note %}
-                <div style="background: #fff3cd; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 14px; color: #856404;">
-                    📝 Note : {{ commande.note }}
-                </div>
-            {% endif %}
-            <strong style="display: block; margin-top: 10px; font-size: 16px; color: #0056b3;">
-                💰 Total : {{ "%.2f" | format(commande.total) }} €
-            </strong>
-        </div>
-        <a href="/recu/{{ commande.id }}" target="_blank" 
-           style="display: inline-block; margin-top: 20px; background-color: #0056b3; color: white; padding: 10px 25px; border-radius: 20px; font-weight: bold; text-decoration: none;">
-            🧾 Voir mon reçu
-        </a>
-        
-        <p class="info">Cette page s'actualise automatiquement.</p>
-    </div>
+    <div class="card">
+        <h1>O'Quai</h1>
+        <p>Merci pour votre commande !</p>
+        
+        <div class="numero">#{{ "%03d" | format(commande.id) }}</div>
+        
+        <div class="statut-container">
+            {% if commande.statut == "En préparation" %}
+                <div class="badge preparation">🟠 En préparation...</div>
+            {% elif commande.statut == "Prête ! Passez au comptoir" %}
+                <div class="badge prete">🟢 Prête !</div>
+            {% else %}
+                <div class="badge recuperee">✓ Commande récupérée</div>
+            {% endif %}
+        </div>
 
-    <script>
-        // Statut actuel transmis par Flask
-        const statutActuel = "{{ commande.statut }}";
-        const commandeId = {{ commande.id }};
+        <div class="produits">
+            <strong>Votre commande :</strong>
+            <ul>
+                {% for prod in commande.produits %}
+                    <li>{{ prod }}</li>
+                {% endfor %}
+            </ul>
+            {% if commande.note %}
+                <div style="background: #fff3cd; border-radius: 8px; padding: 10px; margin-top: 10px; color: #856404;">
+                    📝 Note : {{ commande.note }}
+                </div>
+            {% endif %}
+            <strong style="display: block; margin-top: 15px; font-size: 16px; color: #0056b3;">
+                💰 Total : {{ "%.2f" | format(commande.total) }} €
+            </strong>
+        </div>
+        
+        <a href="/recu/{{ commande.id }}" target="_blank" class="btn-recu">
+            🧾 Voir mon reçu
+        </a>
+        
+        <p class="info">Actualisation automatique dans 15s.</p>
+    </div>
 
-        // Clé unique par commande dans localStorage
-        const cleStatut = 'statut_commande_' + commandeId;
-        const statutPrecedent = localStorage.getItem(cleStatut);
+    <script>
+        const statutActuel = "{{ commande.statut }}";
+        const commandeId = {{ commande.id }};
+        const cleStatut = 'statut_commande_' + commandeId;
+        const statutPrecedent = localStorage.getItem(cleStatut);
 
-        // Si le statut vient de passer à "Prête" → jouer le son
-        if (statutActuel === "Prête ! Passez au comptoir" && statutPrecedent !== statutActuel) {
-            jouerSonPrete();
-        }
+        if (statutActuel === "Prête ! Passez au comptoir" && statutPrecedent !== statutActuel) {
+            jouerSonPrete();
+        }
 
-        // Mémoriser le statut actuel pour la prochaine actualisation
-        localStorage.setItem(cleStatut, statutActuel);
+        localStorage.setItem(cleStatut, statutActuel);
 
-        function jouerSonPrete() {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-            function bip(freq, debut, duree, volume) {
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                gain.gain.setValueAtTime(volume || 0.4, ctx.currentTime + debut);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + debut + duree);
-                osc.start(ctx.currentTime + debut);
-                osc.stop(ctx.currentTime + debut + duree);
-            }
-
-            // Mélodie joyeuse : 4 notes montantes
-            bip(523, 0.0, 0.15);  // Do
-            bip(659, 0.2, 0.15);  // Mi
-            bip(784, 0.4, 0.15);  // Sol
-            bip(1047, 0.6, 0.4);  // Do aigu (plus long)
-        }
-    </script>
+        function jouerSonPrete() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            function bip(freq, debut, duree) {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.4, ctx.currentTime + debut);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + debut + duree);
+                osc.start(ctx.currentTime + debut);
+                osc.stop(ctx.currentTime + debut + duree);
+            }
+            bip(523, 0.0, 0.15); bip(659, 0.2, 0.15); bip(784, 0.4, 0.15); bip(1047, 0.6, 0.4);
+        }
+    </script>
 </body>
 </html>
