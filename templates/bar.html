@@ -162,6 +162,9 @@
                 🗂️ Tout archiver
             </button>
             {% endif %}
+            <form action="/raz-compteur" method="POST" style="display:inline;" onsubmit="return confirm('⚠️ Êtes-vous sûr de vouloir vider TOUTES les commandes et remettre le compteur à #001 ? Cela va effacer l\'écran.');">
+                <button type="submit" style="background-color: #d63031; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px;">🗑️ RAZ</button>
+            </form>
             <a href="/logout_bar" class="btn-logout">🔒</a>
         </div>
     </div>
