@@ -233,6 +233,23 @@
             margin-bottom: 10px;
             pointer-events: auto;
         }
+
+        .bar-ferme-banner {
+            background: #8e44ad;
+            color: white;
+            text-align: center;
+            padding: 18px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            margin: 30px 0 10px 0;
+        }
+        .bar-ferme-banner p {
+            margin: 6px 0 0 0;
+            font-size: 14px;
+            font-weight: normal;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -295,12 +312,19 @@
         </div>
         <ul id="liste-panier"></ul>
         <div id="inputs-caches-zone"></div>
-        <input type="text" name="note" id="note-commande"
-            class="note-input"
-            placeholder="Une note ? (ex: sans sucre, allergie...)">
-        <button type="submit" class="btn-valider">
-            🚀 Envoyer la commande au bar
-        </button>
+        {% if bar_ferme %}
+            <div class="bar-ferme-banner">
+                🚫 Le bar est actuellement fermé
+                <p>Les commandes ne sont pas disponibles pour le moment.</p>
+            </div>
+        {% else %}
+            <input type="text" name="note" id="note-commande"
+                class="note-input"
+                placeholder="Une note ? (ex: sans sucre, allergie...)">
+            <button type="submit" class="btn-valider">
+                🚀 Envoyer la commande au bar
+            </button>
+        {% endif %}
     </form>
 
     <script>
