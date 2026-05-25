@@ -29,6 +29,25 @@
         .header h1 { margin: 0; color: #3498db; font-size: 18px; }
         .header-btns { display: flex; gap: 8px; }
         .btn-refresh { background-color: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
+        .btn-archiver-tout { background-color: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
+
+        /* Confirmation archiver tout */
+        .confirm-bar {
+            display: none;
+            background: #c0392b;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .confirm-bar.visible { display: flex; }
+        .confirm-bar span { flex: 1; min-width: 160px; }
+        .btn-confirmer-tout { background: white; color: #c0392b; border: none; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .btn-annuler-tout { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
         .zone-tickets {
             display: flex;
@@ -111,7 +130,23 @@
         <h1>👨‍🍳 Comptoir</h1>
         <div class="header-btns">
             <a href="/bar" class="btn-refresh">🔄 ({{ commandes|length }})</a>
+            {% if commandes %}
+            <button class="btn-archiver-tout" onclick="document.getElementById('confirm-tout').classList.add('visible')">
+                🗂️ Tout archiver
+            </button>
+            {% endif %}
         </div>
+    </div>
+
+    <!-- Bande de confirmation -->
+    <div class="confirm-bar" id="confirm-tout">
+        <span>⚠️ Archiver toutes les commandes en cours ?</span>
+        <form action="/archiver-tout" method="POST" style="display:inline;">
+            <button type="submit" class="btn-confirmer-tout">✓ Confirmer</button>
+        </form>
+        <button class="btn-annuler-tout" onclick="document.getElementById('confirm-tout').classList.remove('visible')">
+            ✕ Annuler
+        </button>
     </div>
 
     <div class="zone-tickets">
@@ -156,22 +191,16 @@
     </div>
 
     <script>
-        // Nombre de commandes actuel transmis par Flask
         const nbCommandesActuel = {{ commandes|length }};
-
-        // On récupère le nombre mémorisé lors de la dernière visite
         const nbCommandesPrecedent = parseInt(localStorage.getItem('nb_commandes') || '0');
 
-        // Si c'est plus qu'avant, on joue un son d'alerte
         if (nbCommandesActuel > nbCommandesPrecedent) {
             jouerSonAlerte();
         }
 
-        // On mémorise le nombre actuel pour la prochaine fois
         localStorage.setItem('nb_commandes', nbCommandesActuel);
 
         function jouerSonAlerte() {
-            // Son généré via Web Audio API, pas besoin de fichier externe
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
             function bip(freq, debut, duree) {
@@ -187,13 +216,11 @@
                 osc.stop(ctx.currentTime + debut + duree);
             }
 
-            // Trois bips courts et montants
             bip(520, 0.0, 0.15);
             bip(660, 0.2, 0.15);
             bip(800, 0.4, 0.25);
         }
 
-        // Actualisation automatique toutes les 15 secondes
         setTimeout(() => location.reload(), 15000);
     </script>
 
