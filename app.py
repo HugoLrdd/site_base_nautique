@@ -218,7 +218,7 @@ def ecran_bar():
     commandes = get_commandes_actives()
     for c in commandes:
         c['attente'] = int((now - c['heure']).total_seconds() / 60)
-    return render_template('bar.html', commandes=commandes, bar_ferme=bar_ferme)
+    return render_template('bar.html', commandes=commandes, bar_ferme=bar_ferme, menu=menu)
 
 
 @app.route('/login_bar', methods=['GET', 'POST'])
