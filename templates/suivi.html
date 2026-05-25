@@ -27,11 +27,11 @@
 <body>
     <div class="card">
         <div class="logo-header">
-            <img src="https://i.postimg.cc/L4twbytq/logo.png" alt="Logo">
+            <img src="METS_ICI_TON_LIEN_IMAGE" alt="Logo">
         </div>
         <p>Merci pour votre commande !</p>
 
-        <div class="numero">#{{ "%03d" | format(commande.id) }}</div>
+        <div class="numero">#{{ "%03d" | format(commande.numero_affiche) }}</div>
         <div class="statut-container">
             {% if commande.statut == "En préparation" %}
                 <div class="badge preparation">🟠 En préparation...</div>
@@ -61,7 +61,7 @@
         <div class="paiement-info">
             💳 Paiement au comptoir lorsque votre commande sera prête
             <div class="paiement-logos">
-                <img src="https://i.postimg.cc/13td4sLp/paiement.png" alt="Moyen de paiement">
+                <img src="METS_ICI_TON_LIEN_LOGO_PAIEMENT" alt="Moyen de paiement">
             </div>
         </div>
         <a href="/recu/{{ commande.id }}" target="_blank"
