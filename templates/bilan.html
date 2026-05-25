@@ -13,6 +13,7 @@
         .header-btns { display: flex; gap: 10px; flex-wrap: wrap; }
         .btn-retour { background-color: #7f8c8d; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; text-decoration: none; }
         .btn-pdf { background-color: #e74c3c; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .btn-excel { background-color: #27ae60; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; }
         .btn-logout { background-color: #95a5a6; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; text-decoration: none; font-size: 13px; }
 
         /* STATS PRINCIPALES */
@@ -86,7 +87,8 @@
     <div class="header">
         <h1>📊 Bilan du {{ now.strftime('%d/%m/%Y') if now else 'jour' }}</h1>
         <div class="header-btns">
-            <button class="btn-pdf no-print" onclick="window.print()">🖨️ Télécharger PDF</button>
+            <a href="/export-excel" class="btn-excel no-print">📥 Exporter Excel</a>
+            <button class="btn-pdf no-print" onclick="window.print()">🖨️ PDF</button>
             <a href="/logout_bilan" class="btn-logout no-print">🔒 Déconnexion</a>
             <a href="/bar" class="btn-retour no-print">‹ Retour Bar</a>
         </div>
