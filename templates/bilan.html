@@ -300,11 +300,11 @@
 
     <!-- BOUTON RESET -->
     <button class="btn-reset no-print" onclick="document.getElementById('confirm-reset').style.display='block'">
-        🗑️ Remettre le bilan à zéro
+        🗑️ Effacer les données d'aujourd'hui
     </button>
 
     <div class="confirm-reset" id="confirm-reset">
-        <p>⚠️ Êtes-vous sûr de vouloir effacer tout l'historique ? Cette action est irréversible.</p>
+        <p>⚠️ Effacer uniquement les commandes d'aujourd'hui ? Les données des jours précédents sont conservées.</p>
         <div class="btns">
             <form action="/reset" method="POST" style="display:inline;">
                 <button type="submit" class="btn-confirmer">✓ Confirmer</button>
@@ -317,5 +317,4 @@
 
 </div>
 </body>
-</html>
 </html>
