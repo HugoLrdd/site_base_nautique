@@ -212,14 +212,6 @@ def commander_bar():
     return redirect('/bar')
 
 
-@app.route('/suivi/<int:commande_id>')
-def suivi_commande(commande_id):
-    commande = get_commande_by_id(commande_id)
-    if commande:
-        return render_template('suivi.html', commande=commande)
-    return "Commande introuvable", 404
-
-
 @app.route('/bar')
 def ecran_bar():
     if not session.get('bar_ok'):
@@ -500,8 +492,12 @@ def export_excel():
 
 @app.route('/reset', methods=['POST'])
 def reset_bilan():
+    today_str = maintenant().strftime('%Y-%m-%d')
     with get_db() as conn:
-        conn.execute('DELETE FROM commandes WHERE archivee = 1')
+        conn.execute(
+            "DELETE FROM commandes WHERE archivee = 1 AND heure LIKE ?",
+            (today_str + '%',)
+        )
         conn.commit()
     return redirect('/bilan')
 
@@ -517,7 +513,15 @@ def recu_commande(commande_id):
     commande = get_commande_by_id(commande_id)
     if commande:
         return render_template('recu.html', commande=commande, menu=menu)
-    return "Commande introuvable", 404
+    return render_template('erreur.html'), 404
+
+
+@app.route('/suivi/<int:commande_id>')
+def suivi_commande(commande_id):
+    commande = get_commande_by_id(commande_id)
+    if commande:
+        return render_template('suivi.html', commande=commande)
+    return render_template('erreur.html'), 404
 
 
 if __name__ == '__main__':
