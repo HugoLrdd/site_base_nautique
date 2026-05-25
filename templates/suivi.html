@@ -84,11 +84,11 @@
 
         // ── Mémorisation de la commande en cours ──
         if (statutActuel === "Récupérée") {
-            // Commande terminée : effacer la mémorisation
             localStorage.removeItem('dernier_suivi');
+            localStorage.setItem('dernier_statut', 'Récupérée');
         } else {
-            // Commande en cours : mémoriser l'ID pour retrouver la page depuis le menu
             localStorage.setItem('dernier_suivi', commandeId);
+            localStorage.setItem('dernier_statut', statutActuel);
         }
 
         const cleStatut = 'statut_commande_' + commandeId;
