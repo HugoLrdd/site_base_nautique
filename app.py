@@ -107,6 +107,15 @@ def archiver_commande(commande_id):
     commandes = [c for c in commandes if c['id'] != commande_id]
     return redirect('/bar')
 
+@app.route('/archiver-tout', methods=['POST'])
+def archiver_tout():
+    global commandes
+    for c in commandes:
+        c['statut'] = "Récupérée"
+        historique.append(c)
+    commandes = []
+    return redirect('/bar')
+
 @app.route('/bilan', methods=['GET', 'POST'])
 def afficher_bilan():
     if request.method == 'POST' and 'mot_de_passe' in request.form:
