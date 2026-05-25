@@ -40,16 +40,19 @@ menu = {
 commandes = []
 historique = []
 compteur_ticket = 1
+bar_ferme = False
 
 
 @app.route('/')
 def afficher_menu():
-    return render_template('menu.html', menu=menu)
+    return render_template('menu.html', menu=menu, bar_ferme=bar_ferme)
 
 
 @app.route('/commander', methods=['POST'])
 def prendre_commande():
     global compteur_ticket
+    if bar_ferme:
+        return redirect('/')
     produits_choisis = request.form.getlist('produits')
     note = request.form.get('note', '').strip()
 
@@ -96,7 +99,7 @@ def ecran_bar():
     for c in commandes:
         minutes_attente = int((now - c['heure']).total_seconds() / 60)
         c['attente'] = minutes_attente
-    return render_template('bar.html', commandes=commandes)
+    return render_template('bar.html', commandes=commandes, bar_ferme=bar_ferme)
 
 
 @app.route('/login_bar', methods=['GET', 'POST'])
@@ -115,6 +118,13 @@ def login_bar():
 def logout_bar():
     session.pop('bar_ok', None)
     return redirect('/login_bar')
+
+
+@app.route('/toggle-bar', methods=['POST'])
+def toggle_bar():
+    global bar_ferme
+    bar_ferme = not bar_ferme
+    return redirect('/bar')
 
 
 @app.route('/prete/<int:commande_id>')
