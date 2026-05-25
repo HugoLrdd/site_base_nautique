@@ -27,7 +27,7 @@
 <body>
     <div class="card">
         <div class="logo-header">
-            <img src="https://i.postimg.cc/L4twbytq/logo.png" alt="Logo">
+            <img src="https://postimg.cc/yWNLJyrB" alt="Logo">
         </div>
         <p>Merci pour votre commande !</p>
 
@@ -61,7 +61,7 @@
         <div class="paiement-info">
             💳 Paiement au comptoir lorsque votre commande sera prête
             <div class="paiement-logos">
-                <img src="https://i.postimg.cc/13td4sLp/paiement.png" alt="Moyen de paiement">
+                <img src="https://postimg.cc/QH2myGNt" alt="Moyen de paiement">
             </div>
         </div>
         <a href="/recu/{{ commande.id }}" target="_blank"
@@ -75,6 +75,15 @@
     <script>
         const statutActuel = "{{ commande.statut }}";
         const commandeId = {{ commande.id }};
+
+        // ── Mémorisation de la commande en cours ──
+        if (statutActuel === "Récupérée") {
+            // Commande terminée : effacer la mémorisation
+            localStorage.removeItem('dernier_suivi');
+        } else {
+            // Commande en cours : mémoriser l'ID pour retrouver la page depuis le menu
+            localStorage.setItem('dernier_suivi', commandeId);
+        }
 
         const cleStatut = 'statut_commande_' + commandeId;
         const statutPrecedent = localStorage.getItem(cleStatut);
