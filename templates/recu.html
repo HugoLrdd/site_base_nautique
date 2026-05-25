@@ -1,148 +1,148 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reçu #{{ "%03d" | format(commande.id) }} - Base Nautique de Merville</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reçu #{{ "%03d" | format(commande.id) }} - Base Nautique de Merville</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px 20px;
-        }
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+        }
 
-        .btn-imprimer {
-            background-color: #0056b3;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 25px;
-            text-decoration: none;
-        }
-        .btn-imprimer:hover { background-color: #003d82; }
+        .btn-imprimer {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 25px;
+            text-decoration: none;
+        }
+        .btn-imprimer:hover { background-color: #003d82; }
 
-        .ticket {
-            background: white;
-            width: 320px;
-            padding: 25px 20px;
-            border-radius: 4px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-top: 3px dashed #ccc;
-            border-bottom: 3px dashed #ccc;
-        }
+        .ticket {
+            background: white;
+            width: 320px;
+            padding: 25px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-top: 3px dashed #ccc;
+            border-bottom: 3px dashed #ccc;
+        }
 
-        .ticket-header { text-align: center; margin-bottom: 20px; }
-        .ticket-header h1 { font-size: 18px; font-weight: bold; letter-spacing: 1px; }
-        .ticket-header p { font-size: 12px; color: #666; margin-top: 4px; }
+        .ticket-header { text-align: center; margin-bottom: 20px; }
+        .ticket-header h1 { font-size: 18px; font-weight: bold; letter-spacing: 1px; }
+        .ticket-header p { font-size: 12px; color: #666; margin-top: 4px; }
 
-        .separateur { border: none; border-top: 1px dashed #bbb; margin: 15px 0; }
+        .separateur { border: none; border-top: 1px dashed #bbb; margin: 15px 0; }
 
-        .ticket-numero { text-align: center; font-size: 28px; font-weight: bold; color: #0056b3; margin: 10px 0; }
+        .ticket-numero { text-align: center; font-size: 28px; font-weight: bold; color: #0056b3; margin: 10px 0; }
 
-        .infos-date { font-size: 12px; color: #555; text-align: center; margin-bottom: 15px; }
+        .infos-date { font-size: 12px; color: #555; text-align: center; margin-bottom: 15px; }
 
-        .ligne-produit {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start; /* ← était implicitement center */
-            font-size: 14px;
-            margin-bottom: 8px;
-            gap: 8px;               /* ← ajouté */
-        }
+        .ligne-produit {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start; /* ← était implicitement center */
+            font-size: 14px;
+            margin-bottom: 8px;
+            gap: 8px;               /* ← ajouté */
+        }
 
-        .ligne-produit .nom {
-            flex: 1;
-            word-break: break-word; /* ← ajouté */
-            white-space: normal;    /* ← ajouté */
-            line-height: 1.4;       /* ← ajouté */
-            padding-right: 4px;     /* ← ajouté */
-        }
+        .ligne-produit .nom {
+            flex: 1;
+            word-break: break-word; /* ← ajouté */
+            white-space: normal;    /* ← ajouté */
+            line-height: 1.4;       /* ← ajouté */
+            padding-right: 4px;     /* ← ajouté */
+        }
 
-        .ligne-produit .prix {
-            font-weight: bold;
-            white-space: nowrap;
-            flex-shrink: 0;         /* ← ajouté : le prix ne se compresse pas */
-        }
+        .ligne-produit .prix {
+            font-weight: bold;
+            white-space: nowrap;
+            flex-shrink: 0;         /* ← ajouté : le prix ne se compresse pas */
+        }
 
-        .total-zone {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 2px solid #333;
-            display: flex;
-            justify-content: space-between;
-            font-size: 18px;
-            font-weight: bold;
-        }
+        .total-zone {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: bold;
+        }
 
-        .ticket-footer { text-align: center; margin-top: 20px; font-size: 11px; color: #999; line-height: 1.6; }
+        .ticket-footer { text-align: center; margin-top: 20px; font-size: 11px; color: #999; line-height: 1.6; }
 
-        @media print {
-            body { background: white; padding: 0; }
-            .btn-imprimer { display: none; }
-            .ticket {
-                box-shadow: none;
-                border: none;
-                width: 100%;
-                max-width: 320px;
-            }
-        }
-    </style>
+        @media print {
+            body { background: white; padding: 0; }
+            .btn-imprimer { display: none; }
+            .ticket {
+                box-shadow: none;
+                border: none;
+                width: 100%;
+                max-width: 320px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <button class="btn-imprimer" onclick="window.print()">🖨️ Imprimer / Sauvegarder en PDF</button>
+    <button class="btn-imprimer" onclick="window.print()">🖨️ Imprimer / Sauvegarder en PDF</button>
 
-    <div class="ticket">
-        <div class="ticket-header">
-            <h1>⛵ BASE NAUTIQUE</h1>
-            <p>Merville</p>
-        </div>
+    <div class="ticket">
+        <div class="ticket-header">
+            <h1>⛵ BASE NAUTIQUE</h1>
+            <p>Merville</p>
+        </div>
 
-        <hr class="separateur">
+        <hr class="separateur">
 
-        <div class="ticket-numero">#{{ "%03d" | format(commande.id) }}</div>
-        <div class="infos-date">
-            {{ commande.heure.strftime('%d/%m/%Y à %H:%M') }}
-        </div>
+        <div class="ticket-numero">#{{ "%03d" | format(commande.id) }}</div>
+        <div class="infos-date">
+            {{ commande.heure.strftime('%d/%m/%Y à %H:%M') }}
+        </div>
 
-        <hr class="separateur">
+        <hr class="separateur">
 
-        {% for prod in commande.produits %}
-            {% set prix_produit = namespace(valeur=0) %}
-            {% for categorie in menu.values() %}
-                {% for item in categorie %}
-                    {% if item.nom == prod or prod.endswith(item.nom) %}
-                        {% set prix_produit.valeur = item.prix %}
-                    {% endif %}
-                {% endfor %}
-            {% endfor %}
-            <div class="ligne-produit">
-                <span class="nom">{{ prod }}</span>
-                <span class="prix">{{ "%.2f" | format(prix_produit.valeur) }} €</span>
-            </div>
-        {% endfor %}
+        {% for prod in commande.produits %}
+            {% set prix_produit = namespace(valeur=0) %}
+            {% for categorie in menu.values() %}
+                {% for item in categorie %}
+                    {% if item.nom == prod or prod.endswith(item.nom) %}
+                        {% set prix_produit.valeur = item.prix %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+            <div class="ligne-produit">
+                <span class="nom">{{ prod }}</span>
+                <span class="prix">{{ "%.2f" | format(prix_produit.valeur) }} €</span>
+            </div>
+        {% endfor %}
 
-        <div class="total-zone">
-            <span>TOTAL</span>
-            <span>{{ "%.2f" | format(commande.total) }} €</span>
-        </div>
+        <div class="total-zone">
+            <span>TOTAL</span>
+            <span>{{ "%.2f" | format(commande.total) }} €</span>
+        </div>
 
-        <hr class="separateur">
+        <hr class="separateur">
 
-        <div class="ticket-footer">
-            Merci de votre visite !<br>
-            Bonne journée ☀️
-        </div>
-    </div>
+        <div class="ticket-footer">
+            Merci de votre visite !<br>
+            Bonne journée ☀️
+        </div>
+    </div>
 
 </body>
 </html>
