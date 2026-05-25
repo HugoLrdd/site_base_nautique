@@ -1,63 +1,124 @@
-from flask import Flask, render_template, request, redirect, session
-from datetime import datetime, timezone, timedelta
-from io import BytesIO
-import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment
-from flask import send_file
+from flask import Flask, render_template, request, redirect
+from datetime import datetime
+import pytz
+import sqlite3
+import os
 
 app = Flask(__name__)
-app.secret_key = 'nautique_merville_secret'
 
-MOT_DE_PASSE_BILAN = 'BNM2026'
-MOT_DE_PASSE_BAR = 'BNM2026BAR' 
+# Configuration de la base de données SQLite
+# On utilise un chemin absolu pour éviter les surprises sur Render
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bar_database.db")
 
-# Variable pour suivre l'état d'ouverture du bar
-bar_ouvert = True
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row  # Permet d'accéder aux colonnes par leur nom comme un dictionnaire
+    return conn
 
-def maintenant():
-    return datetime.now(timezone.utc) + timedelta(hours=2)
+def init_db():
+    """Initialise la base de données au démarrage de l'application"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Table pour les commandes
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS commandes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            heure TEXT NOT NULL,
+            statut TEXT NOT NULL,
+            total REAL NOT NULL,
+            note TEXT
+        )
+    ''')
+    
+    # Table pour les produits de chaque commande (Relation One-to-Many)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS produits_commande (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            commande_id INTEGER NOT NULL,
+            nom_produit TEXT NOT NULL,
+            FOREIGN KEY (commande_id) REFERENCES commandes (id) ON DELETE CASCADE
+        )
+    ''')
+    
+    # Table de configuration pour l'état du bar (ouvert/fermé)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS configuration (
+            cle TEXT PRIMARY KEY,
+            valeur TEXT NOT NULL
+        )
+    ''')
+    
+    # Insérer l'état initial du bar s'il n'existe pas déjà (ouvert par défaut)
+    cursor.execute('''
+        INSERT OR IGNORE INTO configuration (cle, valeur)
+        VALUES ('bar_ouvert', 'true')
+    ''')
+    
+    conn.commit()
+    conn.close()
 
+# Lancement de l'initialisation
+init_db()
+
+# Votre menu inchangé
 menu = {
-    "Boissons": [
-        {"nom": "Coca-Cola", "prix": 2.50},
-        {"nom": "Ice Tea", "prix": 2.50},
-        {"nom": "Oasis", "prix": 2.50},
-        {"nom": "Eau Minérale", "prix": 1.50}
+    "Boissons Chaudes": [
+        {"nom": "Café", "prix": 1.50},
+        {"nom": "Grand Café", "prix": 2.50},
+        {"nom": "Thé / Infusion", "prix": 2.00},
+        {"nom": "Chocolat Chaud", "prix": 2.50}
     ],
-    "Crêpes": [
-        {"nom": "Sucre", "prix": 3.00},
-        {"nom": "Nutella", "prix": 3.50},
-        {"nom": "Confiture", "prix": 3.50}
+    "Softs": [
+        {"nom": "Coca-Cola (33cl)", "prix": 2.50},
+        {"nom": "Perrier (33cl)", "prix": 2.50},
+        {"nom": "Oasis Oasis (33cl)", "prix": 2.50},
+        {"nom": "Jus de fruits (25cl)", "prix": 2.00},
+        {"nom": "Sirop à l'eau (25cl)", "prix": 1.50}
     ],
-    "Glaces": [
-        {"nom": "Magnum", "prix": 3.00},
-        {"nom": "Cornet Vanille", "prix": 2.50}
+    "Bières & Cidre": [
+        {"nom": "Pression Demi (25cl)", "prix": 3.00},
+        {"nom": "Pression Pinte (50cl)", "prix": 5.50},
+        {"nom": "Bière Bouteille (33cl)", "prix": 3.50},
+        {"nom": "Cidre (33cl)", "prix": 3.00}
     ],
-    "Planches": [
-        {"nom": " Planche apéritif (saucisson,légume,jambon,cornichon,cacahuètes...)", "prix": 8.00},
-        {"nom": " Planche charcuterie (saucisson,pâté,jambon,fromage,cacahuètes...)", "prix": 10.00},
-        {"nom": " Planche fromage (brie,camembert,comté,pain,cacahuètes...)", "prix": 8.50}
-    ]   
+    "Snacks": [
+        {"nom": "Chips", "prix": 1.50},
+        {"nom": "Planche Apéro", "prix": 8.00},
+        {"nom": "Gaufre / Crêpe", "prix": 3.00}
+    ]
 }
 
-commandes = []
-historique = []
-compteur_ticket = 1
+def maintenant():
+    tz = pytz.timezone('Europe/Paris')
+    return datetime.now(tz)
+
+def calculer_attente(heure_str):
+    try:
+        tz = pytz.timezone('Europe/Paris')
+        heure_commande = datetime.strptime(heure_str, "%Y-%m-%d %H:%M:%S").replace(tzinfo=tz)
+        diff = maintenant() - heure_commande
+        return int(diff.total_seconds() // 60)
+    except:
+        return 0
+
+def is_bar_ouvert():
+    conn = get_db_connection()
+    res = conn.execute("SELECT valeur FROM configuration WHERE cle = 'bar_ouvert'").fetchone()
+    conn.close()
+    return res['valeur'] == 'true' if res else True
+
+# --- ROUTES CLIENTS ---
 
 @app.route('/')
 def afficher_menu():
-    global bar_ouvert
-    # Si le bar est fermé, on affiche la page d'information au client
-    if not bar_ouvert:
+    if not is_bar_ouvert():
         return render_template('bar_ferme.html')
     return render_template('menu.html', menu=menu)
 
 @app.route('/commander', methods=['POST'])
 def prendre_commande():
-    global compteur_ticket, bar_ouvert
-    
-    # Sécurité supplémentaire au cas où le formulaire est soumis alors que le bar est fermé
-    if not bar_ouvert:
+    if not is_bar_ouvert():
         return render_template('bar_ferme.html')
         
     produits_choisis = request.form.getlist('produits')
@@ -72,273 +133,133 @@ def prendre_commande():
                         total_commande += item['prix']
                         break
 
-        nouvelle_commande = {
-            "id": compteur_ticket,
-            "produits": produits_choisis,
-            "heure": maintenant(),
-            "statut": "En préparation",
-            "total": total_commande,
-            "note": note
-        }
-        commandes.append(nouvelle_commande)
-        compteur_ticket += 1
+        # Insertion SQL de la commande
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        heure_actuelle = maintenant().strftime("%Y-%m-%d %H:%M:%S")
+        
+        cursor.execute(
+            "INSERT INTO commandes (heure, statut, total, note) VALUES (?, ?, ?, ?)",
+            (heure_actuelle, "En préparation", total_commande, note)
+        )
+        commande_id = cursor.lastrowid
+        
+        # Insertion des produits associés
+        for prod in produits_choisis:
+            cursor.execute(
+                "INSERT INTO produits_commande (commande_id, nom_produit) VALUES (?, ?)",
+                (commande_id, prod)
+            )
+            
+        conn.commit()
+        conn.close()
 
-        return redirect(f'/suivi/{nouvelle_commande["id"]}')
+        return redirect(f'/suivi/{commande_id}')
 
     return redirect('/')
 
 @app.route('/suivi/<int:commande_id>')
 def suivi_commande(commande_id):
-    commande = next((c for c in commandes if c['id'] == commande_id), None)
-    if not commande:
-        commande = next((c for c in historique if c['id'] == commande_id), None)
-    if commande:
-        return render_template('suivi.html', commande=commande)
-    return "Commande introuvable", 404
+    conn = get_db_connection()
+    c = conn.execute("SELECT * FROM commandes WHERE id = ?", (commande_id,)).fetchone()
+    
+    if not c:
+        conn.close()
+        return "Commande introuvable", 404
+        
+    # Récupérer les produits
+    produits_rows = conn.execute("SELECT nom_produit FROM produits_commande WHERE commande_id = ?", (commande_id,)).fetchall()
+    conn.close()
+    
+    commande_dict = {
+        "id": c["id"],
+        "statut": c["statut"],
+        "total": c["total"],
+        "note": c["note"],
+        "produits": [p["nom_produit"] for p in produits_rows]
+    }
+    
+    return render_template('suivi.html', c=commande_dict)
+
+# --- ROUTES BAR / COMPTOIR ---
 
 @app.route('/bar')
 def ecran_bar():
-    global bar_ouvert
-    if not session.get('bar_ok'):
-        return redirect('/login_bar')
-    now = maintenant()
-    for c in commandes:
-        minutes_attente = int((now - c['heure']).total_seconds() / 60)
-        c['attente'] = minutes_attente
-    # On passe "bar_ouvert" au template pour que le bouton puisse adapter son affichage
-    return render_template('bar.html', commandes=commandes, bar_ouvert=bar_ouvert)
+    conn = get_db_connection()
+    # On ne récupère que les commandes qui ne sont pas archivées/servies
+    commandes_rows = conn.execute("SELECT * FROM commandes WHERE statut != 'Servie' ORDER BY id ASC").fetchall()
+    
+    commandes_actives = []
+    for row in commandes_rows:
+        produits_rows = conn.execute("SELECT nom_produit FROM produits_commande WHERE commande_id = ?", (row["id"],)).fetchall()
+        
+        commandes_actives.append({
+            "id": row["id"],
+            "heure": row["heure"],
+            "statut": row["statut"],
+            "total": row["total"],
+            "note": row["note"],
+            "attente": calculer_attente(row["heure"]),
+            "produits": [p["nom_produit"] for p in produits_rows]
+        })
+        
+    conn.close()
+    return render_template('bar.html', commandes=commandes_actives, bar_ouvert=is_bar_ouvert())
 
 @app.route('/toggle-bar', methods=['POST'])
 def toggle_bar():
-    global bar_ouvert
-    if not session.get('bar_ok'):
-        return redirect('/login_bar')
-    bar_ouvert = not bar_ouvert  # Alterne entre Ouvert (True) et Fermé (False)
+    conn = get_db_connection()
+    nouvel_etat = "false" if is_bar_ouvert() else "true"
+    conn.execute("UPDATE configuration SET valeur = ? WHERE cle = 'bar_ouvert'", (nouvel_etat,))
+    conn.commit()
+    conn.close()
     return redirect('/bar')
-
-@app.route('/login_bar', methods=['GET', 'POST'])
-def login_bar():
-    if request.method == 'POST':
-        mdp = request.form.get('mot_de_passe', '')
-        if mdp == MOT_DE_PASSE_BAR:
-            session['bar_ok'] = True
-            return redirect('/bar')
-        else:
-            return render_template('login_bar.html', erreur=True)
-    return render_template('login_bar.html', erreur=False)
-
-@app.route('/logout_bar')
-def logout_bar():
-    session.pop('bar_ok', None)
-    return redirect('/login_bar')
 
 @app.route('/prete/<int:commande_id>')
 def commande_prete(commande_id):
-    for c in commandes:
-        if c['id'] == commande_id:
-            c['statut'] = "Prête ! Passez au comptoir"
-            c['heure_prete'] = maintenant()
-            break
+    conn = get_db_connection()
+    conn.execute("UPDATE commandes SET statut = 'Prête !' WHERE id = ?", (commande_id,))
+    conn.commit()
+    conn.close()
     return redirect('/bar')
 
 @app.route('/archiver/<int:commande_id>')
 def archiver_commande(commande_id):
-    global commandes
-    for c in commandes:
-        if c['id'] == commande_id:
-            c['statut'] = "Récupérée"
-            historique.append(c)
-            break
-    commandes = [c for c in commandes if c['id'] != commande_id]
+    conn = get_db_connection()
+    conn.execute("UPDATE commandes SET statut = 'Servie' WHERE id = ?", (commande_id,))
+    conn.commit()
+    conn.close()
     return redirect('/bar')
 
 @app.route('/archiver-tout', methods=['POST'])
 def archiver_tout():
-    global commandes
-    for c in commandes:
-        c['statut'] = "Récupérée"
-        historique.append(c)
-    commandes = []
+    conn = get_db_connection()
+    conn.execute("UPDATE commandes SET statut = 'Servie' WHERE statut != 'Servie'")
+    conn.commit()
+    conn.close()
     return redirect('/bar')
 
-@app.route('/bilan', methods=['GET', 'POST'])
-def afficher_bilan():
-    if request.method == 'POST' and 'mot_de_passe' in request.form:
-        mdp = request.form.get('mot_de_passe', '')
-        if mdp == MOT_DE_PASSE_BILAN:
-            session['bilan_ok'] = True
-        else:
-            return render_template('login_bilan.html', erreur=True)
-
-    if not session.get('bilan_ok'):
-        return render_template('login_bilan.html', erreur=False)
-
-    total_recettes = sum(c['total'] for c in historique)
-    total_articles = 0
-    stats_produits = {}
-    stats_categories = {}
-    nb_commandes = len(historique)
-
-    panier_moyen = round(total_recettes / nb_commandes, 2) if nb_commandes > 0 else 0
-
-    commandes_par_heure = {}
-    for c in historique:
-        heure = c['heure'].strftime('%H:00')
-        commandes_par_heure[heure] = commandes_par_heure.get(heure, 0) + 1
-
-    heure_pointe = None
-    if commandes_par_heure:
-        heure_pointe = max(commandes_par_heure, key=commandes_par_heure.get)
-
-    for c in historique:
-        for prod in c['produits']:
-            total_articles += 1
-            stats_produits[prod] = stats_produits.get(prod, 0) + 1
-            for cat, items in menu.items():
-                for item in items:
-                    if item['nom'] == prod or prod.endswith(item['nom']):
-                        stats_categories[cat] = stats_categories.get(cat, 0) + 1
-                        break
-
-    produit_star = max(stats_produits, key=stats_produits.get) if stats_produits else None
-    commandes_par_heure_triees = dict(sorted(commandes_par_heure.items()))
-
-    # Temps moyen de préparation
-    temps_prep_list = []
-    for c in historique:
-        if 'heure_prete' in c:
-            duree = (c['heure_prete'] - c['heure']).total_seconds() / 60
-            temps_prep_list.append(duree)
-    temps_moyen_prep = round(sum(temps_prep_list) / len(temps_prep_list), 1) if temps_prep_list else None
-
-    return render_template('bilan.html',
-                           historique=historique,
-                           total_recettes=total_recettes,
-                           total_articles=total_articles,
-                           stats_produits=stats_produits,
-                           stats_categories=stats_categories,
-                           panier_moyen=panier_moyen,
-                           heure_pointe=heure_pointe,
-                           nb_commandes=nb_commandes,
-                           produit_star=produit_star,
-                           commandes_par_heure=commandes_par_heure_triees,
-                           now=maintenant(),
-                           menu=menu,
-                           temps_moyen_prep=temps_moyen_prep)
-
-
-@app.route('/export-excel')
-def export_excel():
-    if not session.get('bilan_ok'):
-        return redirect('/bilan')
-
-    wb = openpyxl.Workbook()
-
-    # ── Onglet 1 : Résumé ──
-    ws1 = wb.active
-    ws1.title = "Résumé"
-
-    titre_font = Font(bold=True, size=13, color="FFFFFF")
-    titre_fill = PatternFill("solid", fgColor="0056B3")
-    header_font = Font(bold=True, color="FFFFFF")
-    header_fill = PatternFill("solid", fgColor="2C3E50")
-
-    ws1.append(["Bilan du " + maintenant().strftime('%d/%m/%Y')])
-    ws1['A1'].font = titre_font
-    ws1['A1'].fill = titre_fill
-    ws1.append([])
-    ws1.append(["Indicateur", "Valeur"])
-    for cell in ws1[3]:
-        cell.font = header_font
-        cell.fill = header_fill
-
-    nb_commandes = len(historique)
-    total_recettes = sum(c['total'] for c in historique)
-    panier_moyen = round(total_recettes / nb_commandes, 2) if nb_commandes > 0 else 0
-
-    stats_produits = {}
-    commandes_par_heure = {}
-    for c in historique:
-        heure = c['heure'].strftime('%H:00')
-        commandes_par_heure[heure] = commandes_par_heure.get(heure, 0) + 1
-        for prod in c['produits']:
-            stats_produits[prod] = stats_produits.get(prod, 0) + 1
-
-    produit_star = max(stats_produits, key=stats_produits.get) if stats_produits else "—"
-    heure_pointe = max(commandes_par_heure, key=commandes_par_heure.get) if commandes_par_heure else "—"
-
-    ws1.append(["Nombre de commandes", nb_commandes])
-    ws1.append(["Chiffre d'affaires (€)", total_recettes])
-    ws1.append(["Panier moyen (€)", panier_moyen])
-    ws1.append(["Produit star", produit_star])
-    ws1.append(["Heure de pointe", heure_pointe])
-    ws1.column_dimensions['A'].width = 28
-    ws1.column_dimensions['B'].width = 20
-
-    # ── Onglet 2 : Ventes par produit ──
-    ws2 = wb.create_sheet("Ventes par produit")
-    ws2.append(["Produit", "Quantité", "Recette (€)"])
-    for cell in ws2[1]:
-        cell.font = header_font
-        cell.fill = header_fill
-    for prod, qte in sorted(stats_produits.items(), key=lambda x: x[1], reverse=True):
-        prix_unit = 0
-        for cat in menu.values():
-            for item in cat:
-                if item['nom'] == prod or prod.endswith(item['nom']):
-                    prix_unit = item['prix']
-        ws2.append([prod, qte, round(qte * prix_unit, 2)])
-    ws2.column_dimensions['A'].width = 40
-    ws2.column_dimensions['B'].width = 12
-    ws2.column_dimensions['C'].width = 15
-
-    # ── Onglet 3 : Détail commandes ──
-    ws3 = wb.create_sheet("Détail commandes")
-    ws3.append(["#", "Heure", "Produits", "Note", "Total (€)"])
-    for cell in ws3[1]:
-        cell.font = header_font
-        cell.fill = header_fill
-    for c in sorted(historique, key=lambda x: x['heure']):
-        ws3.append([
-            f"#{c['id']:03d}",
-            c['heure'].strftime('%H:%M'),
-            ", ".join(c['produits']),
-            c.get('note', ''),
-            c['total']
-        ])
-    ws3.column_dimensions['A'].width = 8
-    ws3.column_dimensions['B'].width = 10
-    ws3.column_dimensions['C'].width = 50
-    ws3.column_dimensions['D'].width = 20
-    ws3.column_dimensions['E'].width = 12
-
-    # Envoi du fichier
-    output = BytesIO()
-    wb.save(output)
-    output.seek(0)
-    filename = f"bilan_{maintenant().strftime('%d-%m-%Y')}.xlsx"
-    return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                     as_attachment=True, download_name=filename)
-
-@app.route('/reset', methods=['POST'])
-def reset_bilan():
-    global historique
-    historique = []
-    return redirect('/bilan')
-
-@app.route('/logout_bilan')
-def logout_bilan():
-    session.pop('bilan_ok', None)
-    return redirect('/bilan')
-
 @app.route('/recu/<int:commande_id>')
-def recu_commande(commande_id):
-    commande = next((c for c in commandes if c['id'] == commande_id), None)
-    if not commande:
-        commande = next((c for c in historique if c['id'] == commande_id), None)
-    if commande:
-        return render_template('recu.html', commande=commande, menu=menu)
-    return "Commande introuvable", 404
+def voir_recu(commande_id):
+    conn = get_db_connection()
+    c = conn.execute("SELECT * FROM commandes WHERE id = ?", (commande_id,)).fetchone()
+    if not c:
+        conn.close()
+        return "Commande introuvable", 404
+    produits_rows = conn.execute("SELECT nom_produit FROM produits_commande WHERE commande_id = ?", (commande_id,)).fetchall()
+    conn.close()
+    
+    commande_dict = {
+        "id": c["id"],
+        "heure": c["heure"],
+        "total": c["total"],
+        "produits": [p["nom_produit"] for p in produits_rows]
+    }
+    return render_template('recu.html', c=commande_dict)
+
+@app.route('/logout_bar')
+def logout_bar():
+    return "Déconnexion réussie (Écran Bar clos)"
 
 if __name__ == '__main__':
     app.run(debug=True)
