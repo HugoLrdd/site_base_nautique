@@ -62,6 +62,26 @@
         .star-box .star-nom { font-size: 22px; font-weight: bold; }
         .star-box .star-nb { font-size: 14px; opacity: 0.9; margin-top: 5px; }
 
+        /* COMPARAISON J / J-1 */
+        .compa-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+        .compa-box {
+            flex: 1; min-width: 130px; background: #f8f9fa;
+            border-radius: 10px; padding: 14px; text-align: center;
+            border-top: 3px solid #3498db;
+        }
+        .compa-label { font-size: 11px; color: #7f8c8d; text-transform: uppercase; margin-bottom: 6px; }
+        .compa-row { display: flex; justify-content: center; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+        .compa-j   { font-size: 20px; font-weight: bold; color: #2c3e50; }
+        .compa-j1  { font-size: 13px; color: #95a5a6; }
+        .compa-evol {
+            display: inline-block; font-size: 12px; font-weight: bold;
+            padding: 2px 7px; border-radius: 10px; margin-top: 4px;
+        }
+        .evol-up   { background: #eafaf1; color: #27ae60; }
+        .evol-down { background: #fdf2f2; color: #e74c3c; }
+        .evol-flat { background: #f4f6f7; color: #7f8c8d; }
+        .compa-aucune { color: #95a5a6; font-size: 13px; font-style: italic; margin-top: 8px; }
+
         /* HISTORIQUE */
         .historique-table td { font-size: 13px; }
 
@@ -136,6 +156,44 @@
         <div class="star-nom">🏆 {{ produit_star }}</div>
         <div class="star-nb">{{ stats_produits[produit_star] }} vente(s)</div>
     </div>
+    {% endif %}
+
+    <!-- COMPARAISON J vs J-1 -->
+    <h2>📈 Comparaison J vs J-1</h2>
+    {% if compa_j and compa_j1 %}
+    <div class="compa-grid">
+
+        {% set items = [
+            ('CA (€)',       compa_j.ca,       compa_j1.ca,       '%.2f', compa_evol.ca),
+            ('Commandes',    compa_j.nb,        compa_j1.nb,        '%d',   compa_evol.nb),
+            ('Articles',     compa_j.articles,  compa_j1.articles,  '%d',   compa_evol.articles),
+            ('Panier moyen', compa_j.panier,    compa_j1.panier,    '%.2f', compa_evol.panier)
+        ] %}
+
+        {% for label, vj, vj1, fmt, evol in items %}
+        <div class="compa-box">
+            <div class="compa-label">{{ label }}</div>
+            <div class="compa-row">
+                <span class="compa-j">{{ (fmt + ' €') | format(vj) if '€' in label else fmt | format(vj) }}</span>
+                <span class="compa-j1">vs {{ (fmt + ' €') | format(vj1) if '€' in label else fmt | format(vj1) }} (J-1)</span>
+            </div>
+            {% if evol is not none %}
+                {% if evol > 0 %}
+                    <div class="compa-evol evol-up">▲ +{{ evol }}%</div>
+                {% elif evol < 0 %}
+                    <div class="compa-evol evol-down">▼ {{ evol }}%</div>
+                {% else %}
+                    <div class="compa-evol evol-flat">= stable</div>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% endfor %}
+
+    </div>
+    {% elif compa_j and not compa_j1 %}
+    <p class="compa-aucune">Aucune donnée pour hier — la comparaison sera disponible dès le deuxième jour d'activité.</p>
+    {% else %}
+    <p class="compa-aucune">Aucune donnée pour aujourd'hui.</p>
     {% endif %}
 
     <!-- REPARTITION PAR CATEGORIE -->
@@ -259,4 +317,5 @@
 
 </div>
 </body>
+</html>
 </html>
