@@ -27,12 +27,13 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         .header h1 { margin: 0; color: #3498db; font-size: 18px; }
-        .header-btns { display: flex; gap: 8px; }
+        .header-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
         .btn-refresh { background-color: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
         .btn-archiver-tout { background-color: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
         .btn-logout { background-color: #7f8c8d; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
         .btn-fermer-bar { background-color: #8e44ad; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
         .btn-ouvrir-bar { background-color: #2ecc71; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .btn-reset-num { background-color: #f39c12; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
         .bandeau-ferme { background: #8e44ad; color: white; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; }
 
         /* Confirmation archiver tout */
@@ -52,6 +53,24 @@
         .confirm-bar span { flex: 1; min-width: 160px; }
         .btn-confirmer-tout { background: white; color: #c0392b; border: none; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
         .btn-annuler-tout { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
+
+        /* Confirmation reset numérotation */
+        .confirm-num {
+            display: none;
+            background: #d35400;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .confirm-num.visible { display: flex; }
+        .confirm-num span { flex: 1; min-width: 160px; }
+        .btn-confirmer-num { background: white; color: #d35400; border: none; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .btn-annuler-num { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
         .zone-tickets {
             display: flex;
@@ -139,6 +158,9 @@
                 🗂️ Tout archiver
             </button>
             {% endif %}
+            <button class="btn-reset-num" onclick="document.getElementById('confirm-num').classList.add('visible')">
+                🔢 Remise à zéro n°
+            </button>
             <form action="/toggle-bar" method="POST" style="display:inline;">
                 {% if bar_ferme %}
                     <button type="submit" class="btn-ouvrir-bar">✅ Ouvrir le bar</button>
@@ -154,13 +176,24 @@
     <div class="bandeau-ferme">🚫 Le bar est actuellement fermé — les commandes clients sont désactivées</div>
     {% endif %}
 
-    <!-- Bande de confirmation -->
+    <!-- Confirmation archiver tout -->
     <div class="confirm-bar" id="confirm-tout">
         <span>⚠️ Archiver toutes les commandes en cours ?</span>
         <form action="/archiver-tout" method="POST" style="display:inline;">
             <button type="submit" class="btn-confirmer-tout">✓ Confirmer</button>
         </form>
         <button class="btn-annuler-tout" onclick="document.getElementById('confirm-tout').classList.remove('visible')">
+            ✕ Annuler
+        </button>
+    </div>
+
+    <!-- Confirmation remise à zéro numérotation -->
+    <div class="confirm-num" id="confirm-num">
+        <span>🔢 Remettre la numérotation à #001 ? (le bilan reste intact)</span>
+        <form action="/reset-numerotation" method="POST" style="display:inline;">
+            <button type="submit" class="btn-confirmer-num">✓ Confirmer</button>
+        </form>
+        <button class="btn-annuler-num" onclick="document.getElementById('confirm-num').classList.remove('visible')">
             ✕ Annuler
         </button>
     </div>
@@ -174,7 +207,7 @@
                 {% endif %}">
 
                 <div class="ticket-top">
-                    <span class="ticket-numero">#{{ "%03d" | format(c.id) }}</span>
+                    <span class="ticket-numero">#{{ "%03d" | format(c.numero_affiche) }}</span>
                     <span class="ticket-temps">⏱️ {{ c.attente }} min</span>
                 </div>
 
