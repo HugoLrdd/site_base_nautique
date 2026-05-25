@@ -117,6 +117,29 @@
 
         .bar-ferme-banner { background: #8e44ad; color: white; text-align: center; padding: 18px 20px; font-size: 18px; font-weight: bold; border-radius: 10px; margin: 30px 0 10px 0; }
         .bar-ferme-banner p { margin: 6px 0 0 0; font-size: 14px; font-weight: normal; opacity: 0.9; }
+
+        /* MODALE CONFIRMATION */
+        .modale-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 500;
+            align-items: flex-end; justify-content: center;
+        }
+        .modale-overlay.open { display: flex; }
+        .modale {
+            background: white; border-radius: 18px 18px 0 0;
+            padding: 24px 20px 30px; width: 100%; max-width: 600px;
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modale h3 { margin: 0 0 14px; font-size: 17px; color: #2c3e50; text-align: center; }
+        .modale-liste { list-style: none; padding: 0; margin: 0 0 14px; font-size: 14px; color: #555; }
+        .modale-liste li { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee; }
+        .modale-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; color: #2c3e50; margin-bottom: 18px; padding-top: 8px; }
+        .modale-total span:last-child { color: #2ecc71; }
+        .modale-btns { display: flex; gap: 10px; }
+        .btn-annuler-modale { flex: 1; background: #f0f0f0; color: #555; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
+        .btn-confirmer-modale { flex: 2; background: #2ecc71; color: white; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
+        .btn-confirmer-modale:disabled { background: #95a5a6; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -200,15 +223,34 @@
         {% else %}
             <input type="text" name="note" id="note-commande" class="note-input"
                    placeholder="Une note ? (ex: sans sucre, allergie...)">
-            <button type="submit" class="btn-valider">
+            <button type="button" class="btn-valider" onclick="ouvrirConfirmation()">
                 🚀 Envoyer la commande au bar
             </button>
         {% endif %}
     </form>
 
+    <!-- MODALE CONFIRMATION -->
+    <div class="modale-overlay" id="modale-overlay" onclick="fermerConfirmation(event)">
+        <div class="modale">
+            <h3>✅ Confirmer votre commande</h3>
+            <ul class="modale-liste" id="modale-liste"></ul>
+            <div class="modale-total">
+                <span>Total</span>
+                <span id="modale-total">0.00 €</span>
+            </div>
+            <div class="modale-btns">
+                <button class="btn-annuler-modale" onclick="fermerConfirmation()">✕ Modifier</button>
+                <button class="btn-confirmer-modale" id="btn-confirmer" onclick="envoyerCommande()">
+                    🚀 Confirmer
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // panier : { nomComplet -> { nom, prix, qty, cle } }
+        // ── Panier ──
         let panier = {};
+        let commandeEnvoyee = false;
 
         function getNomComplet(nom, categorie) {
             if (categorie === "Crêpes" && !nom.toLowerCase().includes("crêpe")) {
@@ -221,7 +263,6 @@
 
         function premierAjout(nom, prix, categorie, cle) {
             const nomComplet = getNomComplet(nom, categorie);
-            // Cacher le bouton, montrer le sélecteur
             document.querySelector('#zone-' + cle + ' .btn-ajouter').style.display = 'none';
             document.getElementById('ctrl-' + cle).classList.add('visible');
             document.getElementById('num-' + cle).textContent = '1';
@@ -232,17 +273,25 @@
         function changerQty(nom, prix, categorie, cle, delta) {
             const nomComplet = getNomComplet(nom, categorie);
             if (!panier[nomComplet]) return;
-
             panier[nomComplet].qty += delta;
-
             if (panier[nomComplet].qty <= 0) {
-                // Retirer complètement
                 delete panier[nomComplet];
                 document.getElementById('ctrl-' + cle).classList.remove('visible');
                 document.querySelector('#zone-' + cle + ' .btn-ajouter').style.display = '';
             } else {
                 document.getElementById('num-' + cle).textContent = panier[nomComplet].qty;
             }
+            mettreAJourAffichage();
+        }
+
+        function supprimerLigne(nomComplet) {
+            if (!panier[nomComplet]) return;
+            const cle = panier[nomComplet].cle;
+            delete panier[nomComplet];
+            const ctrl = document.getElementById('ctrl-' + cle);
+            if (ctrl) ctrl.classList.remove('visible');
+            const btn = document.querySelector('#zone-' + cle + ' .btn-ajouter');
+            if (btn) btn.style.display = '';
             mettreAJourAffichage();
         }
 
@@ -261,14 +310,11 @@
 
             listeHTML.innerHTML  = '';
             zoneInputs.innerHTML = '';
-            let total = 0;
-            let nbTotal = 0;
+            let total = 0, nbTotal = 0;
 
             Object.values(panier).forEach(item => {
                 total   += item.prix * item.qty;
                 nbTotal += item.qty;
-
-                // Ligne dans le récap
                 const li = document.createElement('li');
                 li.innerHTML = `
                     <span>• ${item.qty > 1 ? item.qty + '× ' : ''}${item.nom}</span>
@@ -276,8 +322,6 @@
                         <span class="btn-supprimer" onclick="supprimerLigne('${item.nom.replace(/'/g,"\\'")}')">❌</span>
                     </span>`;
                 listeHTML.appendChild(li);
-
-                // Inputs cachés (répétés selon qty pour le POST)
                 for (let i = 0; i < item.qty; i++) {
                     const input = document.createElement('input');
                     input.type = 'hidden'; input.name = 'produits'; input.value = item.nom;
@@ -290,24 +334,63 @@
             ajusterPadding();
         }
 
-        function supprimerLigne(nomComplet) {
-            if (!panier[nomComplet]) return;
-            const cle = panier[nomComplet].cle;
-            delete panier[nomComplet];
-            // Remettre le bouton ajouter
-            const ctrl = document.getElementById('ctrl-' + cle);
-            if (ctrl) ctrl.classList.remove('visible');
-            const btn = document.querySelector('#zone-' + cle + ' .btn-ajouter');
-            if (btn) btn.style.display = '';
-            mettreAJourAffichage();
+        // ── Modale de confirmation ──
+        function ouvrirConfirmation() {
+            if (Object.keys(panier).length === 0) {
+                alert("Votre panier est vide !");
+                return;
+            }
+            // Remplir la modale
+            const liste = document.getElementById('modale-liste');
+            liste.innerHTML = '';
+            let total = 0;
+            Object.values(panier).forEach(item => {
+                total += item.prix * item.qty;
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${item.qty > 1 ? item.qty + '× ' : ''}${item.nom}</span>
+                    <span>${(item.prix * item.qty).toFixed(2)} €</span>`;
+                liste.appendChild(li);
+            });
+            // Ajouter la note si présente
+            const note = document.getElementById('note-commande').value.trim();
+            if (note) {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>📝 ${note}</span><span></span>`;
+                li.style.color = '#856404';
+                liste.appendChild(li);
+            }
+            document.getElementById('modale-total').textContent = total.toFixed(2) + ' €';
+            document.getElementById('modale-overlay').classList.add('open');
         }
 
-        function verifierPanierAvantEnvoi() {
-            if (Object.keys(panier).length === 0) {
-                alert("Votre panier est vide ! Ajoutez des produits avant d'envoyer.");
-                return false;
-            }
-            return true;
+        function fermerConfirmation(e) {
+            // Fermer si clic sur l'overlay (pas sur la modale elle-même)
+            if (e && e.target !== document.getElementById('modale-overlay')) return;
+            document.getElementById('modale-overlay').classList.remove('open');
+        }
+
+        // ── Anti-double commande + envoi ──
+        function envoyerCommande() {
+            if (commandeEnvoyee) return;
+            commandeEnvoyee = true;
+
+            const btn = document.getElementById('btn-confirmer');
+            btn.disabled = true;
+            btn.textContent = '⏳ Envoi en cours...';
+
+            document.getElementById('panier-section').submit();
+        }
+
+        // ── Mémorisation de la commande (numéro de suivi) ──
+        // Si le client a déjà une commande en cours, afficher un lien de retour
+        const dernierSuivi = localStorage.getItem('dernier_suivi');
+        if (dernierSuivi) {
+            const lien = document.createElement('a');
+            lien.href = '/suivi/' + dernierSuivi;
+            lien.style.cssText = 'display:block;text-align:center;margin:10px 15px 0;padding:10px;background:#e8f4f8;border-radius:8px;color:#0056b3;font-size:13px;font-weight:bold;text-decoration:none;';
+            lien.textContent = '🔍 Voir ma commande en cours #' + String(dernierSuivi).padStart(3, '0');
+            document.querySelector('.container').prepend(lien);
         }
     </script>
 
