@@ -27,10 +27,28 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         .header h1 { margin: 0; color: #3498db; font-size: 18px; }
-        .header-btns { display: flex; gap: 8px; }
+        .header-btns { display: flex; gap: 8px; align-items: center; }
         .btn-refresh { background-color: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
         .btn-archiver-tout { background-color: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
         .btn-logout { background-color: #7f8c8d; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
+
+        /* Nouveaux styles pour les boutons d'état du bar */
+        .btn-toggle-bar {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .bar-ferme-btn { background-color: #d63031; }
+        .bar-ferme-btn:hover { background-color: #b32424; }
+        .bar-ouvert-btn { background-color: #2ed573; }
+        .bar-ouvert-btn:hover { background-color: #26b05f; }
 
         /* Confirmation archiver tout */
         .confirm-bar {
@@ -130,6 +148,14 @@
     <div class="header">
         <h1>👨‍🍳 Comptoir</h1>
         <div class="header-btns">
+            <form action="/toggle-bar" method="POST" style="display: inline;">
+                {% if bar_ouvert %}
+                    <button type="submit" class="btn-toggle-bar bar-ferme-btn">🛑 Fermer le bar</button>
+                {% else %}
+                    <button type="submit" class="btn-toggle-bar bar-ouvert-btn">🟢 Ouvrir le bar</button>
+                {% endif %}
+            </form>
+
             <a href="/bar" class="btn-refresh">🔄 ({{ commandes|length }})</a>
             {% if commandes %}
             <button class="btn-archiver-tout" onclick="document.getElementById('confirm-tout').classList.add('visible')">
@@ -140,7 +166,6 @@
         </div>
     </div>
 
-    <!-- Bande de confirmation -->
     <div class="confirm-bar" id="confirm-tout">
         <span>⚠️ Archiver toutes les commandes en cours ?</span>
         <form action="/archiver-tout" method="POST" style="display:inline;">
