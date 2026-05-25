@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suivi de commande - Merville</title>
-    <!-- On rafraîchit la page automatiquement toutes les 15 secondes -->
     <meta http-equiv="refresh" content="15">
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7f9fa; margin: 0; padding: 20px; text-align: center; color: #333; }
@@ -27,7 +26,6 @@
         <p>Merci pour votre commande !</p>
         
         <div class="numero">#{{ "%03d" | format(commande.id) }}</div>
-
         <div class="statut-container">
             {% if commande.statut == "En préparation" %}
                 <div class="badge preparation">🟠 En préparation...</div>
@@ -37,7 +35,6 @@
                 <div class="badge recuperee">✓ Commande récupérée</div>
             {% endif %}
         </div>
-
         <div class="produits">
             <strong>Votre commande :</strong>
             <ul>
@@ -54,13 +51,53 @@
                 💰 Total : {{ "%.2f" | format(commande.total) }} €
             </strong>
         </div>
-
         <a href="/recu/{{ commande.id }}" target="_blank" 
-   style="display: inline-block; margin-top: 20px; background-color: #0056b3; color: white; padding: 10px 25px; border-radius: 20px; font-weight: bold; text-decoration: none;">
-    🧾 Voir mon reçu
-</a>
+           style="display: inline-block; margin-top: 20px; background-color: #0056b3; color: white; padding: 10px 25px; border-radius: 20px; font-weight: bold; text-decoration: none;">
+            🧾 Voir mon reçu
+        </a>
         
         <p class="info">Cette page s'actualise automatiquement.</p>
     </div>
+
+    <script>
+        // Statut actuel transmis par Flask
+        const statutActuel = "{{ commande.statut }}";
+        const commandeId = {{ commande.id }};
+
+        // Clé unique par commande dans localStorage
+        const cleStatut = 'statut_commande_' + commandeId;
+        const statutPrecedent = localStorage.getItem(cleStatut);
+
+        // Si le statut vient de passer à "Prête" → jouer le son
+        if (statutActuel === "Prête ! Passez au comptoir" && statutPrecedent !== statutActuel) {
+            jouerSonPrete();
+        }
+
+        // Mémoriser le statut actuel pour la prochaine actualisation
+        localStorage.setItem(cleStatut, statutActuel);
+
+        function jouerSonPrete() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+            function bip(freq, debut, duree, volume) {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(volume || 0.4, ctx.currentTime + debut);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + debut + duree);
+                osc.start(ctx.currentTime + debut);
+                osc.stop(ctx.currentTime + debut + duree);
+            }
+
+            // Mélodie joyeuse : 4 notes montantes
+            bip(523, 0.0, 0.15);  // Do
+            bip(659, 0.2, 0.15);  // Mi
+            bip(784, 0.4, 0.15);  // Sol
+            bip(1047, 0.6, 0.4);  // Do aigu (plus long)
+        }
+    </script>
 </body>
 </html>
