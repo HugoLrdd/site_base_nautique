@@ -193,9 +193,9 @@ def commander_bar():
 
         with get_db() as conn:
             conn.execute(
-                'INSERT INTO commandes (produits, heure, statut, total, note) VALUES (?, ?, ?, ?, ?)',
+                'INSERT INTO commandes (produits, heure, statut, total, note, archivee) VALUES (?, ?, ?, ?, ?, ?)',
                 (json.dumps(produits_choisis), maintenant().isoformat(),
-                 "En préparation", total_commande, note)
+                 "Récupérée", total_commande, note, 1)
             )
             conn.commit()
 
