@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -56,14 +54,28 @@
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start; /* ← était center */
+            gap: 10px;               /* ← ajouté */
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             position: relative;
             z-index: 10;
         }
 
-        .produit-infos { display: flex; flex-direction: column; }
-        .produit-nom { font-weight: bold; font-size: 16px; }
+        .produit-infos {
+            display: flex;
+            flex-direction: column;
+            flex: 1;          /* ← ajouté : prend tout l'espace dispo */
+            min-width: 0;     /* ← ajouté : permet le retour à la ligne */
+        }
+
+        .produit-nom {
+            font-weight: bold;
+            font-size: 16px;
+            word-break: break-word; /* ← ajouté */
+            white-space: normal;    /* ← ajouté */
+            line-height: 1.4;       /* ← ajouté pour confort de lecture */
+        }
+
         .produit-prix { color: #2ecc71; font-weight: 600; margin-top: 4px; }
 
         .btn-ajouter {
@@ -77,6 +89,9 @@
             transition: background 0.2s;
             position: relative;
             z-index: 20;
+            flex-shrink: 0;      /* ← ajouté : bouton ne rétrécit pas */
+            align-self: flex-start; /* ← ajouté : bouton collé en haut */
+            white-space: nowrap; /* ← ajouté : texte bouton sur une ligne */
         }
         .btn-ajouter:hover { background-color: #0084cc; }
 
@@ -94,7 +109,7 @@
         .footer .footer-titre { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: white; }
         .footer .footer-item { margin: 4px 0; }
 
-        /* PANIER FIXED — fond transparent aux clics, seuls les enfants sont cliquables */
+        /* PANIER FIXED */
         #panier-section {
             position: fixed;
             bottom: 0;
@@ -111,7 +126,6 @@
             pointer-events: none;
         }
 
-        /* Tous les éléments interactifs du panier restent cliquables */
         #panier-section button,
         #panier-section input,
         #panier-section ul,
@@ -248,14 +262,11 @@
             mettreAJourAffichage();
         }
 
-
-        // Ajuste le padding-bottom selon la hauteur réelle du panier
         function ajusterPadding() {
             const hauteurPanier = document.getElementById('panier-section').offsetHeight;
             document.body.style.paddingBottom = (hauteurPanier + 20) + 'px';
         }
 
-        // Au chargement et à chaque mise à jour du panier
         ajusterPadding();
         window.addEventListener('resize', ajusterPadding);
 
