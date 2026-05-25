@@ -31,6 +31,9 @@
         .btn-refresh { background-color: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
         .btn-archiver-tout { background-color: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
         .btn-logout { background-color: #7f8c8d; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
+        .btn-fermer-bar { background-color: #8e44ad; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .btn-ouvrir-bar { background-color: #2ecc71; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .bandeau-ferme { background: #8e44ad; color: white; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; }
 
         /* Confirmation archiver tout */
         .confirm-bar {
@@ -136,9 +139,20 @@
                 🗂️ Tout archiver
             </button>
             {% endif %}
+            <form action="/toggle-bar" method="POST" style="display:inline;">
+                {% if bar_ferme %}
+                    <button type="submit" class="btn-ouvrir-bar">✅ Ouvrir le bar</button>
+                {% else %}
+                    <button type="submit" class="btn-fermer-bar">🔴 Fermer le bar</button>
+                {% endif %}
+            </form>
             <a href="/logout_bar" class="btn-logout">🔒</a>
         </div>
     </div>
+
+    {% if bar_ferme %}
+    <div class="bandeau-ferme">🚫 Le bar est actuellement fermé — les commandes clients sont désactivées</div>
+    {% endif %}
 
     <!-- Bande de confirmation -->
     <div class="confirm-bar" id="confirm-tout">
