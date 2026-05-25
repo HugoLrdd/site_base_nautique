@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reçu #{{ "%03d" | format(commande.id) }} - Base Nautique de Merville</title>
+    <title>Reçu #{{ "%03d" | format(commande.numero_affiche) }} - Base Nautique de Merville</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -109,7 +109,7 @@
 
         <hr class="separateur">
 
-        <div class="ticket-numero">#{{ "%03d" | format(commande.id) }}</div>
+        <div class="ticket-numero">#{{ "%03d" | format(commande.numero_affiche) }}</div>
         <div class="infos-date">
             {{ commande.heure.strftime('%d/%m/%Y à %H:%M') }}
         </div>
