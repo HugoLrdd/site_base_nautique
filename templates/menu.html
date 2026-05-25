@@ -402,7 +402,8 @@
         // ── Mémorisation de la commande (numéro de suivi) ──
         // Si le client a déjà une commande en cours, afficher un lien de retour
         const dernierSuivi = localStorage.getItem('dernier_suivi');
-        if (dernierSuivi) {
+        const dernierStatut = localStorage.getItem('dernier_statut');
+        if (dernierSuivi && dernierStatut !== 'Récupérée') {
             const lien = document.createElement('a');
             lien.href = '/suivi/' + dernierSuivi;
             lien.style.cssText = 'display:block;text-align:center;margin:10px 15px 0;padding:10px;background:#e8f4f8;border-radius:8px;color:#0056b3;font-size:13px;font-weight:bold;text-decoration:none;';
