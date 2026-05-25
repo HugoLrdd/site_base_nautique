@@ -127,16 +127,33 @@
         .modale-overlay.open { display: flex; }
         .modale {
             background: white; border-radius: 18px 18px 0 0;
-            padding: 24px 20px 30px; width: 100%; max-width: 600px;
+            padding: 20px 16px 28px; width: 100%; max-width: 600px;
+            max-height: 85vh; display: flex; flex-direction: column;
             animation: slideUp 0.25s ease;
         }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modale h3 { margin: 0 0 14px; font-size: 17px; color: #2c3e50; text-align: center; }
-        .modale-liste { list-style: none; padding: 0; margin: 0 0 14px; font-size: 14px; color: #555; }
-        .modale-liste li { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee; }
-        .modale-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; color: #2c3e50; margin-bottom: 18px; padding-top: 8px; }
+        .modale h3 { margin: 0 0 12px; font-size: 16px; color: #2c3e50; text-align: center; flex-shrink: 0; }
+        .modale-liste {
+            list-style: none; padding: 0; margin: 0 0 10px;
+            font-size: 13px; color: #555;
+            overflow-y: auto; flex: 1; min-height: 0;
+        }
+        .modale-liste li {
+            display: flex; justify-content: space-between;
+            align-items: flex-start; gap: 8px;
+            padding: 6px 0; border-bottom: 1px dashed #eee;
+        }
+        .modale-liste li span:first-child {
+            flex: 1; min-width: 0;
+            word-break: break-word; white-space: normal; line-height: 1.4;
+        }
+        .modale-liste li span:last-child {
+            flex-shrink: 0; white-space: nowrap;
+            font-weight: bold; color: #2c3e50;
+        }
+        .modale-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; color: #2c3e50; margin: 10px 0 16px; padding-top: 8px; border-top: 2px solid #eee; flex-shrink: 0; }
         .modale-total span:last-child { color: #2ecc71; }
-        .modale-btns { display: flex; gap: 10px; }
+        .modale-btns { display: flex; gap: 10px; flex-shrink: 0; }
         .btn-annuler-modale { flex: 1; background: #f0f0f0; color: #555; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
         .btn-confirmer-modale { flex: 2; background: #2ecc71; color: white; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
         .btn-confirmer-modale:disabled { background: #95a5a6; cursor: not-allowed; }
