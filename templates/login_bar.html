@@ -1,90 +1,90 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accès Bar - Base Nautique</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #1a252f;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        .card {
-            background: #2c3e50;
-            padding: 40px 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 360px;
-            text-align: center;
-            border-top: 4px solid #3498db;
-        }
-        .icone { font-size: 48px; margin-bottom: 10px; }
-        h1 { color: #ecf0f1; margin: 0 0 8px 0; font-size: 22px; }
-        p { color: #95a5a6; font-size: 14px; margin-bottom: 25px; }
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #34495e;
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-            text-align: center;
-            letter-spacing: 4px;
-            background-color: #1a252f;
-            color: #ecf0f1;
-        }
-        input[type="password"]:focus {
-            border-color: #3498db;
-            outline: none;
-        }
-        input[type="password"]::placeholder {
-            letter-spacing: normal;
-            color: #7f8c8d;
-        }
-        button {
-            width: 100%;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 13px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button:hover { background-color: #2980b9; }
-        .erreur {
-            background-color: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
-            border: 1px solid #e74c3c;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accès Bar - Base Nautique</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #1a252f;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .card {
+            background: #2c3e50;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            border-top: 4px solid #3498db;
+        }
+        .icone { font-size: 48px; margin-bottom: 10px; }
+        h1 { color: #ecf0f1; margin: 0 0 8px 0; font-size: 22px; }
+        p { color: #95a5a6; font-size: 14px; margin-bottom: 25px; }
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #34495e;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 4px;
+            background-color: #1a252f;
+            color: #ecf0f1;
+        }
+        input[type="password"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        input[type="password"]::placeholder {
+            letter-spacing: normal;
+            color: #7f8c8d;
+        }
+        button {
+            width: 100%;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover { background-color: #2980b9; }
+        .erreur {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-    <div class="card">
-        <div class="icone">👨‍🍳</div>
-        <h1>Accès Comptoir</h1>
-        <p>Réservé au personnel du bar.</p>
-        {% if erreur %}
-            <div class="erreur">❌ Mot de passe incorrect</div>
-        {% endif %}
-        <form method="POST" action="/login_bar">
-            <input type="password" name="mot_de_passe" placeholder="Mot de passe" autofocus>
-            <button type="submit">Accéder au bar</button>
-        </form>
-    </div>
+    <div class="card">
+        <div class="icone">👨‍🍳</div>
+        <h1>Accès Comptoir</h1>
+        <p>Réservé au personnel du bar.</p>
+        {% if erreur %}
+            <div class="erreur">❌ Mot de passe incorrect</div>
+        {% endif %}
+        <form method="POST" action="/login_bar">
+            <input type="password" name="mot_de_passe" placeholder="Mot de passe" autofocus>
+            <button type="submit">Accéder au bar</button>
+        </form>
+    </div>
 </body>
 </html>
