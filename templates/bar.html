@@ -3,253 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Écran Bar - Gestion des commandes</title>
+    <title>Gestion Bar - Base Nautique</title>
     <style>
-        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #2c3e50; margin: 0; padding: 20px; color: #333; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; background: #34495e; padding: 15px 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .header h1 { margin: 0; color: white; font-size: 24px; }
+        .header-btns { display: flex; gap: 10px; align-items: center; }
+        
+        .btn-toggle { padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .btn-toggle.ouvert { background-color: #2ecc71; color: white; }
+        .btn-toggle.ferme { background-color: #e74c3c; color: white; }
+        
+        .btn-bilan { background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; text-decoration: none; font-size: 14px; }
+        .btn-bilan:hover { background-color: #2980b9; }
 
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #2c3e50;
-            margin: 0;
-            padding: 0;
-            color: #ecf0f1;
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        
+        .card { background: white; border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.15); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-2px); }
+        
+        .card-header { padding: 15px; color: white; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .card-header.preparation { background-color: #e67e22; }
+        .card-header.prete { background-color: #2ecc71; animation: clignote 1.5s infinite; }
+        
+        @keyframes clignote {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
         }
 
-        .header {
-            background-color: #1a252f;
-            padding: 12px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        .header h1 { margin: 0; color: #3498db; font-size: 18px; }
-        .header-btns { display: flex; gap: 8px; align-items: center; }
-        .btn-refresh { background-color: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
-        .btn-archiver-tout { background-color: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
-        .btn-logout { background-color: #7f8c8d; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
+        .card-body { padding: 20px; flex-grow: 1; }
+        .liste-produits { margin: 0; padding-left: 20px; font-size: 16px; font-weight: 500; }
+        .liste-produits li { margin-bottom: 6px; }
+        
+        .note-client { margin-top: 15px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; font-size: 14px; color: #856404; font-style: italic; font-weight: bold; }
+        
+        .temps-attente { margin-top: 15px; font-size: 13px; color: #7f8c8d; font-weight: bold; text-align: right; }
+        
+        .card-footer { padding: 15px; background: #f8f9fa; border-top: 1px solid #eee; display: flex; gap: 10px; }
+        
+        .btn-action { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-prete { background-color: #2ecc71; }
+        .btn-prete:hover { background-color: #27ae60; }
+        .btn-servie { background-color: #3498db; }
+        .btn-servie:hover { background-color: #2980b9; }
 
-        /* Nouveaux styles pour les boutons d'état du bar */
-        .btn-toggle-bar {
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 13px;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .bar-ferme-btn { background-color: #d63031; }
-        .bar-ferme-btn:hover { background-color: #b32424; }
-        .bar-ouvert-btn { background-color: #2ed573; }
-        .bar-ouvert-btn:hover { background-color: #26b05f; }
-
-        /* Confirmation archiver tout */
-        .confirm-bar {
-            display: none;
-            background: #c0392b;
-            padding: 10px 15px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .confirm-bar.visible { display: flex; }
-        .confirm-bar span { flex: 1; min-width: 160px; }
-        .btn-confirmer-tout { background: white; color: #c0392b; border: none; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
-        .btn-annuler-tout { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
-
-        .zone-tickets {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 15px;
-        }
-
-        .ticket {
-            border-radius: 12px;
-            padding: 15px;
-            width: 100%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            color: white;
-        }
-        .ticket-vert { background-color: #2ecc71; }
-        .ticket-orange { background-color: #e67e22; }
-        .ticket-rouge-flash { background-color: #e74c3c; animation: flash 1s infinite alternate; }
-
-        @keyframes flash {
-            from { background-color: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
-            to { background-color: #c0392b; box-shadow: 0 0 25px #e74c3c; }
-        }
-
-        .ticket-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(255,255,255,0.3);
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        .ticket-numero { font-size: 26px; }
-        .ticket-temps { font-size: 14px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 10px; }
-
-        .liste-produits {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 10px 0;
-            font-size: 17px;
-            font-weight: 500;
-        }
-        .liste-produits li { margin-bottom: 5px; padding-left: 5px; }
-
-        .note-box {
-            background: rgba(0,0,0,0.15);
-            border-radius: 6px;
-            padding: 6px 10px;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-
-        .ticket-bottom { margin-top: 10px; }
-        .statut-actuel { font-size: 12px; font-style: italic; text-align: center; margin-bottom: 6px; opacity: 0.9; }
-        .total-ligne { text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
-
-        .actions { display: flex; gap: 8px; }
-        .btn-action {
-            flex: 1;
-            border: none;
-            padding: 12px 8px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .btn-prete { background-color: #f39c12; color: white; border: 1px solid rgba(255,255,255,0.4); }
-        .btn-valider { background-color: white; color: #2c3e50; }
-        .btn-recu { background-color: #9b59b6; color: white; }
-
-        .vide { text-align: center; margin-top: 80px; color: #95a5a6; font-size: 20px; padding: 0 20px; }
+        .aucun { grid-column: 1 / -1; text-align: center; color: rgba(255,255,255,0.6); padding: 60px; font-size: 18px; font-weight: bold; background: rgba(255,255,255,0.05); border-radius: 10px; border: 2px dashed rgba(255,255,255,0.1); }
     </style>
+    <meta http-equiv="refresh" content="7">
 </head>
 <body>
 
     <div class="header">
-        <h1>👨‍🍳 Comptoir</h1>
+        <h1>🍻 Écran de Gestion du Bar</h1>
         <div class="header-btns">
-            <form action="/toggle-bar" method="POST" style="display: inline;">
-                {% if bar_ouvert %}
-                    <button type="submit" class="btn-toggle-bar bar-ferme-btn">🛑 Fermer le bar</button>
-                {% else %}
-                    <button type="submit" class="btn-toggle-bar bar-ouvert-btn">🟢 Ouvrir le bar</button>
-                {% endif %}
+            <form action="/toggle-bar" method="POST" style="margin:0;">
+                <button type="submit" class="btn-toggle {% if bar_ouvert %}ouvert{% else %}ferme{% endif %}">
+                    {% if bar_ouvert %}🟢 Bar Ouvert{% else %}🔴 Bar Fermé{% endif %}
+                </button>
             </form>
-
-            <a href="/bar" class="btn-refresh">🔄 ({{ commandes|length }})</a>
-            {% if commandes %}
-            <button class="btn-archiver-tout" onclick="document.getElementById('confirm-tout').classList.add('visible')">
-                🗂️ Tout archiver
-            </button>
-            {% endif %}
-            <a href="/logout_bar" class="btn-logout">🔒</a>
+            <a href="/bilan" class="btn-bilan">📊 Voir le Bilan</a>
         </div>
     </div>
 
-    <div class="confirm-bar" id="confirm-tout">
-        <span>⚠️ Archiver toutes les commandes en cours ?</span>
-        <form action="/archiver-tout" method="POST" style="display:inline;">
-            <button type="submit" class="btn-confirmer-tout">✓ Confirmer</button>
-        </form>
-        <button class="btn-annuler-tout" onclick="document.getElementById('confirm-tout').classList.remove('visible')">
-            ✕ Annuler
-        </button>
-    </div>
-
-    <div class="zone-tickets">
+    <div class="grid">
         {% for c in commandes %}
-            <div class="ticket
-                {% if c.attente >= 10 %} ticket-rouge-flash
-                {% elif c.attente >= 5 %} ticket-orange
-                {% else %} ticket-vert
-                {% endif %}">
-
-                <div class="ticket-top">
-                    <span class="ticket-numero">#{{ "%03d" | format(c.id) }}</span>
-                    <span class="ticket-temps">⏱️ {{ c.attente }} min</span>
-                </div>
-
+        <div class="card">
+            <div class="card-header {% if c.statut == 'En préparation' %}preparation{% else %}prete{% endif %}">
+                <span>Commande #{{ "%03d" | format(c.id) }}</span>
+                <span>{{ c.statut }}</span>
+            </div>
+            
+            <div class="card-body">
                 <ul class="liste-produits">
-                    {% for prod in c.produits %}
-                        <li>• {{ prod }}</li>
+                    {% for p in c.produits %}
+                    <li>{{ p }}</li>
                     {% endfor %}
                 </ul>
-
+                
                 {% if c.note %}
-                    <div class="note-box">📝 {{ c.note }}</div>
+                <div class="note-client">💡 {{ c.note }}</div>
                 {% endif %}
-
-                <div class="ticket-bottom">
-                    <div class="statut-actuel">Statut : {{ c.statut }}</div>
-                    <div class="total-ligne">💰 {{ "%.2f" | format(c.total) }} €</div>
-                    <div class="actions">
-                        {% if c.statut == "En préparation" %}
-                            <a href="/prete/{{ c.id }}" class="btn-action btn-prete">📢 Prête !</a>
-                        {% endif %}
-                        <a href="/archiver/{{ c.id }}" class="btn-action btn-valider">✓ Servie</a>
-                        <a href="/recu/{{ c.id }}" target="_blank" class="btn-action btn-recu">🧾 Reçu</a>
-                    </div>
-                </div>
-
+                
+                <div class="temps-attente">🕒 Depuis {{ c.attente }} min</div>
             </div>
+            
+            <div class="card-footer">
+                {% if c.statut == 'En préparation' %}
+                <a href="/prete/{{ c.id }}" class="btn-action btn-prete">✅ Prête !</a>
+                {% else %}
+                <a href="/archiver/{{ c.id }}" class="btn-action btn-servie">📦 Servie</a>
+                {% endif %}
+            </div>
+        </div>
         {% else %}
-            <div class="vide">🎉 Aucune commande en attente. Tout est à jour !</div>
+        <div class="aucun">📭 Aucune commande en cours pour le moment. Beaucoup de calme !</div>
         {% endfor %}
     </div>
-
-    <script>
-        const nbCommandesActuel = {{ commandes|length }};
-        const nbCommandesPrecedent = parseInt(localStorage.getItem('nb_commandes') || '0');
-
-        if (nbCommandesActuel > nbCommandesPrecedent) {
-            jouerSonAlerte();
-        }
-
-        localStorage.setItem('nb_commandes', nbCommandesActuel);
-
-        function jouerSonAlerte() {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-            function bip(freq, debut, duree) {
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                gain.gain.setValueAtTime(0.4, ctx.currentTime + debut);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + debut + duree);
-                osc.start(ctx.currentTime + debut);
-                osc.stop(ctx.currentTime + debut + duree);
-            }
-
-            bip(520, 0.0, 0.15);
-            bip(660, 0.2, 0.15);
-            bip(800, 0.4, 0.25);
-        }
-
-        setTimeout(() => location.reload(), 15000);
-    </script>
 
 </body>
 </html>
