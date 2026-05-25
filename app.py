@@ -37,8 +37,8 @@ menu = {
         {"nom": "Confiture",  "prix": 3.50}
     ],
     "Glaces": [
-        {"nom": "Magnum",        "prix": 3.00},
-        {"nom": "Cornet Vanille","prix": 2.50}
+        {"nom": "Magnum",         "prix": 3.00},
+        {"nom": "Cornet Vanille", "prix": 2.50}
     ],
     "Planches": [
         {"nom": " Planche apéritif (saucisson,légume,jambon,cornichon,cacahuètes...)",  "prix":  8.00},
@@ -63,25 +63,47 @@ def init_db():
                 id          INTEGER PRIMARY KEY AUTOINCREMENT,
                 produits    TEXT    NOT NULL,
                 heure       TEXT    NOT NULL,
-                statut      TEXT    NOT NULL DEFAULT "En préparation",
+                statut      TEXT    NOT NULL DEFAULT "En preparation",
                 total       REAL    NOT NULL,
                 note        TEXT    DEFAULT "",
                 heure_prete TEXT    DEFAULT NULL,
                 archivee    INTEGER NOT NULL DEFAULT 0
             )
         ''')
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS config (
+                cle    TEXT PRIMARY KEY,
+                valeur TEXT NOT NULL
+            )
+        ''')
+        # offset = id du dernier ticket avant remise à zéro
+        # numero affiché = id - offset
+        conn.execute('INSERT OR IGNORE INTO config (cle, valeur) VALUES ("numero_offset", "0")')
         conn.commit()
 
 init_db()
 
+def get_offset():
+    with get_db() as conn:
+        row = conn.execute('SELECT valeur FROM config WHERE cle = "numero_offset"').fetchone()
+    return int(row['valeur']) if row else 0
+
+def set_offset(val):
+    with get_db() as conn:
+        conn.execute('UPDATE config SET valeur = ? WHERE cle = "numero_offset"', (str(val),))
+        conn.commit()
+
 # ─────────────────────────────────────────────
-# Conversion ligne DB → dict (même structure qu'avant)
+# Conversion ligne DB -> dict
+# Le numéro affiché = id - offset (repart de 1 après reset numérotation)
+# L'id réel en DB est conservé pour les liens /suivi/, /recu/, etc.
 # ─────────────────────────────────────────────
 
-def row_to_dict(row):
+def row_to_dict(row, offset=0):
     d = dict(row)
-    d['produits']  = json.loads(d['produits'])
-    d['heure']     = datetime.fromisoformat(d['heure'])
+    d['produits']      = json.loads(d['produits'])
+    d['heure']         = datetime.fromisoformat(d['heure'])
+    d['numero_affiche'] = d['id'] - offset
     if d['heure_prete']:
         d['heure_prete'] = datetime.fromisoformat(d['heure_prete'])
     else:
@@ -89,25 +111,28 @@ def row_to_dict(row):
     return d
 
 def get_commandes_actives():
+    offset = get_offset()
     with get_db() as conn:
         rows = conn.execute(
             'SELECT * FROM commandes WHERE archivee = 0 ORDER BY id'
         ).fetchall()
-    return [row_to_dict(r) for r in rows]
+    return [row_to_dict(r, offset) for r in rows]
 
 def get_historique():
+    offset = get_offset()
     with get_db() as conn:
         rows = conn.execute(
             'SELECT * FROM commandes WHERE archivee = 1 ORDER BY heure'
         ).fetchall()
-    return [row_to_dict(r) for r in rows]
+    return [row_to_dict(r, offset) for r in rows]
 
 def get_commande_by_id(commande_id):
+    offset = get_offset()
     with get_db() as conn:
         row = conn.execute(
             'SELECT * FROM commandes WHERE id = ?', (commande_id,)
         ).fetchone()
-    return row_to_dict(row) if row else None
+    return row_to_dict(row, offset) if row else None
 
 # ─────────────────────────────────────────────
 # Routes
@@ -193,6 +218,19 @@ def toggle_bar():
     return redirect('/bar')
 
 
+@app.route('/reset-numerotation', methods=['POST'])
+def reset_numerotation():
+    if not session.get('bar_ok'):
+        return redirect('/login_bar')
+    # L'offset devient l'id du dernier ticket inséré
+    # => le prochain ticket affiché sera (max_id + 1) - (max_id) = 1
+    with get_db() as conn:
+        row = conn.execute('SELECT MAX(id) as max_id FROM commandes').fetchone()
+        max_id = row['max_id'] or 0
+    set_offset(max_id)
+    return redirect('/bar')
+
+
 @app.route('/prete/<int:commande_id>')
 def commande_prete(commande_id):
     with get_db() as conn:
@@ -240,12 +278,12 @@ def afficher_bilan():
 
     historique = get_historique()
 
-    total_recettes  = sum(c['total'] for c in historique)
-    total_articles  = 0
-    stats_produits  = {}
+    total_recettes   = sum(c['total'] for c in historique)
+    total_articles   = 0
+    stats_produits   = {}
     stats_categories = {}
-    nb_commandes    = len(historique)
-    panier_moyen    = round(total_recettes / nb_commandes, 2) if nb_commandes > 0 else 0
+    nb_commandes     = len(historique)
+    panier_moyen     = round(total_recettes / nb_commandes, 2) if nb_commandes > 0 else 0
 
     commandes_par_heure = {}
     for c in historique:
@@ -298,7 +336,6 @@ def export_excel():
     historique = get_historique()
 
     wb = openpyxl.Workbook()
-
     titre_font  = Font(bold=True, size=13, color="FFFFFF")
     titre_fill  = PatternFill("solid", fgColor="0056B3")
     header_font = Font(bold=True, color="FFFFFF")
@@ -330,11 +367,11 @@ def export_excel():
     produit_star = max(stats_produits, key=stats_produits.get) if stats_produits else "—"
     heure_pointe = max(commandes_par_heure, key=commandes_par_heure.get) if commandes_par_heure else "—"
 
-    ws1.append(["Nombre de commandes",   nb_commandes])
+    ws1.append(["Nombre de commandes",    nb_commandes])
     ws1.append(["Chiffre d'affaires (€)", total_recettes])
-    ws1.append(["Panier moyen (€)",      panier_moyen])
-    ws1.append(["Produit star",          produit_star])
-    ws1.append(["Heure de pointe",       heure_pointe])
+    ws1.append(["Panier moyen (€)",       panier_moyen])
+    ws1.append(["Produit star",           produit_star])
+    ws1.append(["Heure de pointe",        heure_pointe])
     ws1.column_dimensions['A'].width = 28
     ws1.column_dimensions['B'].width = 20
 
@@ -363,7 +400,7 @@ def export_excel():
         cell.fill = header_fill
     for c in sorted(historique, key=lambda x: x['heure']):
         ws3.append([
-            f"#{c['id']:03d}",
+            f"#{c['numero_affiche']:03d}",
             c['heure'].strftime('%H:%M'),
             ", ".join(c['produits']),
             c.get('note', ''),
