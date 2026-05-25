@@ -255,7 +255,7 @@ def voir_recu(commande_id):
         "total": c["total"],
         "produits": [p["nom_produit"] for p in produits_rows]
     }
-    return render_template('recu.html', c=commande_dict)
+    return render_template('suivi.html', commande=commande_dict)
 
 @app.route('/logout_bar')
 def logout_bar():
