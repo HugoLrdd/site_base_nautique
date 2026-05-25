@@ -10,8 +10,7 @@
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #2c3e50;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             color: #ecf0f1;
         }
 
@@ -23,66 +22,49 @@
             justify-content: space-between;
             align-items: center;
             position: sticky;
-            top: 0;
-            z-index: 200;
+            top: 0; z-index: 200;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         .header h1 { margin: 0; color: #3498db; font-size: 17px; white-space: nowrap; }
-
         .header-btns { display: flex; gap: 8px; align-items: center; }
 
-        /* Boutons toujours visibles */
         .btn-refresh {
             background-color: #3498db; color: white; border: none;
             padding: 9px 13px; border-radius: 6px; font-weight: bold;
-            cursor: pointer; text-decoration: none; font-size: 14px;
-            white-space: nowrap;
+            cursor: pointer; text-decoration: none; font-size: 14px; white-space: nowrap;
         }
         .btn-archiver-tout {
             background-color: #e74c3c; color: white; border: none;
             padding: 9px 13px; border-radius: 6px; font-weight: bold;
             cursor: pointer; font-size: 14px; white-space: nowrap;
         }
-
-        /* ── MENU HAMBURGER ── */
-        .menu-plus {
-            position: relative;
+        .btn-nouvelle-cmd {
+            background-color: #27ae60; color: white; border: none;
+            padding: 9px 13px; border-radius: 6px; font-weight: bold;
+            cursor: pointer; font-size: 14px; white-space: nowrap;
         }
+
+        /* ── MENU ⋮ ── */
+        .menu-plus { position: relative; }
         .btn-plus {
             background-color: #34495e; color: white; border: none;
             padding: 9px 13px; border-radius: 6px; font-size: 18px;
             cursor: pointer; line-height: 1;
         }
         .btn-plus:hover { background-color: #4a6278; }
-
         .dropdown {
-            display: none;
-            position: absolute;
-            top: calc(100% + 6px);
-            right: 0;
-            background: #1a252f;
-            border-radius: 10px;
+            display: none; position: absolute;
+            top: calc(100% + 6px); right: 0;
+            background: #1a252f; border-radius: 10px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-            min-width: 210px;
-            overflow: hidden;
-            z-index: 300;
+            min-width: 210px; overflow: hidden; z-index: 300;
         }
         .dropdown.open { display: block; }
-
         .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 13px 16px;
-            font-size: 14px;
-            font-weight: bold;
-            color: white;
-            text-decoration: none;
-            border: none;
-            background: none;
-            width: 100%;
-            cursor: pointer;
-            text-align: left;
+            display: flex; align-items: center; gap: 10px;
+            padding: 13px 16px; font-size: 14px; font-weight: bold;
+            color: white; text-decoration: none; border: none;
+            background: none; width: 100%; cursor: pointer; text-align: left;
             border-bottom: 1px solid rgba(255,255,255,0.07);
         }
         .dropdown-item:last-child { border-bottom: none; }
@@ -93,53 +75,136 @@
         .dropdown-item.gris   { color: #aab7b8; }
 
         /* ── BANDEAUX ── */
-        .bandeau-ferme {
-            background: #8e44ad; color: white;
-            text-align: center; padding: 9px;
-            font-weight: bold; font-size: 13px;
-        }
+        .bandeau-ferme { background: #8e44ad; color: white; text-align: center; padding: 9px; font-weight: bold; font-size: 13px; }
 
-        /* Confirmation archiver tout */
-        .confirm-bar {
-            display: none; background: #c0392b;
-            padding: 10px 15px; text-align: center;
-            font-size: 14px; font-weight: bold;
-            gap: 10px; align-items: center;
-            justify-content: center; flex-wrap: wrap;
-        }
+        .confirm-bar { display: none; background: #c0392b; padding: 10px 15px; text-align: center; font-size: 14px; font-weight: bold; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
         .confirm-bar.visible { display: flex; }
         .confirm-bar span { flex: 1; min-width: 160px; }
         .btn-confirmer-tout { background: white; color: #c0392b; border: none; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
         .btn-annuler-tout   { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
-        /* Confirmation reset numérotation */
-        .confirm-num {
-            display: none; background: #d35400;
-            padding: 10px 15px; text-align: center;
-            font-size: 14px; font-weight: bold;
-            gap: 10px; align-items: center;
-            justify-content: center; flex-wrap: wrap;
-        }
+        .confirm-num { display: none; background: #d35400; padding: 10px 15px; text-align: center; font-size: 14px; font-weight: bold; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
         .confirm-num.visible { display: flex; }
         .confirm-num span { flex: 1; min-width: 160px; }
         .btn-confirmer-num { background: white; color: #d35400; border: none; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
         .btn-annuler-num   { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
-        /* ── TICKETS ── */
-        .zone-tickets {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 12px;
+        /* ── PANNEAU COMMANDE RAPIDE ── */
+        .overlay {
+            display: none; position: fixed;
+            inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 400;
+        }
+        .overlay.open { display: block; }
+
+        .panneau {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #1a252f;
+            border-radius: 18px 18px 0 0;
+            z-index: 500;
+            max-height: 90vh;
+            display: flex; flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .panneau.open { transform: translateY(0); }
+
+        .panneau-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 16px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .panneau-header h2 { margin: 0; font-size: 17px; color: #27ae60; }
+        .btn-fermer-panneau {
+            background: rgba(255,255,255,0.1); border: none; color: white;
+            width: 32px; height: 32px; border-radius: 50%;
+            font-size: 18px; cursor: pointer; line-height: 1;
         }
 
-        .ticket {
-            border-radius: 12px;
-            padding: 14px;
-            width: 100%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            color: white;
+        .panneau-corps { overflow-y: auto; flex: 1; padding: 12px; }
+
+        /* Catégories dans le panneau */
+        .p-categorie-titre {
+            font-size: 13px; font-weight: bold; color: #95a5a6;
+            text-transform: uppercase; letter-spacing: 1px;
+            margin: 14px 0 8px;
         }
+        .p-categorie-titre:first-child { margin-top: 0; }
+
+        .p-produits-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .p-produit-btn {
+            background: #2c3e50; border: 2px solid transparent;
+            border-radius: 10px; padding: 10px 8px;
+            text-align: center; cursor: pointer;
+            color: white; transition: all 0.15s;
+            position: relative;
+        }
+        .p-produit-btn:active { transform: scale(0.96); }
+        .p-produit-btn.selectionne { border-color: #27ae60; background: #1e8449; }
+
+        .p-produit-nom { font-size: 13px; font-weight: bold; line-height: 1.3; }
+        .p-produit-prix { font-size: 12px; color: #2ecc71; margin-top: 3px; }
+        .p-produit-btn.selectionne .p-produit-prix { color: #a9dfbf; }
+
+        .p-badge-qty {
+            position: absolute; top: -6px; right: -6px;
+            background: #27ae60; color: white;
+            border-radius: 50%; width: 22px; height: 22px;
+            font-size: 12px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Récap panier dans le panneau */
+        .panneau-footer {
+            padding: 12px 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0;
+            background: #1a252f;
+        }
+
+        .p-recap {
+            display: flex; justify-content: space-between;
+            font-size: 13px; color: #bdc3c7; margin-bottom: 8px;
+        }
+        .p-recap-total { font-weight: bold; color: #2ecc71; }
+
+        .p-liste-panier {
+            list-style: none; padding: 0; margin: 0 0 10px;
+            max-height: 80px; overflow-y: auto;
+            font-size: 13px; color: #ecf0f1;
+        }
+        .p-liste-panier li {
+            display: flex; justify-content: space-between;
+            padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .p-suppr { color: #e74c3c; cursor: pointer; font-weight: bold; margin-left: 8px; }
+
+        .p-note {
+            width: 100%; padding: 9px 12px;
+            background: #2c3e50; border: 1px solid #34495e;
+            border-radius: 8px; color: white; font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .p-note::placeholder { color: #7f8c8d; }
+
+        .p-btn-valider {
+            width: 100%; background: #27ae60; color: white; border: none;
+            padding: 14px; border-radius: 10px; font-size: 16px;
+            font-weight: bold; cursor: pointer;
+        }
+        .p-btn-valider:disabled { background: #555; cursor: not-allowed; }
+
+        /* ── TICKETS ── */
+        .zone-tickets { display: flex; flex-direction: column; gap: 12px; padding: 12px; }
+
+        .ticket { border-radius: 12px; padding: 14px; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); color: white; }
         .ticket-vert        { background-color: #2ecc71; }
         .ticket-orange      { background-color: #e67e22; }
         .ticket-rouge-flash { background-color: #e74c3c; animation: flash 1s infinite alternate; }
@@ -149,47 +214,21 @@
             to   { background-color: #c0392b; box-shadow: 0 0 25px #e74c3c; }
         }
 
-        .ticket-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(255,255,255,0.3);
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
+        .ticket-top { display: flex; justify-content: space-between; align-items: center; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 10px; margin-bottom: 10px; }
         .ticket-numero { font-size: 26px; }
         .ticket-temps  { font-size: 13px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 10px; }
 
-        .liste-produits {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 10px 0;
-            font-size: 16px;
-            font-weight: 500;
-        }
+        .liste-produits { list-style: none; padding: 0; margin: 0 0 10px 0; font-size: 16px; font-weight: 500; }
         .liste-produits li { margin-bottom: 5px; padding-left: 4px; }
 
-        .note-box {
-            background: rgba(0,0,0,0.15);
-            border-radius: 6px;
-            padding: 6px 10px;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
+        .note-box { background: rgba(0,0,0,0.15); border-radius: 6px; padding: 6px 10px; font-size: 13px; margin-bottom: 10px; }
 
         .ticket-bottom { margin-top: 10px; }
         .statut-actuel { font-size: 12px; font-style: italic; text-align: center; margin-bottom: 6px; opacity: 0.9; }
         .total-ligne   { text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
 
         .actions { display: flex; gap: 8px; }
-        .btn-action {
-            flex: 1; border: none;
-            padding: 13px 8px; border-radius: 8px;
-            font-weight: bold; cursor: pointer;
-            text-align: center; text-decoration: none;
-            font-size: 14px;
-        }
+        .btn-action { flex: 1; border: none; padding: 13px 8px; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; font-size: 14px; }
         .btn-prete   { background-color: #f39c12; color: white; border: 1px solid rgba(255,255,255,0.4); }
         .btn-valider { background-color: white; color: #2c3e50; }
         .btn-recu    { background-color: #9b59b6; color: white; }
@@ -199,26 +238,20 @@
 </head>
 <body>
 
+    <!-- ── HEADER ── -->
     <div class="header">
         <h1>👨‍🍳 Comptoir</h1>
         <div class="header-btns">
-
-            <!-- Refresh avec compteur -->
             <a href="/bar" class="btn-refresh">🔄 {{ commandes|length }}</a>
-
-            <!-- Archiver tout (seulement si commandes) -->
             {% if commandes %}
             <button class="btn-archiver-tout" onclick="document.getElementById('confirm-tout').classList.add('visible')">
                 🗂️ Archiver
             </button>
             {% endif %}
-
-            <!-- Menu ⋮ -->
+            <button class="btn-nouvelle-cmd" onclick="ouvrirPanneau()">➕ Commande</button>
             <div class="menu-plus" id="menu-plus">
                 <button class="btn-plus" onclick="toggleMenu()">⋮</button>
                 <div class="dropdown" id="dropdown">
-
-                    <!-- Fermer / Ouvrir le bar -->
                     <form action="/toggle-bar" method="POST">
                         {% if bar_ferme %}
                             <button type="submit" class="dropdown-item vert">✅ Ouvrir le bar</button>
@@ -226,19 +259,13 @@
                             <button type="submit" class="dropdown-item violet">🔴 Fermer le bar</button>
                         {% endif %}
                     </form>
-
-                    <!-- Remise à zéro numérotation -->
                     <button class="dropdown-item orange"
                             onclick="toggleMenu(); document.getElementById('confirm-num').classList.add('visible')">
                         🔢 Remise à zéro n°
                     </button>
-
-                    <!-- Déconnexion -->
                     <a href="/logout_bar" class="dropdown-item gris">🔒 Déconnexion</a>
-
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -252,22 +279,19 @@
         <form action="/archiver-tout" method="POST" style="display:inline;">
             <button type="submit" class="btn-confirmer-tout">✓ Confirmer</button>
         </form>
-        <button class="btn-annuler-tout" onclick="document.getElementById('confirm-tout').classList.remove('visible')">
-            ✕ Annuler
-        </button>
+        <button class="btn-annuler-tout" onclick="document.getElementById('confirm-tout').classList.remove('visible')">✕ Annuler</button>
     </div>
 
-    <!-- Confirmation remise à zéro numérotation -->
+    <!-- Confirmation reset numérotation -->
     <div class="confirm-num" id="confirm-num">
-        <span>🔢 Remettre la numérotation à #001 ?</span>
+        <span>🔢 Remettre la numérotation à #001 ? (le bilan reste intact)</span>
         <form action="/reset-numerotation" method="POST" style="display:inline;">
             <button type="submit" class="btn-confirmer-num">✓ Confirmer</button>
         </form>
-        <button class="btn-annuler-num" onclick="document.getElementById('confirm-num').classList.remove('visible')">
-            ✕ Annuler
-        </button>
+        <button class="btn-annuler-num" onclick="document.getElementById('confirm-num').classList.remove('visible')">✕ Annuler</button>
     </div>
 
+    <!-- ── TICKETS ── -->
     <div class="zone-tickets">
         {% for c in commandes %}
             <div class="ticket
@@ -275,22 +299,18 @@
                 {% elif c.attente >= 5 %} ticket-orange
                 {% else %} ticket-vert
                 {% endif %}">
-
                 <div class="ticket-top">
                     <span class="ticket-numero">#{{ "%03d" | format(c.numero_affiche) }}</span>
                     <span class="ticket-temps">⏱️ {{ c.attente }} min</span>
                 </div>
-
                 <ul class="liste-produits">
                     {% for prod in c.produits %}
                         <li>• {{ prod }}</li>
                     {% endfor %}
                 </ul>
-
                 {% if c.note %}
                     <div class="note-box">📝 {{ c.note }}</div>
                 {% endif %}
-
                 <div class="ticket-bottom">
                     <div class="statut-actuel">Statut : {{ c.statut }}</div>
                     <div class="total-ligne">💰 {{ "%.2f" | format(c.total) }} €</div>
@@ -302,11 +322,47 @@
                         <a href="/recu/{{ c.id }}" target="_blank" class="btn-action btn-recu">🧾 Reçu</a>
                     </div>
                 </div>
-
             </div>
         {% else %}
             <div class="vide">🎉 Aucune commande en attente. Tout est à jour !</div>
         {% endfor %}
+    </div>
+
+    <!-- ── OVERLAY + PANNEAU COMMANDE RAPIDE ── -->
+    <div class="overlay" id="overlay" onclick="fermerPanneau()"></div>
+
+    <div class="panneau" id="panneau">
+        <div class="panneau-header">
+            <h2>➕ Nouvelle commande</h2>
+            <button class="btn-fermer-panneau" onclick="fermerPanneau()">✕</button>
+        </div>
+
+        <div class="panneau-corps" id="panneau-corps">
+            {% for categorie, produits in menu.items() %}
+                <div class="p-categorie-titre">{{ categorie }}</div>
+                <div class="p-produits-grid">
+                    {% for p in produits %}
+                        <div class="p-produit-btn" id="btn-{{ loop.index }}-{{ categorie | replace(' ', '_') }}"
+                             onclick="toggleProduit('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}', this)">
+                            <div class="p-produit-nom">{{ p.nom }}</div>
+                            <div class="p-produit-prix">{{ "%.2f" | format(p.prix) }} €</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="panneau-footer">
+            <div class="p-recap">
+                <span>🛒 <span id="p-nb">0</span> article(s)</span>
+                <span class="p-recap-total"><span id="p-total">0.00</span> €</span>
+            </div>
+            <ul class="p-liste-panier" id="p-liste"></ul>
+            <input type="text" class="p-note" id="p-note" placeholder="📝 Note (optionnel)">
+            <button class="p-btn-valider" id="p-btn-valider" disabled onclick="envoyerCommande()">
+                ✅ Envoyer la commande
+            </button>
+        </div>
     </div>
 
     <script>
@@ -320,6 +376,125 @@
                 document.getElementById('dropdown').classList.remove('open');
             }
         });
+
+        // ── Panneau commande rapide ──
+        let panier = [];  // [{nom, prix, nomComplet}]
+
+        function ouvrirPanneau() {
+            document.getElementById('overlay').classList.add('open');
+            document.getElementById('panneau').classList.add('open');
+        }
+        function fermerPanneau() {
+            document.getElementById('overlay').classList.remove('open');
+            document.getElementById('panneau').classList.remove('open');
+        }
+
+        function getNomComplet(nom, categorie) {
+            if (categorie === "Crêpes" && !nom.toLowerCase().includes("crêpe")) {
+                return "Crêpe " + nom;
+            } else if (categorie !== "Boissons" && categorie !== "Glaces") {
+                return categorie + " - " + nom;
+            }
+            return nom;
+        }
+
+        function toggleProduit(nom, prix, categorie, btn) {
+            const nomComplet = getNomComplet(nom, categorie);
+            // Chercher si déjà dans le panier
+            const idx = panier.findIndex(p => p.nomComplet === nomComplet);
+            if (idx === -1) {
+                panier.push({ nom, prix, categorie, nomComplet, btn });
+            } else {
+                // Déjà présent : incrémenter la quantité
+                panier[idx].qty = (panier[idx].qty || 1) + 1;
+            }
+            // Si premier ajout, marquer le btn
+            if (idx === -1) {
+                btn.classList.add('selectionne');
+                const badge = document.createElement('div');
+                badge.className = 'p-badge-qty';
+                badge.id = 'badge-' + nomComplet.replace(/\s/g,'_');
+                badge.textContent = '1';
+                btn.appendChild(badge);
+            } else {
+                const badge = btn.querySelector('.p-badge-qty');
+                if (badge) badge.textContent = panier[idx].qty;
+            }
+            majAffichage();
+        }
+
+        function retirerDuPanier(nomComplet) {
+            const idx = panier.findIndex(p => p.nomComplet === nomComplet);
+            if (idx === -1) return;
+            const item = panier[idx];
+            if ((item.qty || 1) > 1) {
+                item.qty--;
+                const badge = item.btn.querySelector('.p-badge-qty');
+                if (badge) badge.textContent = item.qty;
+            } else {
+                item.btn.classList.remove('selectionne');
+                const badge = item.btn.querySelector('.p-badge-qty');
+                if (badge) badge.remove();
+                panier.splice(idx, 1);
+            }
+            majAffichage();
+        }
+
+        function majAffichage() {
+            const liste = document.getElementById('p-liste');
+            const nbEl  = document.getElementById('p-nb');
+            const totEl = document.getElementById('p-total');
+            const btnV  = document.getElementById('p-btn-valider');
+
+            liste.innerHTML = '';
+            let total = 0;
+            let nbTotal = 0;
+            panier.forEach(item => {
+                const qty = item.qty || 1;
+                nbTotal += qty;
+                total += item.prix * qty;
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${qty > 1 ? qty + '× ' : ''}${item.nomComplet}</span>
+                    <span>${(item.prix * qty).toFixed(2)} €
+                        <span class="p-suppr" onclick="retirerDuPanier('${item.nomComplet.replace(/'/g,"\\'")}')">❌</span>
+                    </span>`;
+                liste.appendChild(li);
+            });
+            nbEl.textContent  = nbTotal;
+            totEl.textContent = total.toFixed(2);
+            btnV.disabled     = panier.length === 0;
+        }
+
+        function envoyerCommande() {
+            if (panier.length === 0) return;
+            const note = document.getElementById('p-note').value.trim();
+
+            // Construire les produits à plat (répétés selon qty)
+            const produits = [];
+            panier.forEach(item => {
+                for (let i = 0; i < (item.qty || 1); i++) {
+                    produits.push(item.nomComplet);
+                }
+            });
+
+            // Soumettre via un formulaire caché
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/commander-bar';
+            produits.forEach(p => {
+                const inp = document.createElement('input');
+                inp.type = 'hidden'; inp.name = 'produits'; inp.value = p;
+                form.appendChild(inp);
+            });
+            if (note) {
+                const noteInp = document.createElement('input');
+                noteInp.type = 'hidden'; noteInp.name = 'note'; noteInp.value = note;
+                form.appendChild(noteInp);
+            }
+            document.body.appendChild(form);
+            form.submit();
+        }
 
         // ── Son nouvelle commande ──
         const nbCommandesActuel = {{ commandes|length }};
