@@ -284,7 +284,7 @@
 
     <!-- Confirmation reset numérotation -->
     <div class="confirm-num" id="confirm-num">
-        <span>🔢 Remettre la numérotation à #001 ?</span>
+        <span>🔢 Remettre la numérotation à #001 ? (le bilan reste intact)</span>
         <form action="/reset-numerotation" method="POST" style="display:inline;">
             <button type="submit" class="btn-confirmer-num">✓ Confirmer</button>
         </form>
@@ -378,16 +378,7 @@
         });
 
         // ── Panneau commande rapide ──
-        let panier = [];  // [{nom, prix, nomComplet}]
-
-        function ouvrirPanneau() {
-            document.getElementById('overlay').classList.add('open');
-            document.getElementById('panneau').classList.add('open');
-        }
-        function fermerPanneau() {
-            document.getElementById('overlay').classList.remove('open');
-            document.getElementById('panneau').classList.remove('open');
-        }
+        let panier = [];
 
         function getNomComplet(nom, categorie) {
             if (categorie === "Crêpes" && !nom.toLowerCase().includes("crêpe")) {
@@ -519,7 +510,18 @@
             bip(800, 0.4, 0.25);
         }
 
-        setTimeout(() => location.reload(), 15000);
+        let reloadTimer = setTimeout(() => location.reload(), 15000);
+
+        function ouvrirPanneau() {
+            clearTimeout(reloadTimer);
+            document.getElementById('overlay').classList.add('open');
+            document.getElementById('panneau').classList.add('open');
+        }
+        function fermerPanneau() {
+            document.getElementById('overlay').classList.remove('open');
+            document.getElementById('panneau').classList.remove('open');
+            reloadTimer = setTimeout(() => location.reload(), 15000);
+        }
     </script>
 
 </body>
