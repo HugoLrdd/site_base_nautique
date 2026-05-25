@@ -15,84 +15,138 @@
             color: #ecf0f1;
         }
 
+        /* ── HEADER ── */
         .header {
             background-color: #1a252f;
-            padding: 12px 15px;
+            padding: 10px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 200;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
-        .header h1 { margin: 0; color: #3498db; font-size: 18px; }
-        .header-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-        .btn-refresh { background-color: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
-        .btn-archiver-tout { background-color: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
-        .btn-logout { background-color: #7f8c8d; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; }
-        .btn-fermer-bar { background-color: #8e44ad; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
-        .btn-ouvrir-bar { background-color: #2ecc71; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
-        .btn-reset-num { background-color: #f39c12; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
-        .bandeau-ferme { background: #8e44ad; color: white; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; }
+        .header h1 { margin: 0; color: #3498db; font-size: 17px; white-space: nowrap; }
+
+        .header-btns { display: flex; gap: 8px; align-items: center; }
+
+        /* Boutons toujours visibles */
+        .btn-refresh {
+            background-color: #3498db; color: white; border: none;
+            padding: 9px 13px; border-radius: 6px; font-weight: bold;
+            cursor: pointer; text-decoration: none; font-size: 14px;
+            white-space: nowrap;
+        }
+        .btn-archiver-tout {
+            background-color: #e74c3c; color: white; border: none;
+            padding: 9px 13px; border-radius: 6px; font-weight: bold;
+            cursor: pointer; font-size: 14px; white-space: nowrap;
+        }
+
+        /* ── MENU HAMBURGER ── */
+        .menu-plus {
+            position: relative;
+        }
+        .btn-plus {
+            background-color: #34495e; color: white; border: none;
+            padding: 9px 13px; border-radius: 6px; font-size: 18px;
+            cursor: pointer; line-height: 1;
+        }
+        .btn-plus:hover { background-color: #4a6278; }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            background: #1a252f;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            min-width: 210px;
+            overflow: hidden;
+            z-index: 300;
+        }
+        .dropdown.open { display: block; }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+            cursor: pointer;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background: rgba(255,255,255,0.08); }
+        .dropdown-item.violet { color: #c39bd3; }
+        .dropdown-item.vert   { color: #82e0aa; }
+        .dropdown-item.orange { color: #f8c471; }
+        .dropdown-item.gris   { color: #aab7b8; }
+
+        /* ── BANDEAUX ── */
+        .bandeau-ferme {
+            background: #8e44ad; color: white;
+            text-align: center; padding: 9px;
+            font-weight: bold; font-size: 13px;
+        }
 
         /* Confirmation archiver tout */
         .confirm-bar {
-            display: none;
-            background: #c0392b;
-            padding: 10px 15px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
+            display: none; background: #c0392b;
+            padding: 10px 15px; text-align: center;
+            font-size: 14px; font-weight: bold;
+            gap: 10px; align-items: center;
+            justify-content: center; flex-wrap: wrap;
         }
         .confirm-bar.visible { display: flex; }
         .confirm-bar span { flex: 1; min-width: 160px; }
         .btn-confirmer-tout { background: white; color: #c0392b; border: none; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
-        .btn-annuler-tout { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .btn-annuler-tout   { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
         /* Confirmation reset numérotation */
         .confirm-num {
-            display: none;
-            background: #d35400;
-            padding: 10px 15px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
+            display: none; background: #d35400;
+            padding: 10px 15px; text-align: center;
+            font-size: 14px; font-weight: bold;
+            gap: 10px; align-items: center;
+            justify-content: center; flex-wrap: wrap;
         }
         .confirm-num.visible { display: flex; }
         .confirm-num span { flex: 1; min-width: 160px; }
         .btn-confirmer-num { background: white; color: #d35400; border: none; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
-        .btn-annuler-num { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .btn-annuler-num   { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
+        /* ── TICKETS ── */
         .zone-tickets {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            padding: 15px;
+            padding: 12px;
         }
 
         .ticket {
             border-radius: 12px;
-            padding: 15px;
+            padding: 14px;
             width: 100%;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             color: white;
         }
-        .ticket-vert { background-color: #2ecc71; }
-        .ticket-orange { background-color: #e67e22; }
+        .ticket-vert        { background-color: #2ecc71; }
+        .ticket-orange      { background-color: #e67e22; }
         .ticket-rouge-flash { background-color: #e74c3c; animation: flash 1s infinite alternate; }
 
         @keyframes flash {
             from { background-color: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
-            to { background-color: #c0392b; box-shadow: 0 0 25px #e74c3c; }
+            to   { background-color: #c0392b; box-shadow: 0 0 25px #e74c3c; }
         }
 
         .ticket-top {
@@ -105,16 +159,16 @@
             margin-bottom: 10px;
         }
         .ticket-numero { font-size: 26px; }
-        .ticket-temps { font-size: 14px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 10px; }
+        .ticket-temps  { font-size: 13px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 10px; }
 
         .liste-produits {
             list-style: none;
             padding: 0;
             margin: 0 0 10px 0;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 500;
         }
-        .liste-produits li { margin-bottom: 5px; padding-left: 5px; }
+        .liste-produits li { margin-bottom: 5px; padding-left: 4px; }
 
         .note-box {
             background: rgba(0,0,0,0.15);
@@ -126,23 +180,19 @@
 
         .ticket-bottom { margin-top: 10px; }
         .statut-actuel { font-size: 12px; font-style: italic; text-align: center; margin-bottom: 6px; opacity: 0.9; }
-        .total-ligne { text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+        .total-ligne   { text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
 
         .actions { display: flex; gap: 8px; }
         .btn-action {
-            flex: 1;
-            border: none;
-            padding: 12px 8px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
+            flex: 1; border: none;
+            padding: 13px 8px; border-radius: 8px;
+            font-weight: bold; cursor: pointer;
+            text-align: center; text-decoration: none;
             font-size: 14px;
         }
-        .btn-prete { background-color: #f39c12; color: white; border: 1px solid rgba(255,255,255,0.4); }
+        .btn-prete   { background-color: #f39c12; color: white; border: 1px solid rgba(255,255,255,0.4); }
         .btn-valider { background-color: white; color: #2c3e50; }
-        .btn-recu { background-color: #9b59b6; color: white; }
+        .btn-recu    { background-color: #9b59b6; color: white; }
 
         .vide { text-align: center; margin-top: 80px; color: #95a5a6; font-size: 20px; padding: 0 20px; }
     </style>
@@ -152,28 +202,48 @@
     <div class="header">
         <h1>👨‍🍳 Comptoir</h1>
         <div class="header-btns">
-            <a href="/bar" class="btn-refresh">🔄 ({{ commandes|length }})</a>
+
+            <!-- Refresh avec compteur -->
+            <a href="/bar" class="btn-refresh">🔄 {{ commandes|length }}</a>
+
+            <!-- Archiver tout (seulement si commandes) -->
             {% if commandes %}
             <button class="btn-archiver-tout" onclick="document.getElementById('confirm-tout').classList.add('visible')">
-                🗂️ Tout archiver
+                🗂️ Archiver
             </button>
             {% endif %}
-            <button class="btn-reset-num" onclick="document.getElementById('confirm-num').classList.add('visible')">
-                🔢 Remise à zéro n°
-            </button>
-            <form action="/toggle-bar" method="POST" style="display:inline;">
-                {% if bar_ferme %}
-                    <button type="submit" class="btn-ouvrir-bar">✅ Ouvrir le bar</button>
-                {% else %}
-                    <button type="submit" class="btn-fermer-bar">🔴 Fermer le bar</button>
-                {% endif %}
-            </form>
-            <a href="/logout_bar" class="btn-logout">🔒</a>
+
+            <!-- Menu ⋮ -->
+            <div class="menu-plus" id="menu-plus">
+                <button class="btn-plus" onclick="toggleMenu()">⋮</button>
+                <div class="dropdown" id="dropdown">
+
+                    <!-- Fermer / Ouvrir le bar -->
+                    <form action="/toggle-bar" method="POST">
+                        {% if bar_ferme %}
+                            <button type="submit" class="dropdown-item vert">✅ Ouvrir le bar</button>
+                        {% else %}
+                            <button type="submit" class="dropdown-item violet">🔴 Fermer le bar</button>
+                        {% endif %}
+                    </form>
+
+                    <!-- Remise à zéro numérotation -->
+                    <button class="dropdown-item orange"
+                            onclick="toggleMenu(); document.getElementById('confirm-num').classList.add('visible')">
+                        🔢 Remise à zéro n°
+                    </button>
+
+                    <!-- Déconnexion -->
+                    <a href="/logout_bar" class="dropdown-item gris">🔒 Déconnexion</a>
+
+                </div>
+            </div>
+
         </div>
     </div>
 
     {% if bar_ferme %}
-    <div class="bandeau-ferme">🚫 Le bar est actuellement fermé — les commandes clients sont désactivées</div>
+    <div class="bandeau-ferme">🚫 Bar fermé — commandes désactivées</div>
     {% endif %}
 
     <!-- Confirmation archiver tout -->
@@ -189,7 +259,7 @@
 
     <!-- Confirmation remise à zéro numérotation -->
     <div class="confirm-num" id="confirm-num">
-        <span>🔢 Remettre la numérotation à #001 ? </span>
+        <span>🔢 Remettre la numérotation à #001 ?</span>
         <form action="/reset-numerotation" method="POST" style="display:inline;">
             <button type="submit" class="btn-confirmer-num">✓ Confirmer</button>
         </form>
@@ -240,31 +310,35 @@
     </div>
 
     <script>
+        // ── Menu ⋮ ──
+        function toggleMenu() {
+            document.getElementById('dropdown').classList.toggle('open');
+        }
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('menu-plus');
+            if (!menu.contains(e.target)) {
+                document.getElementById('dropdown').classList.remove('open');
+            }
+        });
+
+        // ── Son nouvelle commande ──
         const nbCommandesActuel = {{ commandes|length }};
         const nbCommandesPrecedent = parseInt(localStorage.getItem('nb_commandes') || '0');
-
-        if (nbCommandesActuel > nbCommandesPrecedent) {
-            jouerSonAlerte();
-        }
-
+        if (nbCommandesActuel > nbCommandesPrecedent) jouerSonAlerte();
         localStorage.setItem('nb_commandes', nbCommandesActuel);
 
         function jouerSonAlerte() {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
             function bip(freq, debut, duree) {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.frequency.value = freq;
-                osc.type = 'sine';
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.frequency.value = freq; osc.type = 'sine';
                 gain.gain.setValueAtTime(0.4, ctx.currentTime + debut);
                 gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + debut + duree);
                 osc.start(ctx.currentTime + debut);
                 osc.stop(ctx.currentTime + debut + duree);
             }
-
             bip(520, 0.0, 0.15);
             bip(660, 0.2, 0.15);
             bip(800, 0.4, 0.25);
