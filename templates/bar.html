@@ -269,13 +269,13 @@
                 <div class="p-produits-grid">
                     {% for p in produits %}
                         {% if p.variantes is defined %}
-                        <div class="p-produit-btn" id="btn-{{ loop.index }}-{{ categorie | replace(' ', '_') }}"
-                             onclick="ouvrirVarPopup('{{ p.nom }}', {{ p.prix }}, {{ p.variantes | tojson }}, this)">
+                        <div class="p-produit-btn" id="pbtn-{{ loop.index }}-{{ categorie | replace(' ', '_') }}"
+                             onclick="ouvrirVarPopup('{{ p.nom }}', {{ p.prix }}, this)">
                             <div class="p-produit-nom">{{ p.nom }}</div>
                             <div class="p-produit-prix">{{ "%.2f" | format(p.prix) }} € ▾</div>
                         </div>
                         {% else %}
-                        <div class="p-produit-btn" id="btn-{{ loop.index }}-{{ categorie | replace(' ', '_') }}"
+                        <div class="p-produit-btn" id="pbtn-{{ loop.index }}-{{ categorie | replace(' ', '_') }}"
                              onclick="toggleProduit('{{ p.nom }}', {{ p.prix }}, this)">
                             <div class="p-produit-nom">{{ p.nom }}</div>
                             <div class="p-produit-prix">{{ "%.2f" | format(p.prix) }} €</div>
@@ -300,6 +300,18 @@
     </div>
 
     <script>
+        // Variantes par nom de produit — générées par Jinja
+        const MENU_VARIANTES = {};
+        {% for categorie, produits in menu.items() %}
+            {% for p in produits %}
+                {% if p.variantes is defined %}
+                MENU_VARIANTES[{{ p.nom | tojson }}] = {{ p.variantes | tojson }};
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </script>
+
+    <script>
         // ── Menu ⋮ ──
         function toggleMenu() {
             document.getElementById('dropdown').classList.toggle('open');
@@ -316,7 +328,9 @@
         let varCtxBar = null;
 
         // ── Popup variantes bar ──
-        function ouvrirVarPopup(nom, prix, variantes, btnOrigine) {
+        function ouvrirVarPopup(nom, prix, btnOrigine) {
+            const variantes = MENU_VARIANTES[nom];
+            if (!variantes) return;
             varCtxBar = { nom, prix, btnOrigine };
             document.getElementById('var-titre').textContent = nom;
             const grid = document.getElementById('var-grid');
