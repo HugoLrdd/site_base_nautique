@@ -25,25 +25,36 @@ def maintenant():
     return datetime.now(timezone.utc) + timedelta(hours=2)
 
 menu = {
-    "Boissons": [
-        {"nom": "Coca-Cola",    "prix": 2.50},
-        {"nom": "Ice Tea",      "prix": 2.50},
-        {"nom": "Oasis",        "prix": 2.50},
-        {"nom": "Eau Minérale", "prix": 1.50}
+    "Boissons Non Alcoolisées": [
+        {"nom": "Coca (33cl)",  "prix": 2.00},
+        {"nom": "Coca 0 (33cl)",  "prix": 2.00},
+        {"nom": "Schweppes (33cl)",  "prix": 2.00},
+        {"nom": "Ice Tea (33cl)", "prix": 2.00},
+        {"nom": "Oasis (33cl)", "prix": 2.00},
+        {"nom": "Perrier (33cl)", "prix": 2.00},
+        {"nom": "Eau (50cl)", "prix": 0.50},
+        {"nom": "Café", "prix": 1.00}
     ],
-    "Crêpes": [
-        {"nom": "Sucre",      "prix": 3.00},
-        {"nom": "Nutella",    "prix": 3.50},
-        {"nom": "Confiture",  "prix": 3.50}
+    "Boissons Alcoolisées": [
+        {"nom": "Anosteké (33cl)",  "prix": 2.50},
+        {"nom": "Leffe (25cl)",  "prix": 2.50},
+        {"nom": "Despérados (33cl)",  "prix": 2.50},
+        {"nom": "Vin Rosé",  "prix": 2.00},
+        {"nom": "Blanc",  "prix": 2.00},
+        {"nom": "Pétillant",  "prix": 2.00}
     ],
-    "Glaces": [
-        {"nom": "Magnum",         "prix": 3.00},
-        {"nom": "Cornet Vanille", "prix": 2.50}
+    "Snack": [
+        {"nom": "Planche",  "prix": 12.00},
+        {"nom": "Sandwich (Thon, jambon, fromage, pâté)", "prix": 3.50},
+        {"nom": "Croque Monsieur",  "prix": 3.50},
+        {"nom": "Hot dog",  "prix": 3.50},
+        {"nom": "Saucisson",  "prix": 3.50},
+        {"nom": "Chips", "prix": 0,50}
     ],
-    "Planches": [
-        {"nom": " Planche apéritif (saucisson,légume,jambon,cornichon,cacahuètes...)",  "prix":  8.00},
-        {"nom": " Planche charcuterie (saucisson,pâté,jambon,fromage,cacahuètes...)",  "prix": 10.00},
-        {"nom": " Planche fromage (brie,camembert,comté,pain,cacahuètes...)",           "prix":  8.50}
+    "Pause sucrée": [
+        {"nom": "Crêpe, Gauffre (sucre, nutella, bueno)", "prix": 2,00},
+        {"nom": "Glace", "prix": 2,00},
+        {"nom": "Bonbon", "prix": 0,50}
     ]
 }
 
