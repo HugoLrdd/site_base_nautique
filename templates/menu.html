@@ -213,26 +213,18 @@
                     </div>
                     <div class="qty-zone" id="zone-{{ cle }}">
                         {% if p.variantes is defined %}
-                            <button class="btn-ajouter"
-                                    onclick="ouvrirVariantes('{{ p.nom }}', {{ p.prix }}, {{ p.variantes | tojson }}, '{{ cle }}')">
+                            <button class="btn-ajouter" onclick="ouvrirVariantes({{ cle }})">
                                 ＋ Ajouter
                             </button>
                         {% else %}
-                            <button class="btn-ajouter"
-                                    onclick="premierAjout('{{ p.nom }}', {{ p.prix }}, '{{ cle }}')">
+                            <button class="btn-ajouter" onclick="premierAjout({{ cle }})">
                                 ＋ Ajouter
                             </button>
                         {% endif %}
                         <div class="qty-ctrl" id="ctrl-{{ cle }}">
-                            <button class="qty-btn"
-                                    onclick="changerQty('{{ p.nom }}', {{ p.prix }}, '{{ cle }}', -1, {{ p.variantes | tojson if p.variantes is defined else 'null' }})">
-                                −
-                            </button>
+                            <button class="qty-btn" onclick="changerQty({{ cle }}, -1)">−</button>
                             <span class="qty-num" id="num-{{ cle }}">1</span>
-                            <button class="qty-btn"
-                                    onclick="changerQty('{{ p.nom }}', {{ p.prix }}, '{{ cle }}', +1, {{ p.variantes | tojson if p.variantes is defined else 'null' }})">
-                                ＋
-                            </button>
+                            <button class="qty-btn" onclick="changerQty({{ cle }}, +1)">＋</button>
                         </div>
                     </div>
                 </div>
@@ -315,17 +307,34 @@
     </div>
 
     <script>
+        // Données produits générées par Jinja — évite les problèmes d'encodage dans onclick
+        const PRODUITS = {};
+        {% set ns2 = namespace(i=0) %}
+        {% for categorie, produits in menu.items() %}
+            {% for p in produits %}
+                PRODUITS[{{ ns2.i }}] = {
+                    nom: {{ p.nom | tojson }},
+                    prix: {{ p.prix }},
+                    variantes: {% if p.variantes is defined %}{{ p.variantes | tojson }}{% else %}null{% endif %}
+                };
+                {% set ns2.i = ns2.i + 1 %}
+            {% endfor %}
+        {% endfor %}
+    </script>
+
+    <script>
         let panier = {};
         let commandeEnvoyee = false;
         let varCtx = null;
 
         // ── Popup variantes ──
-        function ouvrirVariantes(nom, prix, variantes, cle) {
-            varCtx = { nom, prix, cle };
-            document.getElementById('variantes-titre').textContent = nom;
+        function ouvrirVariantes(cle) {
+            const p = PRODUITS[cle];
+            varCtx = { nom: p.nom, prix: p.prix, cle };
+            document.getElementById('variantes-titre').textContent = p.nom;
             const grid = document.getElementById('variantes-grid');
             grid.innerHTML = '';
-            variantes.forEach(v => {
+            p.variantes.forEach(v => {
                 const btn = document.createElement('button');
                 btn.className = 'btn-variante';
                 btn.textContent = v;
@@ -348,8 +357,9 @@
         }
 
         // ── Produits sans variantes ──
-        function premierAjout(nom, prix, cle) {
-            _ajouterAuPanier(nom, prix, cle);
+        function premierAjout(cle) {
+            const p = PRODUITS[cle];
+            _ajouterAuPanier(p.nom, p.prix, cle);
         }
 
         function _ajouterAuPanier(nomComplet, prix, cle) {
@@ -360,24 +370,25 @@
             }
             document.querySelector('#zone-' + cle + ' .btn-ajouter').style.display = 'none';
             document.getElementById('ctrl-' + cle).classList.add('visible');
-            const totalQtyCle = Object.values(panier).filter(p => p.cle === cle).reduce((s, p) => s + p.qty, 0);
+            const totalQtyCle = Object.values(panier).filter(p => p.cle == cle).reduce((s, p) => s + p.qty, 0);
             document.getElementById('num-' + cle).textContent = totalQtyCle;
             mettreAJourAffichage();
         }
 
-        function changerQty(nom, prix, cle, delta, variantes) {
+        function changerQty(cle, delta) {
+            const p = PRODUITS[cle];
             if (delta > 0) {
-                if (variantes) { ouvrirVariantes(nom, prix, variantes, cle); }
-                else { _ajouterAuPanier(nom, prix, cle); }
+                if (p.variantes) { ouvrirVariantes(cle); }
+                else { _ajouterAuPanier(p.nom, p.prix, cle); }
                 return;
             }
             // Retirer : enlever la dernière ligne pour cette clé
-            const itemsCle = Object.entries(panier).filter(([k, v]) => v.cle === cle);
+            const itemsCle = Object.entries(panier).filter(([k, v]) => v.cle == cle);
             if (itemsCle.length === 0) return;
             const [key, item] = itemsCle[itemsCle.length - 1];
             item.qty--;
             if (item.qty <= 0) delete panier[key];
-            const totalQtyCle = Object.values(panier).filter(p => p.cle === cle).reduce((s, p) => s + p.qty, 0);
+            const totalQtyCle = Object.values(panier).filter(p => p.cle == cle).reduce((s, p) => s + p.qty, 0);
             if (totalQtyCle <= 0) {
                 document.getElementById('ctrl-' + cle).classList.remove('visible');
                 document.querySelector('#zone-' + cle + ' .btn-ajouter').style.display = '';
