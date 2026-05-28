@@ -49,12 +49,12 @@ menu = {
         {"nom": "Croque Monsieur",  "prix": 3.50},
         {"nom": "Hot dog",  "prix": 3.50},
         {"nom": "Saucisson",  "prix": 3.50},
-        {"nom": "Chips", "prix": 0,50}
+        {"nom": "Chips", "prix": 0.50}
     ],
     "Pause sucrée": [
-        {"nom": "Crêpe, Gauffre (sucre, nutella, bueno)", "prix": 2,00},
-        {"nom": "Glace", "prix": 2,00},
-        {"nom": "Bonbon", "prix": 0,50}
+        {"nom": "Crêpe, Gauffre (sucre, nutella, bueno)", "prix": 2.00},
+        {"nom": "Glace", "prix": 2.00},
+        {"nom": "Bonbon", "prix": 0.50}
     ]
 }
 
