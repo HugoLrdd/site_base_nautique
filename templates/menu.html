@@ -6,23 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu - Base Nautique de Merville</title>
 
-    <!-- Google Analytics (chargé uniquement après consentement) -->
+    <!-- Google Analytics avec gestion du consentement RGPD -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y3PWJH9D3E"></script>
     <script>
-        function chargerAnalytics() {
-            const s = document.createElement('script');
-            s.async = true;
-            s.src = 'https://www.googletagmanager.com/gtag/js?id=G-Y3PWJH9D3E';
-            document.head.appendChild(s);
-            s.onload = function() {
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){ dataLayer.push(arguments); }
-                window.gtag = gtag;
-                gtag('js', new Date());
-                gtag('config', 'G-Y3PWJH9D3E');
-            };
-        }
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+
+        // Par défaut : tout refusé jusqu'au consentement
+        gtag('consent', 'default', {
+            'analytics_storage': 'denied'
+        });
+
+        gtag('js', new Date());
+        gtag('config', 'G-Y3PWJH9D3E');
+
+        // Si déjà accepté lors d'une visite précédente, activer immédiatement
         if (localStorage.getItem('cookies_consent') === 'oui') {
-            chargerAnalytics();
+            gtag('consent', 'update', { 'analytics_storage': 'granted' });
+        }
+
+        function chargerAnalytics() {
+            gtag('consent', 'update', { 'analytics_storage': 'granted' });
         }
     </script>
 
