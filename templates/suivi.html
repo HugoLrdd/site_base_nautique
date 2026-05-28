@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suivi de commande - Merville</title>
     <meta http-equiv="refresh" content="15">
+    <script>
+        if (localStorage.getItem('cookies_consent') === 'oui') {
+            const s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://www.googletagmanager.com/gtag/js?id=G-Y3PWJH9D3E';
+            document.head.appendChild(s);
+            s.onload = function() {
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                window.gtag = gtag;
+                gtag('js', new Date());
+                gtag('config', 'G-Y3PWJH9D3E');
+            };
+        }
+    </script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7f9fa; margin: 0; padding: 20px; text-align: center; color: #333; }
         .card { background: white; max-width: 400px; margin: 40px auto; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -82,7 +97,6 @@
         const statutActuel = "{{ commande.statut }}";
         const commandeId = {{ commande.id }};
 
-        // ── Mémorisation de la commande en cours ──
         if (statutActuel === "Récupérée") {
             localStorage.removeItem('dernier_suivi');
             localStorage.setItem('dernier_statut', 'Récupérée');
@@ -102,7 +116,6 @@
 
         function jouerSonPrete() {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
             function bip(freq, debut, duree, volume) {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -115,11 +128,10 @@
                 osc.start(ctx.currentTime + debut);
                 osc.stop(ctx.currentTime + debut + duree);
             }
-
-            bip(523, 0.0, 0.15);   // Do
-            bip(659, 0.2, 0.15);   // Mi
-            bip(784, 0.4, 0.15);   // Sol
-            bip(1047, 0.6, 0.4);   // Do aigu
+            bip(523, 0.0, 0.15);
+            bip(659, 0.2, 0.15);
+            bip(784, 0.4, 0.15);
+            bip(1047, 0.6, 0.4);
         }
     </script>
 </body>
