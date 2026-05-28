@@ -15,75 +15,34 @@
             overflow-x: hidden;
         }
 
-        /* ── HEADER ── */
+        /* HEADER */
         .header {
             background-color: #1a252f;
             padding: 8px 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0; z-index: 200;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 200;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            width: 100%;
-            min-width: 0;
+            width: 100%; min-width: 0;
         }
-        .header h1 {
-            margin: 0; color: #3498db;
-            font-size: 15px; white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .header-btns {
-            display: flex; gap: 6px; align-items: center;
-            flex-shrink: 0; min-width: 0;
-        }
+        .header h1 { margin: 0; color: #3498db; font-size: 15px; white-space: nowrap; flex-shrink: 0; }
+        .header-btns { display: flex; gap: 6px; align-items: center; flex-shrink: 0; min-width: 0; }
 
-        /* Boutons header : icône seule sur très petit écran */
-        .btn-refresh {
-            background-color: #3498db; color: white; border: none;
-            padding: 8px 11px; border-radius: 6px; font-weight: bold;
-            cursor: pointer; text-decoration: none; font-size: 13px;
-            white-space: nowrap; flex-shrink: 0;
-        }
-        .btn-archiver-tout {
-            background-color: #e74c3c; color: white; border: none;
-            padding: 8px 11px; border-radius: 6px; font-weight: bold;
-            cursor: pointer; font-size: 13px; white-space: nowrap; flex-shrink: 0;
-        }
-        .btn-nouvelle-cmd {
-            background-color: #27ae60; color: white; border: none;
-            padding: 8px 11px; border-radius: 6px; font-weight: bold;
-            cursor: pointer; font-size: 13px; white-space: nowrap; flex-shrink: 0;
-        }
-        /* Masquer le texte des boutons sur très petit écran, garder l'emoji */
+        .btn-refresh { background-color: #3498db; color: white; border: none; padding: 8px 11px; border-radius: 6px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+        .btn-archiver-tout { background-color: #e74c3c; color: white; border: none; padding: 8px 11px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+        .btn-nouvelle-cmd { background-color: #27ae60; color: white; border: none; padding: 8px 11px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+
         @media (max-width: 380px) {
             .btn-label { display: none; }
             .header h1 { font-size: 13px; }
         }
 
-        /* ── MENU ⋮ ── */
+        /* MENU ⋮ */
         .menu-plus { position: relative; }
-        .btn-plus {
-            background-color: #34495e; color: white; border: none;
-            padding: 9px 13px; border-radius: 6px; font-size: 18px;
-            cursor: pointer; line-height: 1;
-        }
+        .btn-plus { background-color: #34495e; color: white; border: none; padding: 9px 13px; border-radius: 6px; font-size: 18px; cursor: pointer; line-height: 1; }
         .btn-plus:hover { background-color: #4a6278; }
-        .dropdown {
-            display: none; position: absolute;
-            top: calc(100% + 6px); right: 0;
-            background: #1a252f; border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-            min-width: 210px; overflow: hidden; z-index: 300;
-        }
+        .dropdown { display: none; position: absolute; top: calc(100% + 6px); right: 0; background: #1a252f; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); min-width: 210px; overflow: hidden; z-index: 300; }
         .dropdown.open { display: block; }
-        .dropdown-item {
-            display: flex; align-items: center; gap: 10px;
-            padding: 13px 16px; font-size: 14px; font-weight: bold;
-            color: white; text-decoration: none; border: none;
-            background: none; width: 100%; cursor: pointer; text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.07);
-        }
+        .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 13px 16px; font-size: 14px; font-weight: bold; color: white; text-decoration: none; border: none; background: none; width: 100%; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.07); }
         .dropdown-item:last-child { border-bottom: none; }
         .dropdown-item:hover { background: rgba(255,255,255,0.08); }
         .dropdown-item.violet { color: #c39bd3; }
@@ -91,7 +50,7 @@
         .dropdown-item.orange { color: #f8c471; }
         .dropdown-item.gris   { color: #aab7b8; }
 
-        /* ── BANDEAUX ── */
+        /* BANDEAUX */
         .bandeau-ferme { background: #8e44ad; color: white; text-align: center; padding: 9px; font-weight: bold; font-size: 13px; }
 
         .confirm-bar { display: none; background: #c0392b; padding: 10px 15px; text-align: center; font-size: 14px; font-weight: bold; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
@@ -106,128 +65,62 @@
         .btn-confirmer-num { background: white; color: #d35400; border: none; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
         .btn-annuler-num   { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 7px 14px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
-        /* ── PANNEAU COMMANDE RAPIDE ── */
-        .overlay {
-            display: none; position: fixed;
-            inset: 0; background: rgba(0,0,0,0.5);
-            z-index: 400;
-        }
+        /* PANNEAU COMMANDE RAPIDE */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 400; }
         .overlay.open { display: block; }
 
-        .panneau {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: #1a252f;
-            border-radius: 18px 18px 0 0;
-            z-index: 500;
-            max-height: 90vh;
-            width: 100%;
-            max-width: 100vw;
-            overflow: hidden;
-            display: flex; flex-direction: column;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-        }
+        .panneau { position: fixed; bottom: 0; left: 0; right: 0; background: #1a252f; border-radius: 18px 18px 0 0; z-index: 500; max-height: 90vh; width: 100%; max-width: 100vw; overflow: hidden; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s ease; }
         .panneau.open { transform: translateY(0); }
 
-        .panneau-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 16px 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            flex-shrink: 0;
-        }
+        .panneau-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 16px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
         .panneau-header h2 { margin: 0; font-size: 17px; color: #27ae60; }
-        .btn-fermer-panneau {
-            background: rgba(255,255,255,0.1); border: none; color: white;
-            width: 32px; height: 32px; border-radius: 50%;
-            font-size: 18px; cursor: pointer; line-height: 1; flex-shrink: 0;
-        }
+        .btn-fermer-panneau { background: rgba(255,255,255,0.1); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; cursor: pointer; line-height: 1; flex-shrink: 0; }
 
         .panneau-corps { overflow-y: auto; overflow-x: hidden; flex: 1; padding: 12px; }
 
-        /* Catégories dans le panneau */
-        .p-categorie-titre {
-            font-size: 13px; font-weight: bold; color: #95a5a6;
-            text-transform: uppercase; letter-spacing: 1px;
-            margin: 14px 0 8px;
-        }
+        .p-categorie-titre { font-size: 13px; font-weight: bold; color: #95a5a6; text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 8px; }
         .p-categorie-titre:first-child { margin-top: 0; }
 
-        .p-produits-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
+        .p-produits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-        .p-produit-btn {
-            background: #2c3e50; border: 2px solid transparent;
-            border-radius: 10px; padding: 10px 8px;
-            text-align: center; cursor: pointer;
-            color: white; transition: all 0.15s;
-            position: relative;
-            min-width: 0; overflow: hidden;
-            width: 100%;
-        }
+        .p-produit-btn { background: #2c3e50; border: 2px solid transparent; border-radius: 10px; padding: 10px 8px; text-align: center; cursor: pointer; color: white; transition: all 0.15s; position: relative; min-width: 0; overflow: hidden; width: 100%; }
         .p-produit-btn:active { transform: scale(0.96); }
         .p-produit-btn.selectionne { border-color: #27ae60; background: #1e8449; }
 
-        .p-produit-nom {
-            font-size: 12px; font-weight: bold; line-height: 1.3;
-            word-break: break-word; white-space: normal;
-            overflow: hidden;
-        }
+        .p-produit-nom { font-size: 12px; font-weight: bold; line-height: 1.3; word-break: break-word; white-space: normal; overflow: hidden; }
         .p-produit-prix { font-size: 12px; color: #2ecc71; margin-top: 3px; white-space: nowrap; }
         .p-produit-btn.selectionne .p-produit-prix { color: #a9dfbf; }
 
-        .p-badge-qty {
-            position: absolute; top: -6px; right: -6px;
-            background: #27ae60; color: white;
-            border-radius: 50%; width: 22px; height: 22px;
-            font-size: 12px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .p-badge-qty { position: absolute; top: -6px; right: -6px; background: #27ae60; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
 
-        /* Récap panier dans le panneau */
-        .panneau-footer {
-            padding: 12px 16px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            flex-shrink: 0;
-            background: #1a252f;
-        }
+        .panneau-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; background: #1a252f; }
 
-        .p-recap {
-            display: flex; justify-content: space-between;
-            font-size: 13px; color: #bdc3c7; margin-bottom: 8px;
-        }
+        .p-recap { display: flex; justify-content: space-between; font-size: 13px; color: #bdc3c7; margin-bottom: 8px; }
         .p-recap-total { font-weight: bold; color: #2ecc71; }
 
-        .p-liste-panier {
-            list-style: none; padding: 0; margin: 0 0 10px;
-            max-height: 80px; overflow-y: auto;
-            font-size: 13px; color: #ecf0f1;
-        }
-        .p-liste-panier li {
-            display: flex; justify-content: space-between;
-            padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
-        }
+        .p-liste-panier { list-style: none; padding: 0; margin: 0 0 10px; max-height: 80px; overflow-y: auto; font-size: 13px; color: #ecf0f1; }
+        .p-liste-panier li { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
         .p-suppr { color: #e74c3c; cursor: pointer; font-weight: bold; margin-left: 8px; }
 
-        .p-note {
-            width: 100%; padding: 9px 12px;
-            background: #2c3e50; border: 1px solid #34495e;
-            border-radius: 8px; color: white; font-size: 14px;
-            margin-bottom: 10px;
-        }
+        .p-note { width: 100%; padding: 9px 12px; background: #2c3e50; border: 1px solid #34495e; border-radius: 8px; color: white; font-size: 14px; margin-bottom: 10px; }
         .p-note::placeholder { color: #7f8c8d; }
 
-        .p-btn-valider {
-            width: 100%; background: #27ae60; color: white; border: none;
-            padding: 14px; border-radius: 10px; font-size: 16px;
-            font-weight: bold; cursor: pointer;
-        }
+        .p-btn-valider { width: 100%; background: #27ae60; color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .p-btn-valider:disabled { background: #555; cursor: not-allowed; }
 
-        /* ── TICKETS ── */
+        /* POPUP VARIANTES BAR */
+        .var-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 600; align-items: flex-end; justify-content: center; }
+        .var-overlay.open { display: flex; }
+        .var-popup { background: #1a252f; border-radius: 18px 18px 0 0; padding: 20px 16px 28px; width: 100%; max-width: 100vw; animation: slideUp 0.25s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .var-popup h3 { margin: 0 0 6px; font-size: 16px; color: #27ae60; text-align: center; }
+        .var-popup p  { margin: 0 0 14px; font-size: 13px; color: #95a5a6; text-align: center; }
+        .var-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+        .btn-var { background: #2c3e50; border: 2px solid #34495e; border-radius: 10px; padding: 12px 8px; font-size: 13px; font-weight: bold; color: white; cursor: pointer; text-align: center; word-break: break-word; }
+        .btn-var:hover { border-color: #27ae60; background: #1e8449; }
+        .btn-annuler-var { width: 100%; background: rgba(255,255,255,0.1); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+
+        /* TICKETS */
         .zone-tickets { display: flex; flex-direction: column; gap: 12px; padding: 12px; }
 
         .ticket { border-radius: 12px; padding: 14px; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); color: white; }
@@ -264,7 +157,6 @@
 </head>
 <body>
 
-    <!-- ── HEADER ── -->
     <div class="header">
         <h1>👨‍🍳 Comptoir</h1>
         <div class="header-btns">
@@ -299,7 +191,6 @@
     <div class="bandeau-ferme">🚫 Bar fermé — commandes désactivées</div>
     {% endif %}
 
-    <!-- Confirmation archiver tout -->
     <div class="confirm-bar" id="confirm-tout">
         <span>⚠️ Archiver toutes les commandes en cours ?</span>
         <form action="/archiver-tout" method="POST" style="display:inline;">
@@ -308,7 +199,6 @@
         <button class="btn-annuler-tout" onclick="document.getElementById('confirm-tout').classList.remove('visible')">✕ Annuler</button>
     </div>
 
-    <!-- Confirmation reset numérotation -->
     <div class="confirm-num" id="confirm-num">
         <span>🔢 Remettre la numérotation à #001 ?</span>
         <form action="/reset-numerotation" method="POST" style="display:inline;">
@@ -317,7 +207,7 @@
         <button class="btn-annuler-num" onclick="document.getElementById('confirm-num').classList.remove('visible')">✕ Annuler</button>
     </div>
 
-    <!-- ── TICKETS ── -->
+    <!-- TICKETS -->
     <div class="zone-tickets">
         {% for c in commandes %}
             <div class="ticket
@@ -354,7 +244,17 @@
         {% endfor %}
     </div>
 
-    <!-- ── OVERLAY + PANNEAU COMMANDE RAPIDE ── -->
+    <!-- POPUP VARIANTES -->
+    <div class="var-overlay" id="var-overlay">
+        <div class="var-popup">
+            <h3 id="var-titre"></h3>
+            <p>Choisissez une option :</p>
+            <div class="var-grid" id="var-grid"></div>
+            <button class="btn-annuler-var" onclick="fermerVarPopup()">✕ Annuler</button>
+        </div>
+    </div>
+
+    <!-- OVERLAY + PANNEAU COMMANDE RAPIDE -->
     <div class="overlay" id="overlay" onclick="fermerPanneau()"></div>
 
     <div class="panneau" id="panneau">
@@ -368,11 +268,19 @@
                 <div class="p-categorie-titre">{{ categorie }}</div>
                 <div class="p-produits-grid">
                     {% for p in produits %}
+                        {% if p.variantes is defined %}
                         <div class="p-produit-btn" id="btn-{{ loop.index }}-{{ categorie | replace(' ', '_') }}"
-                             onclick="toggleProduit('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}', this)">
+                             onclick="ouvrirVarPopup('{{ p.nom }}', {{ p.prix }}, {{ p.variantes | tojson }}, this)">
+                            <div class="p-produit-nom">{{ p.nom }}</div>
+                            <div class="p-produit-prix">{{ "%.2f" | format(p.prix) }} € ▾</div>
+                        </div>
+                        {% else %}
+                        <div class="p-produit-btn" id="btn-{{ loop.index }}-{{ categorie | replace(' ', '_') }}"
+                             onclick="toggleProduit('{{ p.nom }}', {{ p.prix }}, this)">
                             <div class="p-produit-nom">{{ p.nom }}</div>
                             <div class="p-produit-prix">{{ "%.2f" | format(p.prix) }} €</div>
                         </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             {% endfor %}
@@ -405,35 +313,68 @@
 
         // ── Panneau commande rapide ──
         let panier = [];
+        let varCtxBar = null;
 
-        function getNomComplet(nom, categorie) {
-            if (categorie === "Crêpes" && !nom.toLowerCase().includes("crêpe")) {
-                return "Crêpe " + nom;
-            } else if (categorie !== "Boissons" && categorie !== "Glaces") {
-                return categorie + " - " + nom;
-            }
-            return nom;
+        // ── Popup variantes bar ──
+        function ouvrirVarPopup(nom, prix, variantes, btnOrigine) {
+            varCtxBar = { nom, prix, btnOrigine };
+            document.getElementById('var-titre').textContent = nom;
+            const grid = document.getElementById('var-grid');
+            grid.innerHTML = '';
+            variantes.forEach(v => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-var';
+                btn.textContent = v;
+                btn.onclick = () => choisirVarBar(v);
+                grid.appendChild(btn);
+            });
+            document.getElementById('var-overlay').classList.add('open');
         }
 
-        function toggleProduit(nom, prix, categorie, btn) {
-            const nomComplet = getNomComplet(nom, categorie);
-            // Chercher si déjà dans le panier
-            const idx = panier.findIndex(p => p.nomComplet === nomComplet);
+        function fermerVarPopup() {
+            document.getElementById('var-overlay').classList.remove('open');
+            varCtxBar = null;
+        }
+
+        function choisirVarBar(variante) {
+            if (!varCtxBar) return;
+            const { nom, prix, btnOrigine } = varCtxBar;
+            fermerVarPopup();
+            const nomVariante = nom + ' - ' + variante;
+            const idx = panier.findIndex(p => p.nomComplet === nomVariante);
             if (idx === -1) {
-                panier.push({ nom, prix, categorie, nomComplet, btn });
+                panier.push({ nom, prix, nomComplet: nomVariante, qty: 1, btn: btnOrigine });
             } else {
-                // Déjà présent : incrémenter la quantité
                 panier[idx].qty = (panier[idx].qty || 1) + 1;
             }
-            // Si premier ajout, marquer le btn
+            _majBadgeBar(btnOrigine, nom);
+            majAffichage();
+        }
+
+        function _majBadgeBar(btn, nom) {
+            const total = panier.filter(p => p.nom === nom).reduce((s, p) => s + (p.qty || 1), 0);
+            let badge = btn.querySelector('.p-badge-qty');
+            if (total > 0) {
+                if (!badge) { badge = document.createElement('div'); badge.className = 'p-badge-qty'; btn.appendChild(badge); }
+                badge.textContent = total;
+                btn.classList.add('selectionne');
+            } else {
+                if (badge) badge.remove();
+                btn.classList.remove('selectionne');
+            }
+        }
+
+        function toggleProduit(nom, prix, btn) {
+            const idx = panier.findIndex(p => p.nomComplet === nom);
             if (idx === -1) {
+                panier.push({ nom, prix, nomComplet: nom, qty: 1, btn });
                 btn.classList.add('selectionne');
                 const badge = document.createElement('div');
                 badge.className = 'p-badge-qty';
-                badge.id = 'badge-' + nomComplet.replace(/\s/g,'_');
                 badge.textContent = '1';
                 btn.appendChild(badge);
             } else {
+                panier[idx].qty = (panier[idx].qty || 1) + 1;
                 const badge = btn.querySelector('.p-badge-qty');
                 if (badge) badge.textContent = panier[idx].qty;
             }
@@ -444,15 +385,22 @@
             const idx = panier.findIndex(p => p.nomComplet === nomComplet);
             if (idx === -1) return;
             const item = panier[idx];
+            const nom = item.nom;
             if ((item.qty || 1) > 1) {
                 item.qty--;
-                const badge = item.btn.querySelector('.p-badge-qty');
-                if (badge) badge.textContent = item.qty;
             } else {
-                item.btn.classList.remove('selectionne');
-                const badge = item.btn.querySelector('.p-badge-qty');
-                if (badge) badge.remove();
                 panier.splice(idx, 1);
+            }
+            // Mettre à jour le badge
+            const totalNom = panier.filter(p => p.nom === nom).reduce((s, p) => s + (p.qty || 1), 0);
+            if (item.btn) {
+                const badge = item.btn.querySelector('.p-badge-qty');
+                if (totalNom > 0) {
+                    if (badge) badge.textContent = totalNom;
+                } else {
+                    if (badge) badge.remove();
+                    item.btn.classList.remove('selectionne');
+                }
             }
             majAffichage();
         }
@@ -462,10 +410,8 @@
             const nbEl  = document.getElementById('p-nb');
             const totEl = document.getElementById('p-total');
             const btnV  = document.getElementById('p-btn-valider');
-
             liste.innerHTML = '';
-            let total = 0;
-            let nbTotal = 0;
+            let total = 0, nbTotal = 0;
             panier.forEach(item => {
                 const qty = item.qty || 1;
                 nbTotal += qty;
@@ -486,19 +432,12 @@
         function envoyerCommande() {
             if (panier.length === 0) return;
             const note = document.getElementById('p-note').value.trim();
-
-            // Construire les produits à plat (répétés selon qty)
             const produits = [];
             panier.forEach(item => {
-                for (let i = 0; i < (item.qty || 1); i++) {
-                    produits.push(item.nomComplet);
-                }
+                for (let i = 0; i < (item.qty || 1); i++) produits.push(item.nomComplet);
             });
-
-            // Soumettre via un formulaire caché
             const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/commander-bar';
+            form.method = 'POST'; form.action = '/commander-bar';
             produits.forEach(p => {
                 const inp = document.createElement('input');
                 inp.type = 'hidden'; inp.name = 'produits'; inp.value = p;
