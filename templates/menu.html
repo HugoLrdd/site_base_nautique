@@ -50,7 +50,7 @@
         .produit-nom { font-weight: bold; font-size: 16px; word-break: break-word; white-space: normal; line-height: 1.4; }
         .produit-prix { color: #2ecc71; font-weight: 600; margin-top: 4px; }
 
-        /* ── SÉLECTEUR QUANTITÉ ── */
+        /* SÉLECTEUR QUANTITÉ */
         .qty-zone { flex-shrink: 0; }
 
         .btn-ajouter {
@@ -158,6 +158,38 @@
         .btn-annuler-modale { flex: 1; background: #f0f0f0; color: #555; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
         .btn-confirmer-modale { flex: 2; background: #2ecc71; color: white; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; }
         .btn-confirmer-modale:disabled { background: #95a5a6; cursor: not-allowed; }
+
+        /* POPUP VARIANTES */
+        .variantes-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 600;
+            align-items: flex-end; justify-content: center;
+        }
+        .variantes-overlay.open { display: flex; }
+        .variantes-popup {
+            background: white; border-radius: 18px 18px 0 0;
+            padding: 20px 16px 28px; width: 100%; max-width: 600px;
+            animation: slideUp 0.25s ease;
+        }
+        .variantes-popup h3 { margin: 0 0 6px; font-size: 16px; color: #2c3e50; text-align: center; }
+        .variantes-popup p  { margin: 0 0 16px; font-size: 13px; color: #7f8c8d; text-align: center; }
+        .variantes-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin-bottom: 16px;
+        }
+        .btn-variante {
+            background: #f4f6f7; border: 2px solid #ddd;
+            border-radius: 10px; padding: 12px 8px;
+            font-size: 14px; font-weight: bold; color: #2c3e50;
+            cursor: pointer; text-align: center; transition: all 0.15s;
+        }
+        .btn-variante:hover  { background: #e8f4f8; border-color: #0056b3; color: #0056b3; }
+        .btn-variante:active { transform: scale(0.96); }
+        .btn-annuler-variante {
+            width: 100%; background: #f0f0f0; color: #555;
+            border: none; padding: 12px; border-radius: 8px;
+            font-size: 14px; font-weight: bold; cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -180,18 +212,25 @@
                         <span class="produit-prix">{{ "%.2f" | format(p.prix) }} €</span>
                     </div>
                     <div class="qty-zone" id="zone-{{ cle }}">
-                        <button class="btn-ajouter"
-                                onclick="premierAjout('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}', '{{ cle }}')">
-                            ＋ Ajouter
-                        </button>
+                        {% if p.variantes is defined %}
+                            <button class="btn-ajouter"
+                                    onclick="ouvrirVariantes('{{ p.nom }}', {{ p.prix }}, {{ p.variantes | tojson }}, '{{ cle }}')">
+                                ＋ Ajouter
+                            </button>
+                        {% else %}
+                            <button class="btn-ajouter"
+                                    onclick="premierAjout('{{ p.nom }}', {{ p.prix }}, '{{ cle }}')">
+                                ＋ Ajouter
+                            </button>
+                        {% endif %}
                         <div class="qty-ctrl" id="ctrl-{{ cle }}">
                             <button class="qty-btn"
-                                    onclick="changerQty('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}', '{{ cle }}', -1)">
+                                    onclick="changerQty('{{ p.nom }}', {{ p.prix }}, '{{ cle }}', -1, {{ p.variantes | tojson if p.variantes is defined else 'null' }})">
                                 −
                             </button>
                             <span class="qty-num" id="num-{{ cle }}">1</span>
                             <button class="qty-btn"
-                                    onclick="changerQty('{{ p.nom }}', {{ p.prix }}, '{{ categorie }}', '{{ cle }}', +1)">
+                                    onclick="changerQty('{{ p.nom }}', {{ p.prix }}, '{{ cle }}', +1, {{ p.variantes | tojson if p.variantes is defined else 'null' }})">
                                 ＋
                             </button>
                         </div>
@@ -226,7 +265,7 @@
         </div>
     </div>
 
-    <form id="panier-section" action="/commander" method="POST" onsubmit="return verifierPanierAvantEnvoi()">
+    <form id="panier-section" action="/commander" method="POST">
         <div class="panier-resume">
             <span>🛒 Mon Panier (<span id="panier-nb-articles">0</span>)</span>
             <span class="panier-total"><span id="total-prix">0.00</span> €</span>
@@ -247,6 +286,16 @@
         {% endif %}
     </form>
 
+    <!-- POPUP VARIANTES -->
+    <div class="variantes-overlay" id="variantes-overlay">
+        <div class="variantes-popup">
+            <h3 id="variantes-titre"></h3>
+            <p>Choisissez une option :</p>
+            <div class="variantes-grid" id="variantes-grid"></div>
+            <button class="btn-annuler-variante" onclick="fermerVariantes()">✕ Annuler</button>
+        </div>
+    </div>
+
     <!-- MODALE CONFIRMATION -->
     <div class="modale-overlay" id="modale-overlay" onclick="fermerConfirmation(event)">
         <div class="modale">
@@ -266,38 +315,74 @@
     </div>
 
     <script>
-        // ── Panier ──
         let panier = {};
         let commandeEnvoyee = false;
+        let varCtx = null;
 
-        function getNomComplet(nom, categorie) {
-            if (categorie === "Crêpes" && !nom.toLowerCase().includes("crêpe")) {
-                return "Crêpe " + nom;
-            } else if (categorie !== "Boissons" && categorie !== "Glaces") {
-                return categorie + " - " + nom;
-            }
-            return nom;
+        // ── Popup variantes ──
+        function ouvrirVariantes(nom, prix, variantes, cle) {
+            varCtx = { nom, prix, cle };
+            document.getElementById('variantes-titre').textContent = nom;
+            const grid = document.getElementById('variantes-grid');
+            grid.innerHTML = '';
+            variantes.forEach(v => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-variante';
+                btn.textContent = v;
+                btn.onclick = () => choisirVariante(v);
+                grid.appendChild(btn);
+            });
+            document.getElementById('variantes-overlay').classList.add('open');
         }
 
-        function premierAjout(nom, prix, categorie, cle) {
-            const nomComplet = getNomComplet(nom, categorie);
+        function fermerVariantes() {
+            document.getElementById('variantes-overlay').classList.remove('open');
+            varCtx = null;
+        }
+
+        function choisirVariante(variante) {
+            if (!varCtx) return;
+            const { nom, prix, cle } = varCtx;
+            fermerVariantes();
+            _ajouterAuPanier(nom + ' - ' + variante, prix, cle);
+        }
+
+        // ── Produits sans variantes ──
+        function premierAjout(nom, prix, cle) {
+            _ajouterAuPanier(nom, prix, cle);
+        }
+
+        function _ajouterAuPanier(nomComplet, prix, cle) {
+            if (panier[nomComplet]) {
+                panier[nomComplet].qty++;
+            } else {
+                panier[nomComplet] = { nom: nomComplet, prix, qty: 1, cle };
+            }
             document.querySelector('#zone-' + cle + ' .btn-ajouter').style.display = 'none';
             document.getElementById('ctrl-' + cle).classList.add('visible');
-            document.getElementById('num-' + cle).textContent = '1';
-            panier[nomComplet] = { nom: nomComplet, prix, qty: 1, cle };
+            const totalQtyCle = Object.values(panier).filter(p => p.cle === cle).reduce((s, p) => s + p.qty, 0);
+            document.getElementById('num-' + cle).textContent = totalQtyCle;
             mettreAJourAffichage();
         }
 
-        function changerQty(nom, prix, categorie, cle, delta) {
-            const nomComplet = getNomComplet(nom, categorie);
-            if (!panier[nomComplet]) return;
-            panier[nomComplet].qty += delta;
-            if (panier[nomComplet].qty <= 0) {
-                delete panier[nomComplet];
+        function changerQty(nom, prix, cle, delta, variantes) {
+            if (delta > 0) {
+                if (variantes) { ouvrirVariantes(nom, prix, variantes, cle); }
+                else { _ajouterAuPanier(nom, prix, cle); }
+                return;
+            }
+            // Retirer : enlever la dernière ligne pour cette clé
+            const itemsCle = Object.entries(panier).filter(([k, v]) => v.cle === cle);
+            if (itemsCle.length === 0) return;
+            const [key, item] = itemsCle[itemsCle.length - 1];
+            item.qty--;
+            if (item.qty <= 0) delete panier[key];
+            const totalQtyCle = Object.values(panier).filter(p => p.cle === cle).reduce((s, p) => s + p.qty, 0);
+            if (totalQtyCle <= 0) {
                 document.getElementById('ctrl-' + cle).classList.remove('visible');
                 document.querySelector('#zone-' + cle + ' .btn-ajouter').style.display = '';
             } else {
-                document.getElementById('num-' + cle).textContent = panier[nomComplet].qty;
+                document.getElementById('num-' + cle).textContent = totalQtyCle;
             }
             mettreAJourAffichage();
         }
@@ -306,10 +391,15 @@
             if (!panier[nomComplet]) return;
             const cle = panier[nomComplet].cle;
             delete panier[nomComplet];
-            const ctrl = document.getElementById('ctrl-' + cle);
-            if (ctrl) ctrl.classList.remove('visible');
-            const btn = document.querySelector('#zone-' + cle + ' .btn-ajouter');
-            if (btn) btn.style.display = '';
+            const totalQtyCle = Object.values(panier).filter(p => p.cle === cle).reduce((s, p) => s + p.qty, 0);
+            if (totalQtyCle <= 0) {
+                const ctrl = document.getElementById('ctrl-' + cle);
+                if (ctrl) ctrl.classList.remove('visible');
+                const btn = document.querySelector('#zone-' + cle + ' .btn-ajouter');
+                if (btn) btn.style.display = '';
+            } else {
+                document.getElementById('num-' + cle).textContent = totalQtyCle;
+            }
             mettreAJourAffichage();
         }
 
@@ -325,11 +415,9 @@
             const nbArticles = document.getElementById('panier-nb-articles');
             const totalPrix  = document.getElementById('total-prix');
             const zoneInputs = document.getElementById('inputs-caches-zone');
-
             listeHTML.innerHTML  = '';
             zoneInputs.innerHTML = '';
             let total = 0, nbTotal = 0;
-
             Object.values(panier).forEach(item => {
                 total   += item.prix * item.qty;
                 nbTotal += item.qty;
@@ -346,19 +434,17 @@
                     zoneInputs.appendChild(input);
                 }
             });
-
             nbArticles.innerText = nbTotal;
             totalPrix.innerText  = total.toFixed(2);
             ajusterPadding();
         }
 
-        // ── Modale de confirmation ──
+        // ── Modale confirmation ──
         function ouvrirConfirmation() {
             if (Object.keys(panier).length === 0) {
                 alert("Votre panier est vide !");
                 return;
             }
-            // Remplir la modale
             const liste = document.getElementById('modale-liste');
             liste.innerHTML = '';
             let total = 0;
@@ -370,7 +456,6 @@
                     <span>${(item.prix * item.qty).toFixed(2)} €</span>`;
                 liste.appendChild(li);
             });
-            // Ajouter la note si présente
             const note = document.getElementById('note-commande').value.trim();
             if (note) {
                 const li = document.createElement('li');
@@ -383,26 +468,22 @@
         }
 
         function fermerConfirmation(e) {
-            // Fermer si clic sur l'overlay (pas sur la modale elle-même)
             if (e && e.target !== document.getElementById('modale-overlay')) return;
             document.getElementById('modale-overlay').classList.remove('open');
         }
 
-        // ── Anti-double commande + envoi ──
+        // ── Anti-double commande ──
         function envoyerCommande() {
             if (commandeEnvoyee) return;
             commandeEnvoyee = true;
-
             const btn = document.getElementById('btn-confirmer');
             btn.disabled = true;
             btn.textContent = '⏳ Envoi en cours...';
-
             document.getElementById('panier-section').submit();
         }
 
-        // ── Mémorisation de la commande (numéro de suivi) ──
-        // Si le client a déjà une commande en cours, afficher un lien de retour
-        const dernierSuivi = localStorage.getItem('dernier_suivi');
+        // ── Mémorisation ──
+        const dernierSuivi  = localStorage.getItem('dernier_suivi');
         const dernierStatut = localStorage.getItem('dernier_statut');
         if (dernierSuivi && dernierStatut !== 'Récupérée') {
             const lien = document.createElement('a');
