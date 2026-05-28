@@ -5,6 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu - Base Nautique de Merville</title>
+
+    <!-- Google Analytics (chargé uniquement après consentement) -->
+    <script>
+        function chargerAnalytics() {
+            const s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://www.googletagmanager.com/gtag/js?id=G-Y3PWJH9D3E';
+            document.head.appendChild(s);
+            s.onload = function() {
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                window.gtag = gtag;
+                gtag('js', new Date());
+                gtag('config', 'G-Y3PWJH9D3E');
+            };
+        }
+        if (localStorage.getItem('cookies_consent') === 'oui') {
+            chargerAnalytics();
+        }
+    </script>
+
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -43,14 +64,10 @@
             gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
-        .produit-infos {
-            display: flex; flex-direction: column;
-            flex: 1; min-width: 0;
-        }
+        .produit-infos { display: flex; flex-direction: column; flex: 1; min-width: 0; }
         .produit-nom { font-weight: bold; font-size: 16px; word-break: break-word; white-space: normal; line-height: 1.4; }
         .produit-prix { color: #2ecc71; font-weight: 600; margin-top: 4px; }
 
-        /* SÉLECTEUR QUANTITÉ */
         .qty-zone { flex-shrink: 0; }
 
         .btn-ajouter {
@@ -69,20 +86,14 @@
         .qty-ctrl.visible { display: flex; }
 
         .qty-btn {
-            background: none; border: none;
-            width: 36px; height: 36px;
-            font-size: 20px; font-weight: bold;
-            cursor: pointer; color: #0056b3;
+            background: none; border: none; width: 36px; height: 36px;
+            font-size: 20px; font-weight: bold; cursor: pointer; color: #0056b3;
             display: flex; align-items: center; justify-content: center;
             transition: background 0.15s;
         }
         .qty-btn:hover { background: rgba(0,86,179,0.12); }
-        .qty-num {
-            min-width: 28px; text-align: center;
-            font-weight: bold; font-size: 15px; color: #0056b3;
-        }
+        .qty-num { min-width: 28px; text-align: center; font-weight: bold; font-size: 15px; color: #0056b3; }
 
-        /* FOOTER */
         .footer { background: #2c3e50; color: #ecf0f1; text-align: center; padding: 25px 20px; font-size: 14px; line-height: 1.8; position: relative; z-index: 10; }
         .footer a { color: #00a8ff; text-decoration: none; }
         .footer .footer-titre { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: white; }
@@ -93,7 +104,6 @@
         .qr-zone { margin-top: 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .qr-zone img { width: 110px; height: 110px; border-radius: 8px; background: white; padding: 6px; }
 
-        /* PANIER FIXED */
         #panier-section {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
@@ -120,38 +130,15 @@
         .bar-ferme-banner p { margin: 6px 0 0 0; font-size: 14px; font-weight: normal; opacity: 0.9; }
 
         /* MODALE CONFIRMATION */
-        .modale-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.5); z-index: 500;
-            align-items: flex-end; justify-content: center;
-        }
+        .modale-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; align-items: flex-end; justify-content: center; }
         .modale-overlay.open { display: flex; }
-        .modale {
-            background: white; border-radius: 18px 18px 0 0;
-            padding: 20px 16px 28px; width: 100%; max-width: 600px;
-            max-height: 85vh; display: flex; flex-direction: column;
-            animation: slideUp 0.25s ease;
-        }
+        .modale { background: white; border-radius: 18px 18px 0 0; padding: 20px 16px 28px; width: 100%; max-width: 600px; max-height: 85vh; display: flex; flex-direction: column; animation: slideUp 0.25s ease; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .modale h3 { margin: 0 0 12px; font-size: 16px; color: #2c3e50; text-align: center; flex-shrink: 0; }
-        .modale-liste {
-            list-style: none; padding: 0; margin: 0 0 10px;
-            font-size: 13px; color: #555;
-            overflow-y: auto; flex: 1; min-height: 0;
-        }
-        .modale-liste li {
-            display: flex; justify-content: space-between;
-            align-items: flex-start; gap: 8px;
-            padding: 6px 0; border-bottom: 1px dashed #eee;
-        }
-        .modale-liste li span:first-child {
-            flex: 1; min-width: 0;
-            word-break: break-word; white-space: normal; line-height: 1.4;
-        }
-        .modale-liste li span:last-child {
-            flex-shrink: 0; white-space: nowrap;
-            font-weight: bold; color: #2c3e50;
-        }
+        .modale-liste { list-style: none; padding: 0; margin: 0 0 10px; font-size: 13px; color: #555; overflow-y: auto; flex: 1; min-height: 0; }
+        .modale-liste li { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #eee; }
+        .modale-liste li span:first-child { flex: 1; min-width: 0; word-break: break-word; white-space: normal; line-height: 1.4; }
+        .modale-liste li span:last-child { flex-shrink: 0; white-space: nowrap; font-weight: bold; color: #2c3e50; }
         .modale-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; color: #2c3e50; margin: 10px 0 16px; padding-top: 8px; border-top: 2px solid #eee; flex-shrink: 0; }
         .modale-total span:last-child { color: #2ecc71; }
         .modale-btns { display: flex; gap: 10px; flex-shrink: 0; }
@@ -160,36 +147,29 @@
         .btn-confirmer-modale:disabled { background: #95a5a6; cursor: not-allowed; }
 
         /* POPUP VARIANTES */
-        .variantes-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.5); z-index: 600;
-            align-items: flex-end; justify-content: center;
-        }
+        .variantes-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 600; align-items: flex-end; justify-content: center; }
         .variantes-overlay.open { display: flex; }
-        .variantes-popup {
-            background: white; border-radius: 18px 18px 0 0;
-            padding: 20px 16px 28px; width: 100%; max-width: 600px;
-            animation: slideUp 0.25s ease;
-        }
+        .variantes-popup { background: white; border-radius: 18px 18px 0 0; padding: 20px 16px 28px; width: 100%; max-width: 600px; animation: slideUp 0.25s ease; }
         .variantes-popup h3 { margin: 0 0 6px; font-size: 16px; color: #2c3e50; text-align: center; }
         .variantes-popup p  { margin: 0 0 16px; font-size: 13px; color: #7f8c8d; text-align: center; }
-        .variantes-grid {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 10px; margin-bottom: 16px;
-        }
-        .btn-variante {
-            background: #f4f6f7; border: 2px solid #ddd;
-            border-radius: 10px; padding: 12px 8px;
-            font-size: 14px; font-weight: bold; color: #2c3e50;
-            cursor: pointer; text-align: center; transition: all 0.15s;
-        }
+        .variantes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .btn-variante { background: #f4f6f7; border: 2px solid #ddd; border-radius: 10px; padding: 12px 8px; font-size: 14px; font-weight: bold; color: #2c3e50; cursor: pointer; text-align: center; transition: all 0.15s; }
         .btn-variante:hover  { background: #e8f4f8; border-color: #0056b3; color: #0056b3; }
         .btn-variante:active { transform: scale(0.96); }
-        .btn-annuler-variante {
-            width: 100%; background: #f0f0f0; color: #555;
-            border: none; padding: 12px; border-radius: 8px;
-            font-size: 14px; font-weight: bold; cursor: pointer;
+        .btn-annuler-variante { width: 100%; background: #f0f0f0; color: #555; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+
+        /* BANNIÈRE COOKIES */
+        .cookie-banner {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0;
+            background: #1a252f; color: #ecf0f1;
+            padding: 16px; z-index: 9999;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
         }
+        .cookie-banner.visible { display: block; }
+        .cookie-texte { font-size: 13px; line-height: 1.5; margin-bottom: 12px; color: #bdc3c7; }
+        .cookie-btns { display: flex; gap: 10px; }
+        .btn-cookie-accept { flex: 1; background: #0056b3; color: white; border: none; padding: 11px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .btn-cookie-refuse { flex: 1; background: #34495e; color: #bdc3c7; border: none; padding: 11px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -213,13 +193,9 @@
                     </div>
                     <div class="qty-zone" id="zone-{{ cle }}">
                         {% if p.variantes is defined %}
-                            <button class="btn-ajouter" onclick="ouvrirVariantes({{ cle }})">
-                                ＋ Ajouter
-                            </button>
+                            <button class="btn-ajouter" onclick="ouvrirVariantes({{ cle }})">＋ Ajouter</button>
                         {% else %}
-                            <button class="btn-ajouter" onclick="premierAjout({{ cle }})">
-                                ＋ Ajouter
-                            </button>
+                            <button class="btn-ajouter" onclick="premierAjout({{ cle }})">＋ Ajouter</button>
                         {% endif %}
                         <div class="qty-ctrl" id="ctrl-{{ cle }}">
                             <button class="qty-btn" onclick="changerQty({{ cle }}, -1)">−</button>
@@ -306,8 +282,19 @@
         </div>
     </div>
 
+    <!-- BANNIÈRE COOKIES -->
+    <div class="cookie-banner" id="cookie-banner">
+        <p class="cookie-texte">
+            🍪 Ce site utilise Google Analytics pour mesurer l'audience et améliorer votre expérience.
+            Vos données sont anonymisées et ne sont pas revendues.
+        </p>
+        <div class="cookie-btns">
+            <button class="btn-cookie-accept" onclick="accepterCookies()">✓ Accepter</button>
+            <button class="btn-cookie-refuse" onclick="refuserCookies()">✕ Refuser</button>
+        </div>
+    </div>
+
     <script>
-        // Données produits générées par Jinja — évite les problèmes d'encodage dans onclick
         const PRODUITS = {};
         {% set ns2 = namespace(i=0) %}
         {% for categorie, produits in menu.items() %}
@@ -327,7 +314,6 @@
         let commandeEnvoyee = false;
         let varCtx = null;
 
-        // ── Popup variantes ──
         function ouvrirVariantes(cle) {
             const p = PRODUITS[cle];
             varCtx = { nom: p.nom, prix: p.prix, cle };
@@ -356,7 +342,6 @@
             _ajouterAuPanier(nom + ' - ' + variante, prix, cle);
         }
 
-        // ── Produits sans variantes ──
         function premierAjout(cle) {
             const p = PRODUITS[cle];
             _ajouterAuPanier(p.nom, p.prix, cle);
@@ -382,7 +367,6 @@
                 else { _ajouterAuPanier(p.nom, p.prix, cle); }
                 return;
             }
-            // Retirer : enlever la dernière ligne pour cette clé
             const itemsCle = Object.entries(panier).filter(([k, v]) => v.cle == cle);
             if (itemsCle.length === 0) return;
             const [key, item] = itemsCle[itemsCle.length - 1];
@@ -402,7 +386,7 @@
             if (!panier[nomComplet]) return;
             const cle = panier[nomComplet].cle;
             delete panier[nomComplet];
-            const totalQtyCle = Object.values(panier).filter(p => p.cle === cle).reduce((s, p) => s + p.qty, 0);
+            const totalQtyCle = Object.values(panier).filter(p => p.cle == cle).reduce((s, p) => s + p.qty, 0);
             if (totalQtyCle <= 0) {
                 const ctrl = document.getElementById('ctrl-' + cle);
                 if (ctrl) ctrl.classList.remove('visible');
@@ -450,7 +434,6 @@
             ajusterPadding();
         }
 
-        // ── Modale confirmation ──
         function ouvrirConfirmation() {
             if (Object.keys(panier).length === 0) {
                 alert("Votre panier est vide !");
@@ -483,7 +466,6 @@
             document.getElementById('modale-overlay').classList.remove('open');
         }
 
-        // ── Anti-double commande ──
         function envoyerCommande() {
             if (commandeEnvoyee) return;
             commandeEnvoyee = true;
@@ -502,6 +484,22 @@
             lien.style.cssText = 'display:block;text-align:center;margin:10px 15px 0;padding:10px;background:#e8f4f8;border-radius:8px;color:#0056b3;font-size:13px;font-weight:bold;text-decoration:none;';
             lien.textContent = '🔍 Voir ma commande en cours #' + String(dernierSuivi).padStart(3, '0');
             document.querySelector('.container').prepend(lien);
+        }
+
+        // ── Bannière cookies ──
+        if (!localStorage.getItem('cookies_consent')) {
+            document.getElementById('cookie-banner').classList.add('visible');
+        }
+
+        function accepterCookies() {
+            localStorage.setItem('cookies_consent', 'oui');
+            document.getElementById('cookie-banner').classList.remove('visible');
+            chargerAnalytics();
+        }
+
+        function refuserCookies() {
+            localStorage.setItem('cookies_consent', 'non');
+            document.getElementById('cookie-banner').classList.remove('visible');
         }
     </script>
 
